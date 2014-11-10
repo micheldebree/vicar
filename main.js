@@ -2,7 +2,7 @@
 window.onload = function () {
 
     var img = new Image();
-    img.src = 'images/test.png';
+    img.src = 'images/hqdefault.jpg';
     
     img.onload=function() {
         grabIt(img);
