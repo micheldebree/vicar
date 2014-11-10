@@ -12,18 +12,18 @@ window.onload = function () {
 };
 
 function grabIt(img) {
-    alert(img.width);
+  
     var pg = new PixelImage(img);
 
-    for (var y = 0; y < pg.height; y++) {
-        for (var x = 0; x < pg.widht; x++) {
-            pg.poke(x,y, new Pixel(255, 0, 0, 255));
+    for (var y = 0; y < pg.getHeight(); y++) {
+        for (var x = 0; x < pg.getWidth(); x++) {
+            pg.poke(x,y, pg.peek(x,y).invert());
         }
     }
     
     var canvas = document.getElementById("Canvas0");
-    canvas.width = img.width;
-    canvas.height = img.height;
+    canvas.width = pg.getWidth();
+    canvas.height = pg.getHeight();
     var context = canvas.getContext('2d');
     context.putImageData(pg.imageData, 0, 0);
 }
