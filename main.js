@@ -2,7 +2,7 @@
 window.onload = function() {
 
     var img = new Image();
-    img.src = 'images/hqdefault.jpg';
+    img.src = 'images/rainbowgirl.jpg';
 
     img.onload = function() {
         grabIt(img);
@@ -24,7 +24,6 @@ function grabIt(img) {
     context.putImageData(pg.imageData, 0, 0);
 
     var scaler = new NearestNeighbour();
-
     var scaled = scaler.resize(pg, 160, 200);
     
     scaled = c64palette.remap(scaled);
