@@ -1,4 +1,4 @@
-/*global document*/
+/** A pixel, consisting of red, green, blue and alpha values */
 function Pixel(r, g, b, a) {
     this.r = r;
     this.g = g;
@@ -27,3 +27,12 @@ Pixel.prototype.invert = function() {
     return this;
 };
 
+/** Calculate the euclidian distantance between this pixel's color and another's */
+Pixel.prototype.getDistance = function(pixel) {
+    var r2 = Math.pow(this.r - pixel.r, 2),
+        g2 = Math.pow(this.g - pixel.g, 2),
+        b2 = Math.pow(this.b - pixel.b, 2);
+
+    return Math.sqrt(r2 + g2 + b2);
+
+};

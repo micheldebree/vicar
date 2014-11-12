@@ -1,15 +1,18 @@
+/** Resizes a PixelImage using nearestneightbour algorithm */
 function NearestNeighbour() {
 
-    this.Downsize = function(srcImage, w, h) {
+    this.resize = function(srcImage, w, h) {
 
         var pw = srcImage.getWidth() / w,
             ph = srcImage.getHeight() / h,
-            result = new PixelImage();
+            result = new PixelImage(),
+            x,
+            y;
 
         result.init(w, h);
 
-        for (var y = 0; y < h; y++) {
-            for (var x = 0; x < w; x++) {
+        for (y = 0; y < h; y++) {
+            for (x = 0; x < w; x++) {
                 result.poke(x, y, this.sample(srcImage, x * pw, y * ph))
             }
         }
