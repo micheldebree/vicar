@@ -1,4 +1,5 @@
 /** Create an image with access to individual pixels */
+/* global Pixel */
 function PixelImage() {
     
 }
@@ -8,7 +9,7 @@ PixelImage.prototype.init = function(w, h) {
     var context = canvas.getContext("2d");
 
     this.imageData = context.createImageData(w, h);
-}
+};
 
 PixelImage.prototype.grab = function(img) {
     var canvas = document.createElement("canvas"),

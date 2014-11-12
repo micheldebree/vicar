@@ -1,4 +1,5 @@
 /** Resizes a PixelImage using nearestneightbour algorithm */
+/* global PixelImage */
 function NearestNeighbour() {
 
     this.resize = function(srcImage, w, h) {
@@ -13,7 +14,7 @@ function NearestNeighbour() {
 
         for (y = 0; y < h; y++) {
             for (x = 0; x < w; x++) {
-                result.poke(x, y, this.sample(srcImage, x * pw, y * ph))
+                result.poke(x, y, this.sample(srcImage, x * pw, y * ph));
             }
         }
 
@@ -23,6 +24,6 @@ function NearestNeighbour() {
 
     this.sample = function(srcImage, x, y) {
         return srcImage.peek(x, y);
-    }
+    };
 
 }

@@ -2,7 +2,7 @@
 window.onload = function() {
 
     var img = new Image();
-    img.src = 'images/rainbowgirl.jpg';
+    img.src = 'images/hqdefault.jpg';
 
     img.onload = function() {
         grabIt(img);
@@ -26,8 +26,9 @@ function grabIt(img) {
     var scaler = new NearestNeighbour();
 
     var scaled = scaler.resize(pg, 160, 200);
-    scaled = scaler.resize(scaled, 320, 200);
+    
     scaled = c64palette.remap(scaled);
+    scaled = scaler.resize(scaled, 320, 200);
 
     canvas.width = scaled.getWidth();
     canvas.height = scaled.getHeight();
