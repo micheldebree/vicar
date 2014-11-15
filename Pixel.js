@@ -38,6 +38,10 @@ Pixel.prototype.divide = function(factor) {
     return this;
 };
 
+Pixel.prototype.equals = function(pixel) {
+    return this.r === pixel.r && this.g === pixel.g && this.b == pixel.b;
+};
+
 Pixel.prototype.clone = function() {
     return new Pixel(this.r, this.g, this.b, this.a);
 };

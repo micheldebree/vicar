@@ -1,42 +1,29 @@
 /*global Image, Pixel, PixelImage, document, window, alert, NearestNeighbour, Palette */
-window.onload = function() {
-
+window.onload = function () {
     var img = new Image();
     img.src = 'images/rainbowgirl.jpg';
-
-    img.onload = function() {
+    img.onload = function () {
         grabIt(img);
     };
-
-
 };
 
 function grabIt(img) {
-
     var pg = new PixelImage();
-
     pg.grab(img);
-
     var canvas = document.getElementById("Canvas0");
     canvas.width = pg.getWidth();
     canvas.height = pg.getHeight();
     var context = canvas.getContext('2d');
     context.putImageData(pg.imageData, 0, 0);
-
     var scaler = new NearestNeighbour();
-    var scaled = scaler.resize(pg, 160, 200);
+    pg = scaler.resize(pg, 160, 200);
+    pg = c64palette.remap(pg);
+    pg = scaler.resize(pg, 320, 200);
     
-    scaled = c64palette.remap(scaled);
-    scaled = scaler.resize(scaled, 320, 200);
-
-    canvas.width = scaled.getWidth();
-    canvas.height = scaled.getHeight();
-    context.putImageData(scaled.imageData, 0, 0);
-
-
-
+    canvas.width = pg.getWidth();
+    canvas.height = pg.getHeight();
+    context.putImageData(pg.imageData, 0, 0);
 }
-
 var c64palette = new Palette([
     new Pixel(0, 0, 0, 0xff), // black
     new Pixel(0xff, 0xff, 0xff, 0xff), // white
