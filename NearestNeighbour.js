@@ -22,7 +22,7 @@ function NearestNeighbour() {
         else {
             return this.resizeHeight(srcImage, h);
         }
-    }
+    };
 
     /** Create a new resized version of an image */
     this.resize = function(srcImage, w, h) {

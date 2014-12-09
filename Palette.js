@@ -7,13 +7,13 @@ Palette.prototype.map = function (pixel) {
 
     var i,
         d,
-        minVal = 255 * 255 * 3,
+        minVal,
         minI = 0;
 
     for (i = 0; i < this.pixels.length; i++) {
         d = pixel.getDistance(this.pixels[i]);
 
-        if (d < minVal) {
+        if (minVal === undefined || d < minVal) {
             minVal = d;
             minI = i;
         }
@@ -34,15 +34,28 @@ Palette.prototype.indexOf = function (pixel) {
 };
 
 /* Map all pixels in an image to pixels in this palette */
-Palette.prototype.remap = function (pixelImage) {
+Palette.prototype.remap = function (pixelImage, x, y, w, h) {
 
-    for (var y = 0; y < pixelImage.getHeight(); y++) {
-        for (var x = 0; x < pixelImage.getWidth(); x++) {
-            var pixel = pixelImage.peek(x, y),
+    if (x === undefined) {
+        x = 0;
+    }
+    if (y === undefined) {
+        y = 0;
+    }
+    if (w === undefined) {
+        w = pixelImage.getWidth() - x;
+    }
+    if (h === undefined) {
+        h = pixelImage.getHeight() - y;
+    }
+
+    for (var yi = y; yi < y + h; yi++) {
+        for (var xi = x; xi < x + w; xi++) {
+            var pixel = pixelImage.peek(xi, yi),
                 mappedPixel = this.map(pixel);
 
-            pixelImage.poke(x, y, mappedPixel);
-            this.fsDither(pixelImage, x, y, pixel);
+            pixelImage.poke(xi, yi, mappedPixel);
+            this.fsDither(pixelImage, xi, yi, pixel);
         }
     }
     return pixelImage;
