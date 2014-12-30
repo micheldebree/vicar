@@ -4,6 +4,7 @@ function Pixel(r, g, b, a) {
     this.g = g;
     this.b = b;
     this.a = a;
+    this.w = 1;
 }
 
 Pixel.prototype.add = function(pixel) {
@@ -11,6 +12,7 @@ Pixel.prototype.add = function(pixel) {
     this.g += pixel.g;
     this.b += pixel.b;
     this.a += pixel.a;
+    this.w += pixel.w;
     return this;
 };
 
@@ -19,6 +21,7 @@ Pixel.prototype.substract = function(pixel) {
     this.g -= pixel.g;
     this.b -= pixel.b;
     this.a -= pixel.a;
+    this.w -= pixel.w;
     return this;
 };
 
@@ -27,6 +30,7 @@ Pixel.prototype.multiply = function(factor) {
     this.g *= factor;
     this.b *= factor;
     this.a *= factor;
+    this.w *= factor;
     return this;
 };
 
@@ -35,15 +39,17 @@ Pixel.prototype.divide = function(factor) {
     this.g /= factor;
     this.b /= factor;
     this.a /= factor;
+    this.w /= factor;
     return this;
 };
 
+/** Compare pixels by color value */
 Pixel.prototype.equals = function(pixel) {
-    return this.r === pixel.r && this.g === pixel.g && this.b == pixel.b;
+    return this.r === pixel.r && this.g === pixel.g && this.b === pixel.b;
 };
 
 Pixel.prototype.clone = function() {
-    return new Pixel(this.r, this.g, this.b, this.a);
+    return new Pixel(this.r, this.g, this.b, this.a, this.w);
 };
 
 Pixel.prototype.normalize = function() {

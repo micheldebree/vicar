@@ -33,7 +33,49 @@ Palette.prototype.indexOf = function (pixel) {
     return undefined;
 };
 
-/* Map all pixels in an image to pixels in this palette */
+/**
+ * Add a pixel value to the pallette. If it already exists, increase its weight.
+ */
+Palette.prototype.add = function(pixel) {
+    
+    var found = false;
+    for (var i = 0; i < this.pixels.length; i++) {
+        if (this.pixels[i].equals(this.pixel)) {
+            this.pixels[i].w++;
+        }
+    }
+    if (!found) {
+        this.pixels.push(pixel);
+    }
+    
+};
+
+/**
+ * Extract the pixel values for this palette from an area of an image.
+ */
+Palette.prototype.extract = function(pixelImage, x, y, w, h) {
+     if (x === undefined) {
+        x = 0;
+    }
+    if (y === undefined) {
+        y = 0;
+    }
+    if (w === undefined) {
+        w = pixelImage.getWidth() - x;
+    }
+    if (h === undefined) {
+        h = pixelImage.getHeight() - y;
+    }
+    
+    for (var yi = y; yi < y + h; yi++) {
+        for (var xi = x; xi < x + w; xi++) {
+            this.add(pixelImage.peek(xi, yi));   
+        }
+    }
+    
+}
+
+/* Map a region of pixels in an image to pixels in this palette */
 Palette.prototype.remap = function (pixelImage, x, y, w, h) {
 
     if (x === undefined) {
@@ -55,7 +97,7 @@ Palette.prototype.remap = function (pixelImage, x, y, w, h) {
                 mappedPixel = this.map(pixel);
 
             pixelImage.poke(xi, yi, mappedPixel);
-            this.fsDither(pixelImage, xi, yi, pixel);
+            this.michelDither(pixelImage, xi, yi, pixel);
         }
     }
     return pixelImage;
@@ -82,6 +124,18 @@ Palette.prototype.fsDither = function (pixelImage, x, y, origPixel) {
     this.addError(pixelImage, x - 1, y + 1, error.clone().multiply(3).divide(16));
     this.addError(pixelImage, x, y + 1, error.clone().multiply(5).divide(16));
     this.addError(pixelImage, x + 1, y + 1, error.clone().divide(16));
+
+};
+
+/** Use michel dithering after mapping a pixel */
+Palette.prototype.michelDither = function (pixelImage, x, y, origPixel) {
+
+    var pixel = pixelImage.peek(x, y),
+        error = origPixel.substract(pixel);
+
+    //this.addError(pixelImage, x + 1, y, error.clone().multiply(1).divide(2));
+    this.addError(pixelImage, x, y + 1, error.clone().multiply(8).divide(16));
+    this.addError(pixelImage, x + 1, y, error.clone().multiply(1).divide(16));
 
 };
 
