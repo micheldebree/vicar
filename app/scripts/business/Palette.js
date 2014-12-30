@@ -1,16 +1,18 @@
+/*jslint plusplus:true*/
 function Palette(pixels) {
+    'use strict';
     this.pixels = pixels;
 }
 
 /** Map a pixel to the nearest pixel in this palet */
 Palette.prototype.map = function (pixel) {
-
-    var i,
+    'use strict';
+    var i = this.pixels.length,
         d,
         minVal,
         minI = 0;
 
-    for (i = 0; i < this.pixels.length; i++) {
+    while (i-- > 0) {
         d = pixel.getDistance(this.pixels[i]);
 
         if (minVal === undefined || d < minVal) {
@@ -25,7 +27,9 @@ Palette.prototype.map = function (pixel) {
 
 /** Get the index in de palette for a pixel. undefined if the pixel is not in the palette */
 Palette.prototype.indexOf = function (pixel) {
-    for (var i = 0; i < this.pixels.length; i++) {
+    'use strict';
+    var i = this.pixels.length;
+    while (i-- > 0) {
         if (pixel.equals(this.pixels[i])) {
             return i;
         }
@@ -36,10 +40,12 @@ Palette.prototype.indexOf = function (pixel) {
 /**
  * Add a pixel value to the pallette. If it already exists, increase its weight.
  */
-Palette.prototype.add = function(pixel) {
-    
-    var found = false;
-    for (var i = 0; i < this.pixels.length; i++) {
+Palette.prototype.add = function (pixel) {
+    'use strict';
+    var found = false,
+        i = this.pixels.length;
+
+    while (i-- > 0) {
         if (this.pixels[i].equals(this.pixel)) {
             this.pixels[i].w++;
         }
@@ -47,57 +53,51 @@ Palette.prototype.add = function(pixel) {
     if (!found) {
         this.pixels.push(pixel);
     }
-    
+
 };
 
 /**
  * Extract the pixel values for this palette from an area of an image.
  */
-Palette.prototype.extract = function(pixelImage, x, y, w, h) {
-     if (x === undefined) {
-        x = 0;
-    }
-    if (y === undefined) {
-        y = 0;
-    }
-    if (w === undefined) {
-        w = pixelImage.getWidth() - x;
-    }
-    if (h === undefined) {
-        h = pixelImage.getHeight() - y;
-    }
-    
-    for (var yi = y; yi < y + h; yi++) {
-        for (var xi = x; xi < x + w; xi++) {
-            this.add(pixelImage.peek(xi, yi));   
+Palette.prototype.extract = function (pixelImage, x, y, w, h) {
+    'use strict';
+
+    var xi,
+        yi;
+
+    x = typeof x !== 'undefined' ? x : 0;
+    y = typeof y !== 'undefined' ? y : 0;
+    w = typeof w !== 'undefined' ? w : pixelImage.getWidth() - x;
+    h = typeof h !== 'undefined' ? h : pixelImage.getHeight() - y;
+
+    for (yi = y; yi < y + h; yi++) {
+        for (xi = x; xi < x + w; xi++) {
+            this.add(pixelImage.peek(xi, yi));
         }
     }
-    
-}
+
+};
 
 /* Map a region of pixels in an image to pixels in this palette */
 Palette.prototype.remap = function (pixelImage, x, y, w, h) {
+    'use strict';
 
-    if (x === undefined) {
-        x = 0;
-    }
-    if (y === undefined) {
-        y = 0;
-    }
-    if (w === undefined) {
-        w = pixelImage.getWidth() - x;
-    }
-    if (h === undefined) {
-        h = pixelImage.getHeight() - y;
-    }
+    var xi,
+        yi,
+        pixel,
+        mappedPixel;
 
-    for (var yi = y; yi < y + h; yi++) {
-        for (var xi = x; xi < x + w; xi++) {
-            var pixel = pixelImage.peek(xi, yi),
-                mappedPixel = this.map(pixel);
+    x = typeof x !== 'undefined' ? x : 0;
+    y = typeof y !== 'undefined' ? y : 0;
+    w = typeof w !== 'undefined' ? w : pixelImage.getWidth() - x;
+    h = typeof h !== 'undefined' ? h : pixelImage.getHeight() - y;
 
+    for (yi = y; yi < y + h; yi++) {
+        for (xi = x; xi < x + w; xi++) {
+            pixel = pixelImage.peek(xi, yi);
+            mappedPixel = this.map(pixel);
             pixelImage.poke(xi, yi, mappedPixel);
-            this.michelDither(pixelImage, xi, yi, pixel);
+            this.fsDither(pixelImage, xi, yi, pixel);
         }
     }
     return pixelImage;
@@ -106,7 +106,7 @@ Palette.prototype.remap = function (pixelImage, x, y, w, h) {
 
 /** Add an 'error' pixel to the pixel at x,y in pixelImage */
 Palette.prototype.addError = function (pixelImage, x, y, error) {
-
+    'use strict';
     if (x < pixelImage.getWidth() && y < pixelImage.getHeight()) {
         var nextPixel = pixelImage.peek(x, y);
         nextPixel.add(error);
@@ -116,7 +116,7 @@ Palette.prototype.addError = function (pixelImage, x, y, error) {
 
 /** Use floyd-steinberg dithering after mapping a pixel */
 Palette.prototype.fsDither = function (pixelImage, x, y, origPixel) {
-
+    'use strict';
     var pixel = pixelImage.peek(x, y),
         error = origPixel.substract(pixel);
 
@@ -129,7 +129,7 @@ Palette.prototype.fsDither = function (pixelImage, x, y, origPixel) {
 
 /** Use michel dithering after mapping a pixel */
 Palette.prototype.michelDither = function (pixelImage, x, y, origPixel) {
-
+    'use strict';
     var pixel = pixelImage.peek(x, y),
         error = origPixel.substract(pixel);
 
@@ -140,7 +140,7 @@ Palette.prototype.michelDither = function (pixelImage, x, y, origPixel) {
 };
 
 Palette.prototype.jjnDither = function (pixelImage, x, y, origPixel) {
-
+    'use strict';
     var pixel = pixelImage.peek(x, y),
         error = origPixel.substract(pixel);
 

@@ -1,5 +1,6 @@
 /** A pixel, consisting of red, green, blue and alpha values */
 function Pixel(r, g, b, a) {
+    'use strict';
     this.r = r;
     this.g = g;
     this.b = b;
@@ -7,7 +8,8 @@ function Pixel(r, g, b, a) {
     this.w = 1;
 }
 
-Pixel.prototype.add = function(pixel) {
+Pixel.prototype.add = function (pixel) {
+    'use strict';
     this.r += pixel.r;
     this.g += pixel.g;
     this.b += pixel.b;
@@ -16,7 +18,8 @@ Pixel.prototype.add = function(pixel) {
     return this;
 };
 
-Pixel.prototype.substract = function(pixel) {
+Pixel.prototype.substract = function (pixel) {
+    'use strict';
     this.r -= pixel.r;
     this.g -= pixel.g;
     this.b -= pixel.b;
@@ -25,7 +28,8 @@ Pixel.prototype.substract = function(pixel) {
     return this;
 };
 
-Pixel.prototype.multiply = function(factor) {
+Pixel.prototype.multiply = function (factor) {
+    'use strict';
     this.r *= factor;
     this.g *= factor;
     this.b *= factor;
@@ -34,7 +38,8 @@ Pixel.prototype.multiply = function(factor) {
     return this;
 };
 
-Pixel.prototype.divide = function(factor) {
+Pixel.prototype.divide = function (factor) {
+    'use strict';
     this.r /= factor;
     this.g /= factor;
     this.b /= factor;
@@ -44,23 +49,28 @@ Pixel.prototype.divide = function(factor) {
 };
 
 /** Compare pixels by color value */
-Pixel.prototype.equals = function(pixel) {
+Pixel.prototype.equals = function (pixel) {
+    'use strict';
     return this.r === pixel.r && this.g === pixel.g && this.b === pixel.b;
 };
 
-Pixel.prototype.clone = function() {
+Pixel.prototype.clone = function () {
+    'use strict';
     return new Pixel(this.r, this.g, this.b, this.a, this.w);
 };
 
-Pixel.prototype.normalize = function() {
+Pixel.prototype.normalize = function () {
+    'use strict';
     this.r = Math.max(0, Math.min(Math.round(this.r), 0xff));
     this.g = Math.max(0, Math.min(Math.round(this.g), 0xff));
     this.b = Math.max(0, Math.min(Math.round(this.b), 0xff));
     this.a = Math.max(0, Math.min(Math.round(this.a), 0xff));
+    this.w = 1;
 };
 
 /** Calculate the euclidian distantance between this pixel's color and another's */
-Pixel.prototype.getDistance = function(pixel) {
+Pixel.prototype.getDistance = function (pixel) {
+    'use strict';
     return Math.sqrt(
         Math.pow(this.r - pixel.r, 2) + Math.pow(this.g - pixel.g, 2) + Math.pow(this.b - pixel.b, 2)
     );
