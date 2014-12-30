@@ -2,58 +2,83 @@
 /*global document, Pixel */
 function PixelImage() {
     'use strict';
-}
 
-PixelImage.prototype.init = function (w, h) {
-    'use strict';
-    var canvas = document.createElement('canvas'),
-        context = canvas.getContext('2d');
+    var img,
+        imageData,
+        onGrab = function () {},
+        grabData = function () {
+            var canvas = document.createElement('canvas'),
+                context = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            context.drawImage(img, 0, 0);
 
-    this.imageData = context.createImageData(w, h);
-};
+            imageData = context.getImageData(0, 0, img.width, img.height);
+            onGrab();
+        };
 
-PixelImage.prototype.grab = function (img) {
-    'use strict';
-    var canvas = document.createElement('canvas'),
-        context;
+    this.setOnGrab = function (grabHandler) {
+        onGrab = grabHandler;
+    };
 
-    canvas.width = img.width;
-    canvas.height = img.height;
-    context = canvas.getContext('2d');
-    context.drawImage(img, 0, 0);
+    this.isReady = function () {
+        return imageData !== undefined;
+    };
 
-    this.imageData = context.getImageData(0, 0, img.width, img.height);
-};
+    this.getImageData = function () {
+        return imageData;
+    };
 
-PixelImage.prototype.getWidth = function () {
-    'use strict';
-    return this.imageData.width;
-};
+    /** Create new empty image */
+    this.init = function (w, h) {
+        'use strict';
+        var canvas = document.createElement('canvas'),
+            context = canvas.getContext('2d');
+        imageData = context.createImageData(w, h);
+    };
 
-PixelImage.prototype.getHeight = function () {
-    'use strict';
-    return this.imageData.height;
-};
+    this.grab = function (imgParam) {
+        'use strict';
+        img = imgParam;
 
-PixelImage.prototype.peek = function (x, y) {
-    'use strict';
-    var i = this.coordsToindex(x, y);
-    return new Pixel(this.imageData.data[i], this.imageData.data[i + 1], this.imageData.data[i + 2], this.imageData.data[i + 3]);
-};
+        if (!img.complete) {
+            img.onload = grabData;
+        }
+        else {
+            grabData();
+        }
+    };
 
-PixelImage.prototype.poke = function (x, y, pixel) {
-    'use strict';
-    if (pixel !== undefined) {
+    this.getWidth = function () {
+        'use strict';
+        return this.isReady() ? imageData.width : 0;
+    };
+
+    this.getHeight = function () {
+        'use strict';
+        return this.isReady() ? imageData.height : 0;
+    };
+
+    this.peek = function (x, y) {
+        'use strict';
         var i = this.coordsToindex(x, y);
-        this.imageData.data[i] = pixel.r;
-        this.imageData.data[i + 1] = pixel.g;
-        this.imageData.data[i + 2] = pixel.b;
-        this.imageData.data[i + 3] = pixel.a;
-    }
-};
+        return new Pixel(imageData.data[i], imageData.data[i + 1], imageData.data[i + 2], imageData.data[i + 3]);
+    };
 
-PixelImage.prototype.coordsToindex = function (x, y) {
-    'use strict';
-    var result = ~~y * (this.getWidth() << 2) + (~~x << 2);
-    return result < this.imageData.data.length ? result : 0;
-};
+    this.poke = function (x, y, pixel) {
+        'use strict';
+        if (pixel !== undefined) {
+            var i = this.coordsToindex(x, y);
+            imageData.data[i] = pixel.r;
+            imageData.data[i + 1] = pixel.g;
+            imageData.data[i + 2] = pixel.b;
+            imageData.data[i + 3] = pixel.a;
+        }
+    };
+
+    this.coordsToindex = function (x, y) {
+        'use strict';
+        var result = ~~y * (this.getWidth() << 2) + (~~x << 2);
+        return result < imageData.data.length ? result : 0;
+    };
+}

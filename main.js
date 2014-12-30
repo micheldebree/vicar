@@ -19,36 +19,30 @@ var peptoPalette = new Palette([
     new Pixel(0x95, 0x95, 0x95, 0xff) //green
 ]);
 
-function grabIt(img) {
-    'use strict';
-    var pg = new PixelImage();
-    pg.grab(img);
-    var canvas = document.getElementById("Canvas0");
-    canvas.width = pg.getWidth();
-    canvas.height = pg.getHeight();
-    var context = canvas.getContext('2d');
-    context.putImageData(pg.imageData, 0, 0);
-    var scaler = new NearestNeighbour();
-    //pg = scaler.resize(pg, 160, 200);
-
-    pg = scaler.resizeBounding(pg, 320, 200);
-    var sW = pg.getWidth();
-    pg = scaler.resize(pg, sW / 2, pg.getHeight());
-    pg = peptoPalette.remap(pg);
-    pg = scaler.resize(pg, sW, pg.getHeight());
-
-    canvas.width = pg.getWidth();
-    canvas.height = pg.getHeight();
-    context.putImageData(pg.imageData, 0, 0);
-}
-
 window.onload = function () {
     'use strict';
-    var img = new Image();
-    img.src = 'images/rainbowgirl.jpg';
-    img.onload = function () {
-        grabIt(img);
-    };
+    var img = new Image(),
+        pg = new PixelImage(),
+        scaler = new NearestNeighbour(),
+        canvas = document.getElementById('Canvas0'),
+        context = canvas.getContext('2d');
+
+    img.src = 'images/hqdefault.jpg';
+    pg.setOnGrab(function () {
+
+        pg = scaler.resizeBounding(pg, 320, 200);
+        var sW = pg.getWidth();
+        pg = scaler.resize(pg, sW / 2, pg.getHeight());
+        pg = peptoPalette.remap(pg);
+        pg = scaler.resize(pg, sW, pg.getHeight());
+        canvas.width = pg.getWidth();
+        canvas.height = pg.getHeight();
+        context.putImageData(pg.getImageData(), 0, 0);
+    });
+
+    pg.grab(img);
+
+
 };
 
 
@@ -70,4 +64,3 @@ var c64palette = new Palette([
     new Pixel(0xaa, 0x9d, 0xef, 0xff), //light blue
     new Pixel(0xb8, 0xb8, 0xb8, 0xff) //green
 ]);
-

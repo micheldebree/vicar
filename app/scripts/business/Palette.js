@@ -97,7 +97,7 @@ Palette.prototype.remap = function (pixelImage, x, y, w, h) {
             pixel = pixelImage.peek(xi, yi);
             mappedPixel = this.map(pixel);
             pixelImage.poke(xi, yi, mappedPixel);
-            this.fsDither(pixelImage, xi, yi, pixel);
+            this.jjnDither(pixelImage, xi, yi, pixel);
         }
     }
     return pixelImage;
@@ -133,9 +133,9 @@ Palette.prototype.michelDither = function (pixelImage, x, y, origPixel) {
     var pixel = pixelImage.peek(x, y),
         error = origPixel.substract(pixel);
 
-    //this.addError(pixelImage, x + 1, y, error.clone().multiply(1).divide(2));
-    this.addError(pixelImage, x, y + 1, error.clone().multiply(8).divide(16));
-    this.addError(pixelImage, x + 1, y, error.clone().multiply(1).divide(16));
+    this.addError(pixelImage, x, y + 1, error.clone().multiply(1).divide(4));
+    this.addError(pixelImage, x + 1, y, error.clone().multiply(2).divide(4));
+    this.addError(pixelImage, x + 1, y + 1, error.clone().multiply(1).divide(4));
 
 };
 
