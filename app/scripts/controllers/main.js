@@ -7,7 +7,7 @@
  * # MainCtrl
  * Controller of the workspaceApp
  */
-angular.module('vicaApp')
+angular.module('vicarApp')
   .controller('MainCtrl', function ($scope) {
     $scope.awesomeThings = [
       'HTML5 Boilerplate',

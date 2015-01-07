@@ -69,9 +69,12 @@ Pixel.prototype.normalize = function () {
 };
 
 /** Calculate the euclidian distantance between this pixel's color and another's */
-Pixel.prototype.getDistance = function (pixel) {
+Pixel.prototype.getDistance = function (pixel, offset) {
     'use strict';
+
+    offset = offset !== undefined ? offset : 0;
+
     return Math.sqrt(
-        Math.pow(this.r - pixel.r, 2) + Math.pow(this.g - pixel.g, 2) + Math.pow(this.b - pixel.b, 2)
+        Math.pow(this.r - pixel.r - offset, 2) + Math.pow(this.g - pixel.g - offset, 2) + Math.pow(this.b - pixel.b - offset, 2)
     );
 };

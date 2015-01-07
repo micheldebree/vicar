@@ -19,6 +19,24 @@ var peptoPalette = new Palette([
     new Pixel(0x95, 0x95, 0x95, 0xff) //green
 ]);
 
+peptoPalette.dither = [
+    [1, 49, 13, 61, 4, 52, 16, 64],
+    [33, 17, 45, 29, 36, 20, 48, 31],
+    [9, 57, 5, 53, 12, 60, 8, 56],
+    [41, 25, 37, 21, 44, 28, 40, 24],
+    [3, 51, 15, 63, 2, 50, 14, 62],
+    [35, 19, 47, 31, 34, 18, 46, 30],
+    [11, 59, 7, 55, 10, 58, 6, 54],
+    [43, 27, 39, 23, 42, 26, 38, 22]
+];
+
+peptoPalette.dither = [
+    [1, 9, 3, 11],
+    [13, 5, 15, 7],
+    [4, 12, 2, 10],
+    [16, 8, 14, 6]
+];
+
 window.onload = function () {
     'use strict';
     var img = new Image(),
@@ -30,14 +48,20 @@ window.onload = function () {
     img.src = 'images/hqdefault.jpg';
     pg.setOnGrab(function () {
 
-        pg = scaler.resizeBounding(pg, 320, 200);
+        var bx = 320;
+        var by = 200;
+
+        pg = scaler.resizeBounding(pg, bx, by);
         var sW = pg.getWidth();
         pg = scaler.resize(pg, sW / 2, pg.getHeight());
         pg = peptoPalette.remap(pg);
         pg = scaler.resize(pg, sW, pg.getHeight());
-        canvas.width = pg.getWidth();
-        canvas.height = pg.getHeight();
-        context.putImageData(pg.getImageData(), 0, 0);
+        canvas.width = bx;
+        canvas.height = by;
+        context.putImageData(pg.getImageData(), (bx - pg.getWidth()) >> 1, (by - pg.getHeight()) >> 1);
+        context.strokeStyle='red';
+        context.rect(0,0, bx, by);
+        context.stroke();
     });
 
     pg.grab(img);
