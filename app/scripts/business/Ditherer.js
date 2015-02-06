@@ -1,5 +1,9 @@
 /*global PixelImage*/
 /*jslint plusplus: true*/
+/** 
+ * Dithers an image
+ * @constructor
+*/
 function Ditherer(weightMatrix) {
     'use strict';
 
@@ -14,6 +18,7 @@ function Ditherer(weightMatrix) {
     };
 
 }
+
 
 Ditherer.prototype.dither = function (originalImage, remappedImage) {
     'use strict';
@@ -45,11 +50,13 @@ Ditherer.prototype.dither = function (originalImage, remappedImage) {
                 errorY = iy + this.weightMatrix.distribution[i][1];
 
                 nextPixel = originalPixel.peek(errorX, errorY);
-                nextPixel.add(error);
-                originalPixel.poke(errorX, errorY, nextPixel);
+                nextPixel.add(error * this.weightMatrix.distribution[i][2] / this.weightMatrix.divisor);
+                errorImage.poke(errorX, errorY, nextPixel);
 
             }
 
         }
     }
+    
+    return errorImage;
 };

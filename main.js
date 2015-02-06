@@ -1,5 +1,5 @@
 /*global Image, Pixel, PixelImage, document, window, alert, NearestNeighbour, Palette */
-
+/*jslint bitwise: true*/
 var peptoPalette = new Palette([
     new Pixel(0, 0, 0, 0xff), // black
     new Pixel(0xff, 0xff, 0xff, 0xff), // white
@@ -19,6 +19,7 @@ var peptoPalette = new Palette([
     new Pixel(0x95, 0x95, 0x95, 0xff) //green
 ]);
 
+/*
 peptoPalette.dither = [
     [1, 49, 13, 61, 4, 52, 16, 64],
     [33, 17, 45, 29, 36, 20, 48, 31],
@@ -31,11 +32,18 @@ peptoPalette.dither = [
 ];
 
 peptoPalette.dither = [
+    [1, 3],
+    [4, 2]
+];
+*/
+peptoPalette.dither = [
     [1, 9, 3, 11],
     [13, 5, 15, 7],
     [4, 12, 2, 10],
     [16, 8, 14, 6]
 ];
+
+    
 
 window.onload = function () {
     'use strict';
@@ -46,25 +54,27 @@ window.onload = function () {
         context = canvas.getContext('2d');
 
     img.src = 'images/hqdefault.jpg';
-    pg.setOnGrab(function () {
+    
+    var onGrab = function () {
 
-        var bx = 320;
-        var by = 200;
+        var bx = 320,
+            by = 200,
+            sW;
 
         pg = scaler.resizeBounding(pg, bx, by);
-        var sW = pg.getWidth();
+        sW = pg.getWidth();
         pg = scaler.resize(pg, sW / 2, pg.getHeight());
         pg = peptoPalette.remap(pg);
         pg = scaler.resize(pg, sW, pg.getHeight());
         canvas.width = bx;
         canvas.height = by;
         context.putImageData(pg.getImageData(), (bx - pg.getWidth()) >> 1, (by - pg.getHeight()) >> 1);
-        context.strokeStyle='red';
-        context.rect(0,0, bx, by);
+        context.strokeStyle = 'red';
+        context.rect(0, 0, bx, by);
         context.stroke();
-    });
-
-    pg.grab(img);
+    };    
+    
+    pg.grab(img, onGrab);
 
 
 };

@@ -3,24 +3,7 @@ function Palette(pixels) {
     'use strict';
     this.pixels = pixels;
 
-    /*
-        this.dither = [
-            [1, 3],
-            [4, 2]
-        ];
-    */
-
-    /*
-        this.dither = [
-            [1, 9, 3, 11],
-            [13, 5, 15, 7],
-            [4, 12, 2, 10],
-            [16, 8, 14, 6]
-        ]
-        */
-
-
-
+    // ordered dithering matrix, must be square
     this.dither = [
         [0]
     ];

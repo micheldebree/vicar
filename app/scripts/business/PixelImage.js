@@ -7,7 +7,7 @@ function PixelImage() {
 
     var img,
         imageData,
-        onGrab,
+        onLoad,
         grabData = function () {
             var canvas = document.createElement('canvas'),
                 context = canvas.getContext('2d');
@@ -16,23 +16,26 @@ function PixelImage() {
             context.drawImage(img, 0, 0);
 
             imageData = context.getImageData(0, 0, img.width, img.height);
-            if (onGrab !== undefined) {
-                onGrab();
+            if (onLoad !== undefined) {
+                onLoad();
             }
         };
 
-    this.setOnGrab = function (grabHandler) {
-        onGrab = grabHandler;
-    };
-
+    /**
+     * @returns {Boolean} Is the image ready to be used?
+     */
     this.isReady = function () {
         return imageData !== undefined;
     };
 
+    /**
+     * @returns {ImageData} The actual image data.
+     */
     this.getImageData = function () {
         return imageData;
     };
 
+    /** Clone an existing image */
     this.clone = function (pixelImage) {
         var canvas = document.createElement('canvas'),
             context = canvas.getContext('2d');
@@ -50,7 +53,14 @@ function PixelImage() {
         imageData = context.createImageData(w, h);
     };
 
-    this.grab = function (imgParam) {
+    /**
+        Grab image data from an image. Grabbing is defered until the image is loaded.
+        @param {Image} imgParam - The image from which to grab the data.
+        @param {Function} onLoadHandler - Handler executed after data has been grabbed.
+    */
+    this.grab = function (imgParam, onLoadHandler) {
+        
+        onLoad = onLoadHandler;
 
         img = imgParam;
 
