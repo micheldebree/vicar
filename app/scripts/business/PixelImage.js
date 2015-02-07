@@ -1,5 +1,7 @@
-/** Create an image with access to individual pixels */
 /*global document, Pixel */
+/*exported PixelImage*/
+/*jslint bitwise: true*/
+/** Create an image with access to individual pixels */
 function PixelImage() {
     'use strict';
 
@@ -31,42 +33,35 @@ function PixelImage() {
 
     /** Create new empty image */
     this.init = function (w, h) {
-        'use strict';
         var canvas = document.createElement('canvas'),
             context = canvas.getContext('2d');
         imageData = context.createImageData(w, h);
     };
 
     this.grab = function (imgParam) {
-        'use strict';
         img = imgParam;
 
         if (!img.complete) {
             img.onload = grabData;
-        }
-        else {
+        } else {
             grabData();
         }
     };
 
     this.getWidth = function () {
-        'use strict';
         return this.isReady() ? imageData.width : 0;
     };
 
     this.getHeight = function () {
-        'use strict';
         return this.isReady() ? imageData.height : 0;
     };
 
     this.peek = function (x, y) {
-        'use strict';
         var i = this.coordsToindex(x, y);
         return new Pixel(imageData.data[i], imageData.data[i + 1], imageData.data[i + 2], imageData.data[i + 3]);
     };
 
     this.poke = function (x, y, pixel) {
-        'use strict';
         if (pixel !== undefined) {
             var i = this.coordsToindex(x, y);
             imageData.data[i] = pixel.r;
@@ -77,8 +72,7 @@ function PixelImage() {
     };
 
     this.coordsToindex = function (x, y) {
-        'use strict';
-        var result = ~~y * (this.getWidth() << 2) + (~~x << 2);
+        var result = Math.floor(y) * (this.getWidth() << 2) + (x << 2);
         return result < imageData.data.length ? result : 0;
     };
 }

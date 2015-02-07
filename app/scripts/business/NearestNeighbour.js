@@ -34,9 +34,9 @@ function NearestNeighbour() {
 
         result.init(w, h);
 
-        while (y-- > 0) {
+        while (--y > 0) {
             x = w;
-            while (x-- > 0) {
+            while (--x > 0) {
                 result.poke(x, y, this.sample(srcImage, x * pw, y * ph));
             }
         }

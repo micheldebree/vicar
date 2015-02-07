@@ -1,4 +1,4 @@
-/*global Image, Pixel, PixelImage, document, window, alert, NearestNeighbour, Palette */
+/*global Image, Pixel, PixelImage, document, window, NearestNeighbour, Palette */
 
 var peptoPalette = new Palette([
     new Pixel(0, 0, 0, 0xff), // black
@@ -27,14 +27,14 @@ window.onload = function () {
         canvas = document.getElementById('Canvas0'),
         context = canvas.getContext('2d');
 
-    img.src = 'images/hqdefault.jpg';
+    img.src = 'images/EddieBH.jpg';
     pg.setOnGrab(function () {
 
         pg = scaler.resizeBounding(pg, 320, 200);
         var sW = pg.getWidth();
         pg = scaler.resize(pg, sW / 2, pg.getHeight());
         pg = peptoPalette.remap(pg);
-        pg = scaler.resize(pg, sW, pg.getHeight());
+        pg = scaler.resize(pg, 2 * sW, 2 * pg.getHeight());
         canvas.width = pg.getWidth();
         canvas.height = pg.getHeight();
         context.putImageData(pg.getImageData(), 0, 0);
@@ -45,7 +45,7 @@ window.onload = function () {
 
 };
 
-
+/*
 var c64palette = new Palette([
     new Pixel(0, 0, 0, 0xff), // black
     new Pixel(0xff, 0xff, 0xff, 0xff), // white
@@ -64,3 +64,4 @@ var c64palette = new Palette([
     new Pixel(0xaa, 0x9d, 0xef, 0xff), //light blue
     new Pixel(0xb8, 0xb8, 0xb8, 0xff) //green
 ]);
+*/

@@ -12,7 +12,7 @@ Palette.prototype.map = function (pixel) {
         minVal,
         minI = 0;
 
-    while (i-- > 0) {
+    while (--i >= 0) {
         d = pixel.getDistance(this.pixels[i]);
 
         if (minVal === undefined || d < minVal) {
@@ -29,7 +29,7 @@ Palette.prototype.map = function (pixel) {
 Palette.prototype.indexOf = function (pixel) {
     'use strict';
     var i = this.pixels.length;
-    while (i-- > 0) {
+    while (--i >= 0) {
         if (pixel.equals(this.pixels[i])) {
             return i;
         }
@@ -45,7 +45,7 @@ Palette.prototype.add = function (pixel) {
     var found = false,
         i = this.pixels.length;
 
-    while (i-- > 0) {
+    while (--i >= 0) {
         if (this.pixels[i].equals(this.pixel)) {
             this.pixels[i].w++;
         }
@@ -97,7 +97,7 @@ Palette.prototype.remap = function (pixelImage, x, y, w, h) {
             pixel = pixelImage.peek(xi, yi);
             mappedPixel = this.map(pixel);
             pixelImage.poke(xi, yi, mappedPixel);
-            this.jjnDither(pixelImage, xi, yi, pixel);
+            //this.michelDither(pixelImage, xi, yi, pixel);
         }
     }
     return pixelImage;
@@ -133,9 +133,13 @@ Palette.prototype.michelDither = function (pixelImage, x, y, origPixel) {
     var pixel = pixelImage.peek(x, y),
         error = origPixel.substract(pixel);
 
-    this.addError(pixelImage, x, y + 1, error.clone().multiply(1).divide(4));
-    this.addError(pixelImage, x + 1, y, error.clone().multiply(2).divide(4));
-    this.addError(pixelImage, x + 1, y + 1, error.clone().multiply(1).divide(4));
+    this.addError(pixelImage, x+1, y , error.clone().multiply(2).divide(9));
+    this.addError(pixelImage, x+2, y , error.clone().multiply(1).divide(9));
+    this.addError(pixelImage, x , y+1, error.clone().multiply(2).divide(9));
+     this.addError(pixelImage, x , y+2, error.clone().multiply(1).divide(9));
+    this.addError(pixelImage, x + 1, y + 1, error.clone().multiply(2).divide(9));
+    this.addError(pixelImage, x + 2, y + 2, error.clone().multiply(1).divide(9));
+
 
 };
 
