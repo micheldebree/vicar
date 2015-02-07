@@ -2,18 +2,25 @@
 function Palette(pixels) {
     'use strict';
     this.pixels = pixels;
+
+    // ordered dithering matrix, must be square
+    this.dither = [
+        [0]
+    ];
 }
 
 /** Map a pixel to the nearest pixel in this palet */
-Palette.prototype.map = function (pixel) {
+Palette.prototype.map = function (pixel, offset) {
     'use strict';
     var i = this.pixels.length,
         d,
         minVal,
         minI = 0;
 
+    offset = offset !== undefined ? offset : 0;
     while (--i >= 0) {
-        d = pixel.getDistance(this.pixels[i]);
+
+        d = pixel.getDistance(this.pixels[i], offset);
 
         if (minVal === undefined || d < minVal) {
             minVal = d;
@@ -65,10 +72,10 @@ Palette.prototype.extract = function (pixelImage, x, y, w, h) {
     var xi,
         yi;
 
-    x = typeof x !== 'undefined' ? x : 0;
-    y = typeof y !== 'undefined' ? y : 0;
-    w = typeof w !== 'undefined' ? w : pixelImage.getWidth() - x;
-    h = typeof h !== 'undefined' ? h : pixelImage.getHeight() - y;
+    x = x !== undefined ? x : 0;
+    y = y !== undefined ? y : 0;
+    w = w !== undefined ? w : pixelImage.getWidth() - x;
+    h = h !== undefined ? h : pixelImage.getHeight() - y;
 
     for (yi = y; yi < y + h; yi++) {
         for (xi = x; xi < x + w; xi++) {
@@ -85,17 +92,23 @@ Palette.prototype.remap = function (pixelImage, x, y, w, h) {
     var xi,
         yi,
         pixel,
-        mappedPixel;
+        mappedPixel,
+        ox,
+        oy;
 
-    x = typeof x !== 'undefined' ? x : 0;
-    y = typeof y !== 'undefined' ? y : 0;
-    w = typeof w !== 'undefined' ? w : pixelImage.getWidth() - x;
-    h = typeof h !== 'undefined' ? h : pixelImage.getHeight() - y;
+    x = x !== undefined ? x : 0;
+    y = y !== undefined ? y : 0;
+    w = w !== undefined ? w : pixelImage.getWidth() - x;
+    h = h !== undefined ? h : pixelImage.getHeight() - y;
 
     for (yi = y; yi < y + h; yi++) {
         for (xi = x; xi < x + w; xi++) {
             pixel = pixelImage.peek(xi, yi);
-            mappedPixel = this.map(pixel);
+
+            ox = xi % this.dither.length;
+            oy = yi % this.dither.length;
+
+            mappedPixel = this.map(pixel, this.dither[oy][ox]);
             pixelImage.poke(xi, yi, mappedPixel);
             //this.michelDither(pixelImage, xi, yi, pixel);
         }

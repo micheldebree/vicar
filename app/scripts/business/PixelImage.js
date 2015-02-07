@@ -7,7 +7,7 @@ function PixelImage() {
 
     var img,
         imageData,
-        onGrab = function () {},
+        onLoad,
         grabData = function () {
             var canvas = document.createElement('canvas'),
                 context = canvas.getContext('2d');
@@ -16,29 +16,53 @@ function PixelImage() {
             context.drawImage(img, 0, 0);
 
             imageData = context.getImageData(0, 0, img.width, img.height);
-            onGrab();
+            if (onLoad !== undefined) {
+                onLoad();
+            }
         };
 
-    this.setOnGrab = function (grabHandler) {
-        onGrab = grabHandler;
-    };
-
+    /**
+     * @returns {Boolean} Is the image ready to be used?
+     */
     this.isReady = function () {
         return imageData !== undefined;
     };
 
+    /**
+     * @returns {ImageData} The actual image data.
+     */
     this.getImageData = function () {
         return imageData;
     };
 
+    /** Clone an existing image */
+    this.clone = function (pixelImage) {
+        var canvas = document.createElement('canvas'),
+            context = canvas.getContext('2d');
+        canvas.width = pixelImage.getWidth();
+        canvas.height = pixelImage.getHeight();
+        context.putImageData(pixelImage.getImageData(), 0, 0);
+        imageData = context.getImageData(0, 0, img.width, img.height);
+    };
+
     /** Create new empty image */
     this.init = function (w, h) {
+        'use strict';
+
         var canvas = document.createElement('canvas'),
             context = canvas.getContext('2d');
         imageData = context.createImageData(w, h);
     };
 
-    this.grab = function (imgParam) {
+    /**
+        Grab image data from an image. Grabbing is defered until the image is loaded.
+        @param {Image} imgParam - The image from which to grab the data.
+        @param {Function} onLoadHandler - Handler executed after data has been grabbed.
+    */
+    this.grab = function (imgParam, onLoadHandler) {
+        
+        onLoad = onLoadHandler;
+
         img = imgParam;
 
         if (!img.complete) {
@@ -62,6 +86,7 @@ function PixelImage() {
     };
 
     this.poke = function (x, y, pixel) {
+        'use strict';
         if (pixel !== undefined) {
             var i = this.coordsToindex(x, y);
             imageData.data[i] = pixel.r;

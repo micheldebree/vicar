@@ -4,4 +4,5 @@ dist
 .sass-cache
 bower_components
 .c9
+.bowerrc-ing
 *.log
