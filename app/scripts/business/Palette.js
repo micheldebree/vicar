@@ -1,3 +1,4 @@
+/*global PixelCalculator*/
 /*jslint plusplus:true*/
 function Palette(pixels) {
     'use strict';
@@ -20,7 +21,7 @@ Palette.prototype.map = function (pixel, offset) {
     offset = offset !== undefined ? offset : 0;
 
     while (i-- > 0) {
-        d = pixel.getDistance(this.pixels[i], offset);
+        d = PixelCalculator.getDistance(pixel, this.pixels[i], offset);
 
         if (minVal === undefined || d < minVal) {
             minVal = d;
@@ -37,31 +38,13 @@ Palette.prototype.indexOf = function (pixel) {
     'use strict';
     var i = this.pixels.length;
     while (i-- > 0) {
-        if (pixel.equals(this.pixels[i])) {
+        if (PixelCalculator.equals(pixel, this.pixels[i])) {
             return i;
         }
     }
     return undefined;
 };
 
-/**
- * Add a pixel value to the pallette. If it already exists, increase its weight.
- */
-Palette.prototype.add = function (pixel) {
-    'use strict';
-    var found = false,
-        i = this.pixels.length;
-
-    while (i-- > 0) {
-        if (this.pixels[i].equals(this.pixel)) {
-            this.pixels[i].w++;
-        }
-    }
-    if (!found) {
-        this.pixels.push(pixel);
-    }
-
-};
 
 /**
  * Extract the pixel values for this palette from an area of an image.

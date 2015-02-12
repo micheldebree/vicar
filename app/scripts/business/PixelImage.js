@@ -1,5 +1,5 @@
 /** Create an image with access to individual pixels */
-/*global document, Pixel */
+/*global document, PixelCalculator */
 /*jslint bitwise: true */
 /*exported PixelImage*/
 function PixelImage() {
@@ -81,17 +81,17 @@ function PixelImage() {
 
     this.peek = function (x, y) {
         var i = this.coordsToindex(x, y);
-        return new Pixel(imageData.data[i], imageData.data[i + 1], imageData.data[i + 2], imageData.data[i + 3]);
+        return [imageData.data[i], imageData.data[i + 1], imageData.data[i + 2], imageData.data[i + 3]];
     };
 
     this.poke = function (x, y, pixel) {
 
         if (pixel !== undefined) {
             var i = this.coordsToindex(x, y);
-            imageData.data[i] = pixel.r;
-            imageData.data[i + 1] = pixel.g;
-            imageData.data[i + 2] = pixel.b;
-            imageData.data[i + 3] = pixel.a;
+            imageData.data[i] = pixel[0];
+            imageData.data[i + 1] = pixel[1];
+            imageData.data[i + 2] = pixel[2];
+            imageData.data[i + 3] = pixel[3];
         }
     };
 
