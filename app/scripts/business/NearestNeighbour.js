@@ -1,31 +1,12 @@
 /** Resizes a PixelImage using nearestneightbour algorithm */
-/*global PixelImage*/
+/*global Resizer, PixelImage*/
 /*exported NearestNeighbour*/
 /*jslint plusplus:true*/
 function NearestNeighbour() {
-    'use strict';
-    /** Resize the height and keep aspect ratio */
-    this.resizeHeight = function (srcImage, h) {
-        return this.resize(srcImage, h * srcImage.getWidth() / srcImage.getHeight(), h);
-    };
-
-    /** Resize the width and keep aspect ratio */
-    this.resizeWidth = function (srcImage, w) {
-        return this.resize(srcImage, w, w * srcImage.getHeight() / srcImage.getWidth());
-    };
-
-    /** Resize image to fit in bounding box and retain aspect ratio */
-    this.resizeBounding = function (srcImage, w, h) {
-        var srcratio = srcImage.getWidth() / srcImage.getHeight(),
-            dstratio = w / h;
-        if (srcratio > dstratio) {
-            return this.resizeWidth(srcImage, w);
-        }
-        return this.resizeHeight(srcImage, h);
-    };
-
+    
     /** Create a new resized version of an image */
     this.resize = function (srcImage, w, h) {
+        'use strict';
         var pw = srcImage.getWidth() / w,
             ph = srcImage.getHeight() / h,
             result = new PixelImage(),
@@ -37,16 +18,14 @@ function NearestNeighbour() {
         while (--y > 0) {
             x = w;
             while (--x > 0) {
-                result.poke(x, y, this.sample(srcImage, x * pw, y * ph));
+                result.poke(x, y, srcImage.peek(x * pw, y * ph));
             }
         }
 
         return result;
-
-    };
-
-    this.sample = function (srcImage, x, y) {
-        return srcImage.peek(x, y);
     };
 
 }
+
+NearestNeighbour.prototype = new Resizer();
+NearestNeighbour.prototype.constructor = NearestNeighbour;

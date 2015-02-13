@@ -1,4 +1,4 @@
-/*global PixelImage*/
+/*global PixelImage, Ditherer */
 /*jslint plusplus: true*/
 /** 
  * Dithers an image
@@ -42,14 +42,13 @@ Ditherer.prototype.dither = function (originalImage, remappedImage) {
         while (--ix >= 0) {
             originalPixel = originalImage.peek(ix, iy);
             remappedPixel = remappedImage.peek(ix, iy);
-            error = originalPixel.substract(remappedPixel);
-
+            error = PixelCalculator.substract(originalPixel, remappedPixel);
             i = this.weightMatrix.distribution.length;
             while (--i >= 0) {
                 errorX = ix + this.weightMatrix.distribution[i][0];
                 errorY = iy + this.weightMatrix.distribution[i][1];
 
-                nextPixel = originalPixel.peek(errorX, errorY);
+                nextPixel = originalImage.peek(errorX, errorY);
                 nextPixel.add(error * this.weightMatrix.distribution[i][2] / this.weightMatrix.divisor);
                 errorImage.poke(errorX, errorY, nextPixel);
 

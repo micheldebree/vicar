@@ -1,9 +1,12 @@
+/*global PixelCalculator*/
 /*jslint plusplus:true*/
-function Palette(pixels) {
+function Palette() {
     'use strict';
-    this.pixels = pixels;
+    
+    // the pixels in the palette
+    this.pixels = undefined;
 
-    // ordered dithering matrix, must be square
+    // ordered dithering matrix, must be square. used when mapping an image to this palette
     this.dither = [
         [0]
     ];
@@ -20,7 +23,7 @@ Palette.prototype.map = function (pixel, offset) {
     offset = offset !== undefined ? offset : 0;
     while (--i >= 0) {
 
-        d = pixel.getDistance(this.pixels[i], offset);
+        d = PixelCalculator.getDistance(pixel, this.pixels[i], offset);
 
         if (minVal === undefined || d < minVal) {
             minVal = d;
@@ -37,31 +40,14 @@ Palette.prototype.indexOf = function (pixel) {
     'use strict';
     var i = this.pixels.length;
     while (--i >= 0) {
-        if (pixel.equals(this.pixels[i])) {
+        if (PixelCalculator.equals(pixel, this.pixels[i])) {
             return i;
         }
     }
     return undefined;
 };
 
-/**
- * Add a pixel value to the pallette. If it already exists, increase its weight.
- */
-Palette.prototype.add = function (pixel) {
-    'use strict';
-    var found = false,
-        i = this.pixels.length;
 
-    while (--i >= 0) {
-        if (this.pixels[i].equals(this.pixel)) {
-            this.pixels[i].w++;
-        }
-    }
-    if (!found) {
-        this.pixels.push(pixel);
-    }
-
-};
 
 /**
  * Extract the pixel values for this palette from an area of an image.
@@ -110,7 +96,7 @@ Palette.prototype.remap = function (pixelImage, x, y, w, h) {
 
             mappedPixel = this.map(pixel, this.dither[oy][ox]);
             pixelImage.poke(xi, yi, mappedPixel);
-            //this.michelDither(pixelImage, xi, yi, pixel);
+            //this.fsDither(pixelImage, xi, yi, pixel);
         }
     }
     return pixelImage;
@@ -121,9 +107,9 @@ Palette.prototype.remap = function (pixelImage, x, y, w, h) {
 Palette.prototype.addError = function (pixelImage, x, y, error) {
     'use strict';
     if (x < pixelImage.getWidth() && y < pixelImage.getHeight()) {
-        var nextPixel = pixelImage.peek(x, y);
-        nextPixel.add(error);
-        pixelImage.poke(x, y, nextPixel);
+        var nextPixel = pixelImage.peek(x, y),
+            newPixel = PixelCalculator.add(nextPixel, error);
+        pixelImage.poke(x, y, newPixel);
     }
 };
 
@@ -131,7 +117,7 @@ Palette.prototype.addError = function (pixelImage, x, y, error) {
 Palette.prototype.fsDither = function (pixelImage, x, y, origPixel) {
     'use strict';
     var pixel = pixelImage.peek(x, y),
-        error = origPixel.substract(pixel);
+        error = PixelCalculator.substract(origPixel, pixel);
 
     this.addError(pixelImage, x + 1, y, error.clone().multiply(7).divide(16));
     this.addError(pixelImage, x - 1, y + 1, error.clone().multiply(3).divide(16));
@@ -146,10 +132,10 @@ Palette.prototype.michelDither = function (pixelImage, x, y, origPixel) {
     var pixel = pixelImage.peek(x, y),
         error = origPixel.substract(pixel);
 
-    this.addError(pixelImage, x+1, y , error.clone().multiply(2).divide(9));
-    this.addError(pixelImage, x+2, y , error.clone().multiply(1).divide(9));
-    this.addError(pixelImage, x , y+1, error.clone().multiply(2).divide(9));
-     this.addError(pixelImage, x , y+2, error.clone().multiply(1).divide(9));
+    this.addError(pixelImage, x + 1, y, error.clone().multiply(2).divide(9));
+    this.addError(pixelImage, x + 2, y, error.clone().multiply(1).divide(9));
+    this.addError(pixelImage, x, y + 1, error.clone().multiply(2).divide(9));
+    this.addError(pixelImage, x, y + 2, error.clone().multiply(1).divide(9));
     this.addError(pixelImage, x + 1, y + 1, error.clone().multiply(2).divide(9));
     this.addError(pixelImage, x + 2, y + 2, error.clone().multiply(1).divide(9));
 
