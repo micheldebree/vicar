@@ -1,4 +1,4 @@
-function PixelCalculator() { 'use strict'; }
+var PixelCalculator = {};
 
 PixelCalculator.add = function (one, other) {
     'use strict';
@@ -20,7 +20,6 @@ PixelCalculator.divide = function (one, factor) {
     return [one[0] / factor, one[1] / factor, one[2] / factor];
 };
 
-
 /** Compare pixels by color value */
 PixelCalculator.equals = function (one, other) {
     'use strict';
@@ -31,8 +30,6 @@ PixelCalculator.clone = function (one) {
     'use strict';
     return [one[0], one[1], one[2]];
 };
-
-
 
 /** Calculate the euclidian distantance between this pixel's color and another's */
 PixelCalculator.getDistance = function (one, other, offset) {

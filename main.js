@@ -1,23 +1,6 @@
-/*global Image, Pixel, PixelImage, document, window, alert, NearestNeighbour, Palette */
+/*global Image, Pixel, PixelImage, document, window, alert, NearestNeighbour, Palette, PeptoPalette */
 /*jslint bitwise: true*/
-var peptoPalette = new Palette([
-    [0, 0, 0], // black
-    [0xff, 0xff, 0xff], // white
-    [0x68, 0x37, 0x2b], //red
-    [0x70, 0xa4, 0xb2], //cyan
-    [0x6f, 0x3d, 0x86], //purple
-    [0x58, 0x8d, 0x43], //green
-    [0x35, 0x28, 0x79], //blue
-    [0xb8, 0xc7, 0x6f], //yellow
-    [0x6f, 0x4f, 0x25], //orange
-    [0x43, 0x39, 0x00], //brown
-    [0x9a, 0x67, 0x59], //light red
-    [0x44, 0x44, 0x44], //dark gray
-    [0x6c, 0x6c, 0x6c], //medium gray
-    [0x9a, 0xd2, 0x84], //light green
-    [0x6c, 0x5e, 0xb5], //light blue
-    [0x95, 0x95, 0x95] //green
-]);
+var peptoPalette = new PeptoPalette();
 
 /*
 peptoPalette.dither = [
@@ -43,8 +26,6 @@ peptoPalette.dither = [
     [16, 8, 14, 6]
 ];
 
-    
-
 window.onload = function () {
     'use strict';
     var img = new Image(),
@@ -59,21 +40,29 @@ window.onload = function () {
                 by = 200,
                 sW;
 
+            // resize to 320x200
             pg = scaler.resizeBounding(pg, bx, by);
+            
+            // resize to half width
             sW = pg.getWidth();
             pg = scaler.resize(pg, sW / 2, pg.getHeight());
+            
+            // remap to c64 palette
             pg = peptoPalette.remap(pg);
+            
+            // resize to original width so we get double width pixels
             pg = scaler.resize(pg, sW, pg.getHeight());
+            
+            // draw result on canvas
             canvas.width = bx;
             canvas.height = by;
-            context.putImageData(pg.getImageData(), (bx - pg.getWidth()) >> 1, (by - pg.getHeight()) >> 1);
+            context.putImageData(pg.imageData, (bx - pg.getWidth()) >> 1, (by - pg.getHeight()) >> 1);
             context.strokeStyle = 'red';
             context.rect(0, 0, bx, by);
             context.stroke();
         };
     img.src = 'images/hqdefault.jpg';
     pg.grab(img, onGrab);
-
 
 };
 

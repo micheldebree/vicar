@@ -20,7 +20,7 @@ function CanvasScaler() {
        
         canvas.width = w;
         canvas.height = h;
-        context.putImageData(srcImage.getImageData(), 0, 0, 0, 0, w, h);
+        context.putImageData(srcImage.imageData(), 0, 0, 0, 0, w, h);
     
     };
     

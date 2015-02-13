@@ -1,10 +1,12 @@
 /*global PixelCalculator*/
 /*jslint plusplus:true*/
-function Palette(pixels) {
+function Palette() {
     'use strict';
-    this.pixels = pixels;
+    
+    // the pixels in the palette
+    this.pixels = undefined;
 
-    // ordered dithering matrix, must be square
+    // ordered dithering matrix, must be square. used when mapping an image to this palette
     this.dither = [
         [0]
     ];
@@ -93,7 +95,7 @@ Palette.prototype.remap = function (pixelImage, x, y, w, h) {
 
             mappedPixel = this.map(pixel, this.dither[oy][ox]);
             pixelImage.poke(xi, yi, mappedPixel);
-            //this.jjnDither(pixelImage, xi, yi, pixel);
+            //this.fsDither(pixelImage, xi, yi, pixel);
         }
     }
     return pixelImage;
@@ -104,9 +106,9 @@ Palette.prototype.remap = function (pixelImage, x, y, w, h) {
 Palette.prototype.addError = function (pixelImage, x, y, error) {
     'use strict';
     if (x < pixelImage.getWidth() && y < pixelImage.getHeight()) {
-        var nextPixel = pixelImage.peek(x, y);
-        nextPixel.add(error);
-        pixelImage.poke(x, y, nextPixel);
+        var nextPixel = pixelImage.peek(x, y),
+            newPixel = PixelCalculator.add(nextPixel, error);
+        pixelImage.poke(x, y, newPixel);
     }
 };
 
@@ -114,7 +116,7 @@ Palette.prototype.addError = function (pixelImage, x, y, error) {
 Palette.prototype.fsDither = function (pixelImage, x, y, origPixel) {
     'use strict';
     var pixel = pixelImage.peek(x, y),
-        error = origPixel.substract(pixel);
+        error = PixelCalculator.substract(origPixel, pixel);
 
     this.addError(pixelImage, x + 1, y, error.clone().multiply(7).divide(16));
     this.addError(pixelImage, x - 1, y + 1, error.clone().multiply(3).divide(16));
