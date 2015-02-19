@@ -1,5 +1,4 @@
-'use strict';
-
+/*global angular*/
 /**
  * @ngdoc overview
  * @name workspaceApp
@@ -9,27 +8,29 @@
  * Main module of the application.
  */
 angular
-  .module('vicarApp', [
-    'ngAnimate',
-    'ngAria',
-    'ngCookies',
-    'ngMessages',
-    'ngResource',
-    'ngRoute',
-    'ngSanitize',
-    'ngTouch'
-  ])
-  .config(function ($routeProvider) {
-    $routeProvider
-      .when('/', {
-        templateUrl: 'views/main.html',
-        controller: 'MainCtrl'
-      })
-      .when('/about', {
-        templateUrl: 'views/about.html',
-        controller: 'AboutCtrl'
-      })
-      .otherwise({
-        redirectTo: '/'
-      });
-  });
+      .module('vicarApp', [
+        'ngAnimate',
+        'ngAria',
+        'ngCookies',
+        'ngMessages',
+        'ngResource',
+        'ngRoute',
+        'ngSanitize',
+        'ngTouch'
+    ])
+      .config(function ($routeProvider) {
+        'use strict';
+    
+        $routeProvider
+              .when('/', {
+                templateUrl: 'views/main.html',
+                controller: 'MainCtrl'
+            })
+              .when('/about', {
+                templateUrl: 'views/about.html',
+                controller: 'AboutCtrl'
+            })
+              .otherwise({
+                redirectTo: '/'
+            });
+    });
