@@ -1,7 +1,11 @@
-/** Resizes a PixelImage using nearestneightbour algorithm */
 /*global PixelImage*/
 /*exported NearestNeighbour*/
 /*jslint plusplus:true*/
+/** 
+    Base class for image resizing.
+    Delegates actual resizing.
+    @constructor
+*/
 function Resizer() {
     'use strict';
     this.resize = undefined;
@@ -25,6 +29,16 @@ Resizer.prototype.resizeBounding = function (srcImage, w, h) {
     var srcratio = srcImage.getWidth() / srcImage.getHeight(),
         dstratio = w / h;
     if (srcratio > dstratio) {
+        return this.resizeWidth(srcImage, w);
+    }
+    return this.resizeHeight(srcImage, h);
+};
+
+Resizer.prototype.resizeZoom = function (srcImage, w, h) {
+    'use strict';
+    var srcratio = srcImage.getWidth() / srcImage.getHeight(),
+        dstratio = w / h;
+    if (srcratio < dstratio) {
         return this.resizeWidth(srcImage, w);
     }
     return this.resizeHeight(srcImage, h);

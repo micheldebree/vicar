@@ -14,14 +14,19 @@ function PixelImage() {
         img,
         onLoad,
         grabData = function () {
+            
+            // draw the image on a canvas
             var canvas = document.createElement('canvas'),
                 context = canvas.getContext('2d');
             canvas.width = img.width;
             canvas.height = img.height;
             context.drawImage(img, 0, 0);
-
+            
+            // save the image data from he canvas
             self.imageData = context.getImageData(0, 0, img.width, img.height);
-            if (onLoad !== undefined) {
+            
+            // call the onLoad event because the image data is ready
+            if (typeof onLoad === 'function') {
                 onLoad();
             }
         };
