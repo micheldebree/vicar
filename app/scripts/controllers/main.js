@@ -14,8 +14,8 @@ angular.module('vicarApp')
             'AngularJS',
             'Karma'
         ];
-       
-        $scope.dithers = Palette.dithers;
+        $scope.converter = new C64izer();
+        $scope.dithers = $scope.converter.remapper.dithers;
         $scope.selectedDither = $scope.dithers[0];
     
         $scope.palettes = [{
@@ -33,7 +33,7 @@ angular.module('vicarApp')
     
         var img = new Image();
         $scope.imageUrl = 'images/hqdefault.jpg';
-        $scope.converter = new C64izer();
+       
     
         $scope.convert = function () {
            
@@ -41,10 +41,10 @@ angular.module('vicarApp')
                 context = canvas.getContext('2d');
 
              // set the palette
-            $scope.converter.palette = $scope.selectedPalette.value;
+            $scope.converter.remapper.palette = $scope.selectedPalette.value;
             
             // set the ordered dithering algorithm
-            $scope.converter.palette.dither = $scope.selectedDither.value;
+            $scope.converter.remapper.dither = $scope.selectedDither.value;
 
             img.src = $scope.imageUrl;
             

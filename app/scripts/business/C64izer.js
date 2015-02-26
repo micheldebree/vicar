@@ -1,4 +1,4 @@
-/*global NearestNeighbour, PeptoPalette, PixelImage */
+/*global NearestNeighbour, PixelImage, Remapper */
 /*exported C64izer */
 
 /**
@@ -7,7 +7,7 @@
 function C64izer() {
     'use strict';
     this.resizer = new NearestNeighbour();
-    this.palette = undefined;
+    this.remapper = new Remapper(new PeptoPalette());
     this.image = new PixelImage();
     this.width = 320;
     this.height = 200;
@@ -27,7 +27,7 @@ function C64izer() {
             self.image = self.resizer.resize(self.image, sW / self.pixelWidth, self.image.getHeight());
             
             // remap to c64 palette
-            self.image = self.palette.remap(self.image);
+            self.image = self.remapper.remap(self.image);
             
             // resize to original width so we get double width pixels
             self.image = self.resizer.resize(self.image, sW, self.image.getHeight());
