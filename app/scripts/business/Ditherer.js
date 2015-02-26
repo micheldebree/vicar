@@ -1,4 +1,4 @@
-/*global PixelImage, Ditherer */
+/*global PixelImage, Ditherer, PixelCalculator */
 /*jslint plusplus: true*/
 /** 
  * Dithers an image

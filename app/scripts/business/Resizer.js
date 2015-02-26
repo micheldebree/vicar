@@ -1,4 +1,3 @@
-/*global PixelImage*/
 /*exported NearestNeighbour*/
 /*jslint plusplus:true*/
 /** 

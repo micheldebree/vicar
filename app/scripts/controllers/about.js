@@ -1,10 +1,10 @@
 /*global angular */
 /**
  * @ngdoc function
- * @name workspaceApp.controller:AboutCtrl
+ * @name vicarApp.controller:AboutCtrl
  * @description
  * # AboutCtrl
- * Controller of the workspaceApp
+ * Controller of the vicarApp
  */
 angular.module('vicarApp')
       .controller('AboutCtrl', function ($scope) {

@@ -12,7 +12,7 @@ function PixelImage() {
     // in this constructor (closure)
     var self = this,
         img,
-        onLoad,
+        callback,
         grabData = function () {
             
             // draw the image on a canvas
@@ -22,12 +22,12 @@ function PixelImage() {
             canvas.height = img.height;
             context.drawImage(img, 0, 0);
             
-            // save the image data from he canvas
+            // save the image data from the canvas
             self.imageData = context.getImageData(0, 0, img.width, img.height);
             
-            // call the onLoad event because the image data is ready
-            if (typeof onLoad === 'function') {
-                onLoad();
+            // call the callback event because the image data is ready
+            if (typeof callback === 'function') {
+                callback();
             }
         };
 
@@ -47,9 +47,9 @@ function PixelImage() {
         @param {Image} imgParam - The image from which to grab the data.
         @param {Function} onLoadHandler - Handler executed after data has been grabbed.
     */
-    this.grab = function (imgParam, onLoadHandler) {
+    this.grab = function (imgParam, successCallback) {
         
-        onLoad = onLoadHandler;
+        callback = successCallback;
 
         img = imgParam;
 

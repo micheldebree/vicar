@@ -1,21 +1,20 @@
 /*global NearestNeighbour, PeptoPalette, PixelImage */
+/*exported C64izer */
 
 /**
  * Convert an image to c64 style.
  */
-function C64izer(img) {
+function C64izer() {
     'use strict';
     this.resizer = new NearestNeighbour();
-    this.palette = new PeptoPalette();
-    this.onDone = undefined;
+    this.palette = undefined;
     this.image = new PixelImage();
     this.width = 320;
     this.height = 200;
     this.pixelWidth = 2;
     
-    var canvas = document.createElement('canvas'),
-        context = canvas.getContext('2d'),
-        self = this,
+    var self = this,
+        callback,
         onGrab = function () {
 
             var sW;
@@ -33,13 +32,14 @@ function C64izer(img) {
             // resize to original width so we get double width pixels
             self.image = self.resizer.resize(self.image, sW, self.image.getHeight());
             
-            // call the onDone event
-            if (typeof self.onDone === 'function') {
-                self.onDone();
+            // call the callback event
+            if (typeof callback === 'function') {
+                callback();
             }
         };
 
-    this.convert = function () {
+    this.convert = function (img, successCallback) {
+        callback = successCallback;
         self.image.grab(img, onGrab);
     };
 }

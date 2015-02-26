@@ -1,5 +1,11 @@
 /*global PixelCalculator*/
 /*jslint plusplus:true*/
+/*
+ * A palette is a list of different pixel values.
+ * The palette can remap an arbitrary image to only use pixel values that are
+ * part of the palette.
+ * @constructor
+ */
 function Palette() {
     'use strict';
     
@@ -10,28 +16,35 @@ function Palette() {
     this.dither = Palette.dithers.NONE;
 }
 
-Palette.dithers = {};
-Palette.dithers.NONE = [0];
-Palette.dithers.DITHER2X2 =  [
-    [1, 3],
-    [4, 2]
-];
-Palette.dithers.DITHER4X4 = [
-    [1, 9, 3, 11],
-    [13, 5, 15, 7],
-    [4, 12, 2, 10],
-    [16, 8, 14, 6]
-];
-Palette.dithers.DITHER8X8 = [
-    [1, 49, 13, 61, 4, 52, 16, 64],
-    [33, 17, 45, 29, 36, 20, 48, 31],
-    [9, 57, 5, 53, 12, 60, 8, 56],
-    [41, 25, 37, 21, 44, 28, 40, 24],
-    [3, 51, 15, 63, 2, 50, 14, 62],
-    [35, 19, 47, 31, 34, 18, 46, 30],
-    [11, 59, 7, 55, 10, 58, 6, 54],
-    [43, 27, 39, 23, 42, 26, 38, 22]
-];
+Palette.dithers =  [{
+    key: 'None',
+    value: [0]
+}, {
+    key: '2 x 2',
+    value: [[1, 3],
+            [4, 2]]
+}, {
+    key: '4 x 4',
+    value: [
+        [1, 9, 3, 11],
+        [13, 5, 15, 7],
+        [4, 12, 2, 10],
+        [16, 8, 14, 6]
+    ]
+}, {
+    key: '8 x 8',
+    value: [
+        [1, 49, 13, 61, 4, 52, 16, 64],
+        [33, 17, 45, 29, 36, 20, 48, 31],
+        [9, 57, 5, 53, 12, 60, 8, 56],
+        [41, 25, 37, 21, 44, 28, 40, 24],
+        [3, 51, 15, 63, 2, 50, 14, 62],
+        [35, 19, 47, 31, 34, 18, 46, 30],
+        [11, 59, 7, 55, 10, 58, 6, 54],
+        [43, 27, 39, 23, 42, 26, 38, 22]
+    ]
+}];
+
 
 /** Map a pixel to the nearest pixel in this palet */
 Palette.prototype.map = function (pixel, offset) {
@@ -67,8 +80,6 @@ Palette.prototype.indexOf = function (pixel) {
     }
     return undefined;
 };
-
-
 
 /**
  * Extract the pixel values for this palette from an area of an image.
