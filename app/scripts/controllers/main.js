@@ -1,4 +1,4 @@
-/*global angular, C64izer, Palette, PeptoPalette, ViceRGBPalette, ViceRGBPALPalette*/
+/*global angular, C64izer, Palette, PeptoPalette, ViceRGBPalette, ViceRGBPALPalette, URL*/
 /**
  * @ngdoc function
  * @name workspaceApp.controller:MainCtrl
@@ -16,7 +16,7 @@ angular.module('vicarApp')
         ];
         $scope.converter = new C64izer();
         $scope.dithers = $scope.converter.remapper.dithers;
-        $scope.selectedDither = $scope.dithers[0];
+        $scope.selectedDither = $scope.dithers[2];
     
         $scope.palettes = [{
             key: 'Pepto',
@@ -32,7 +32,7 @@ angular.module('vicarApp')
         $scope.selectedPalette = $scope.palettes[0];
     
         var img = new Image();
-        $scope.imageUrl = 'images/hqdefault.jpg';
+        img.src = 'images/rainbowgirl.jpg';
        
     
         $scope.convert = function () {
@@ -45,8 +45,6 @@ angular.module('vicarApp')
             
             // set the ordered dithering algorithm
             $scope.converter.remapper.dither = $scope.selectedDither.value;
-
-            img.src = $scope.imageUrl;
             
             // convert and draw the converted image data in the callback function
             $scope.converter.convert(img,
@@ -55,6 +53,20 @@ angular.module('vicarApp')
                 }
                 );
         };
+    
+        $scope.upload = function () {
+            if (typeof $scope.files !== 'undefined' && $scope.files.length === 1) {
+                img.src = URL.createObjectURL($scope.files[0]);
+                img.onload = function () {
+                    $scope.convert();
+                };
+            }
+            
+        };
+    
+        $scope.$watch('files', function () {
+            $scope.upload();
+        });
     
         $scope.convert();
     

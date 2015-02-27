@@ -77,3 +77,8 @@ body {
     border-bottom: 0;
   }
 }
+
+#image {
+    border: 1px 1px 1px 1px;
+    border-color: red;
+}

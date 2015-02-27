@@ -9,14 +9,10 @@
  */
 angular
       .module('vicarApp', [
-        'ngAnimate',
-        'ngAria',
-        'ngCookies',
-        'ngMessages',
-        'ngResource',
+       
         'ngRoute',
-        'ngSanitize',
-        'ngTouch'
+       
+        'angularFileUpload'
     ])
       .config(function ($routeProvider) {
         'use strict';

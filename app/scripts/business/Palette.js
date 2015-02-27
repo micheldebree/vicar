@@ -12,8 +12,6 @@ function Palette() {
     // the pixels in the palette
     this.pixels = undefined;
 
-    // ordered dithering matrix, must be square. used when mapping an image to this palette
-    this.dither = Palette.dithers.NONE;
 }
 
 /** Get the index in de palette for a pixel. undefined if the pixel is not in the palette */

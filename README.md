@@ -1,11 +1,22 @@
-To setup development:
+# VICar
 
-- Install Node.js for your OS
-- npm install -g grunt-cli
-- Run from the root of the project (where .git is):
-- npm install
-- bower install
+Converts an image to Commodore 64 style.
 
-Start app:
+## Setup development:
 
-- grunt serve
+- Install [Node.js](http://nodejs.org/) for your OS
+- Install grunt command line tools:
+    - `npm install -g grunt-cli`
+- Install dependencies by running, from the root of the project source:
+    - `npm install`
+    - `bower install`
+
+### Start app
+
+- `grunt serve`
+- surf to http://localhost:9000
+
+### Make a distribution
+
+- `grunt build`
+- Distribution is in the `dist` folder

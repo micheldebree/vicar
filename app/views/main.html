@@ -1,5 +1,10 @@
-<canvas id="Canvas0" width="320" height="200"></canvas>
-<p>Image: <input ng-model="imageUrl"></p>
+ 
+<div id="image" ng-file-drop ng-file-select ng-model="files" class="drop-box" 
+        drag-over-class="dragover" ng-multiple="false" allow-dir="false"
+        accept="image/*">
+    <canvas id="Canvas0" width="320" height="200"></canvas>  
+</div>
+<p>Drag and drop or click on image to change.</p>
 <p>Palette: <select ng-model="selectedPalette" 
             ng-options="palette.key for palette in palettes" 
             ng-change="convert()">

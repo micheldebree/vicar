@@ -1,4 +1,4 @@
-/*global NearestNeighbour, PixelImage, Remapper */
+/*global NearestNeighbour, PixelImage, Remapper, PeptoPalette */
 /*exported C64izer */
 
 /**
