@@ -24,11 +24,21 @@ module.exports = function (grunt) {
         dist: 'dist'
     };
 
+    grunt.loadNpmTasks('grunt-node-webkit-builder');
+    
     // Define the configuration for all the tasks
     grunt.initConfig({
 
     // Project settings
         yeoman: appConfig,
+        
+        nodewebkit: {
+            options: {
+                platforms: ['linux64'],
+                buildDir: './webkitbuilds', // Where the build version of my node-webkit app is saved
+            },
+            src: ['./**/*'] // Your node-webkit app
+        },
 
         // Watches files for changes and runs tasks based on the changed files
         watch: {
@@ -402,6 +412,8 @@ module.exports = function (grunt) {
     'htmlmin'
   ]);
 
+   
+    
   grunt.registerTask('default', [
     'newer:jshint',
     'test',
