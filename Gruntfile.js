@@ -335,6 +335,34 @@ module.exports = function (grunt) {
           dest: '<%= yeoman.dist %>'
         }]
       },
+      lite: {
+        files: [{
+          expand: true,
+          dot: true,
+          cwd: '<%= yeoman.app %>',
+          dest: '<%= yeoman.dist %>',
+          src: [
+            '*.{ico,png,txt}',
+            '.htaccess',
+            '*.html',
+            'views/{,*/}*.html',
+            'images/{,*/}*.*',
+            'fonts/{,*/}*.*',
+            'scripts/{,*/}*.*'
+          ]
+        }]
+      },   
+       bower: {
+        files: [{
+          expand: true,
+          dot: true,
+          cwd: 'bower_components',
+          dest: '<%= yeoman.dist %>/bower_components',
+          src: [
+            '{,*/}*.*'
+          ]
+        }]
+      },            
       styles: {
         expand: true,
         cwd: '<%= yeoman.app %>/styles',
@@ -411,9 +439,14 @@ module.exports = function (grunt) {
     'usemin',
     'htmlmin'
   ]);
-
-   
     
+  grunt.registerTask('buildlite', [
+    'clean:dist',
+    'copy:styles',
+    'copy:lite',
+    'copy:bower'
+  ]);
+ 
   grunt.registerTask('default', [
     'newer:jshint',
     'test',
