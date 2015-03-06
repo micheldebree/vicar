@@ -31,15 +31,7 @@ function PixelImage() {
             }
         };
 
-    /** Clone an existing image */
-    this.clone = function (pixelImage) {
-        var canvas = document.createElement('canvas'),
-            context = canvas.getContext('2d');
-        canvas.width = pixelImage.getWidth();
-        canvas.height = pixelImage.getHeight();
-        context.putImageData(pixelImage.getImageData(), 0, 0);
-        this.imageData = context.getImageData(0, 0, img.width, img.height);
-    };
+   
 
   
     /**
@@ -61,6 +53,22 @@ function PixelImage() {
     };
     
 }
+
+/** Create an Image object */
+PixelImage.prototype.toImage = function () {
+    'use strict';
+    var canvas = document.createElement('canvas'),
+        context = canvas.getContext('2d'),
+        result = new Image();
+
+    canvas.width = this.getWidth();
+    canvas.height = this.getHeight();
+    context.putImageData(this.imageData, 0, 0);
+
+    result.src = canvas.toDataURL();
+    return result;
+        
+};
 
 /** Create new empty image */
 PixelImage.prototype.init = function (w, h) {

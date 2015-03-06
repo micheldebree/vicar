@@ -3,6 +3,7 @@
 function Remapper(palette) {
     'use strict';
     
+    this.pixelWidth = 2;
     this.palette = palette;
     this.dithers = [{
         key: 'None',
@@ -62,6 +63,7 @@ function Remapper(palette) {
 
         var xi,
             yi,
+            pi,
             pixel,
             mappedPixel,
             ox,
@@ -73,14 +75,17 @@ function Remapper(palette) {
         h = h !== undefined ? h : pixelImage.getHeight() - y;
 
         for (yi = y; yi < y + h; yi += 1) {
-            for (xi = x; xi < x + w; xi += 1) {
+            for (xi = x; xi < x + w; xi += this.pixelWidth) {
                 pixel = pixelImage.peek(xi, yi);
 
-                ox = xi % self.dither.length;
+                ox = (xi / this.pixelWidth) % self.dither.length;
                 oy = yi % self.dither.length;
 
                 mappedPixel = map(pixel, self.dither[oy][ox]);
-                pixelImage.poke(xi, yi, mappedPixel);
+                
+                for (pi = 0; pi < this.pixelWidth; pi += 1) {
+                    pixelImage.poke(xi + pi, yi, mappedPixel);
+                }
             }
         }
         return pixelImage;

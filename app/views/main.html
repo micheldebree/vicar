@@ -16,3 +16,9 @@
             ng-change="convert()">
     </select>
 </p>
+<p>
+    Pixel ratio: <select ng-model="selectedPixelWidth" 
+            ng-options="pixelWidth.key for pixelWidth in pixelWidths" 
+            ng-change="convert()">
+    </select>
+</p>
