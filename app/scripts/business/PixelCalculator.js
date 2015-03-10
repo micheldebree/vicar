@@ -31,19 +31,6 @@ PixelCalculator.clone = function (one) {
     return [one[0], one[1], one[2]];
 };
 
-/** Calculate the euclidian distantance between this pixel's color and another's */
-PixelCalculator.getDistance = function (one, other, offset) {
-    'use strict';
-
-    offset = offset !== undefined ? offset : 0;
-
-    return Math.sqrt(
-        Math.pow(one[0] - other[0] - offset, 2) + Math.pow(one[1] - other[1] - offset, 2) + Math.pow(one[2] - other[2] - offset, 2)
-    );
-};
-
-
-
 /** Create imageData from an Image, optionally resizing it */
 PixelCalculator.getImageData = function (img, w, h) {
     'use strict';

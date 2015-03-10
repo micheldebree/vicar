@@ -7,31 +7,16 @@
  * Controller of the workspaceApp
  */
 angular.module('vicarApp')
-    .controller('MainCtrl', ['$scope', 'c64izer', function ($scope, c64izer) {
+    .controller('MainCtrl', ['$scope', 'c64izerService', function ($scope, c64izerService) {
         'use strict';
 
-        $scope.dithers = c64izer.getSupportedDithers();
+        $scope.dithers = c64izerService.getSupportedDithers();
         $scope.selectedDither = $scope.dithers[2];
     
-        $scope.palettes = [{
-            key: 'Pepto',
-            value: new PeptoPalette()
-        }, {
-            key: 'Vice RGB',
-            value: new ViceRGBPalette()
-        }, {
-            key: 'Vice RGB PAL',
-            value: new ViceRGBPALPalette()
-        }];
+        $scope.palettes = c64izerService.getSupportedPalettes();
         $scope.selectedPalette = $scope.palettes[0];
     
-        $scope.pixelWidths = [{
-            key: '1:1',
-            value: 1
-        }, {
-            key: '2:1',
-            value: 2
-        }];
+        $scope.pixelWidths = c64izerService.getSupportedPixelWidths();
         $scope.selectedPixelWidth = $scope.pixelWidths[1];
         
         var img = new Image();
@@ -43,13 +28,17 @@ angular.module('vicarApp')
                 context = canvas.getContext('2d');
             
             // convert and draw the converted image data in the callback function
-            c64izer.convert(img, $scope.selectedPalette.value, $scope.selectedDither.value,  $scope.selectedPixelWidth.value,
-                function (image) {
-                    canvas.width = image.getWidth();
-                    canvas.height = image.getHeight();
-                    context.putImageData(image.imageData, 0, 0);
+            c64izerService.convert(
+                img,
+                $scope.selectedPalette.value,
+                $scope.selectedDither.value,
+                $scope.selectedPixelWidth.value,
+                function (pixelImage) {
+                    canvas.width = pixelImage.getWidth();
+                    canvas.height = pixelImage.getHeight();
+                    context.putImageData(pixelImage.imageData, 0, 0);
                 }
-                );
+            );
         };
     
         $scope.upload = function () {

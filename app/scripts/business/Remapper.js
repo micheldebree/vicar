@@ -1,40 +1,18 @@
 /*global PixelCalculator*/
 /*exported Remapper*/
+/**
+ * Remaps a PixelImage to use only colors from a specified palette
+ * Remapping of a pixel is done to the nearest pixel in the palette according
+ * to euclidian distance.
+ */
 function Remapper(palette) {
     'use strict';
     
-    this.pixelWidth = 2;
+    this.pixelWidth = 1;
     this.palette = palette;
-    this.dithers = [{
-        key: 'None',
-        value: [0]
-    }, {
-        key: '2 x 2',
-        value: [[1, 3],
-                [4, 2]]
-    }, {
-        key: '4 x 4',
-        value: [
-            [1, 9, 3, 11],
-            [13, 5, 15, 7],
-            [4, 12, 2, 10],
-            [16, 8, 14, 6]
-        ]
-    }, {
-        key: '8 x 8',
-        value: [
-            [1, 49, 13, 61, 4, 52, 16, 64],
-            [33, 17, 45, 29, 36, 20, 48, 31],
-            [9, 57, 5, 53, 12, 60, 8, 56],
-            [41, 25, 37, 21, 44, 28, 40, 24],
-            [3, 51, 15, 63, 2, 50, 14, 62],
-            [35, 19, 47, 31, 34, 18, 46, 30],
-            [11, 59, 7, 55, 10, 58, 6, 54],
-            [43, 27, 39, 23, 42, 26, 38, 22]
-        ]
-    }];
     
-    this.dither = this.dithers[0].value;
+    // an n x n matrix used for ordered dithering
+    this.dither = [0];
     
     var self = this,
         map = function (pixel, offset) {
@@ -42,12 +20,21 @@ function Remapper(palette) {
             var i = self.palette.pixels.length,
                 d,
                 minVal,
-                minI = 0;
+                minI = 0,
+                other;
 
             offset = offset !== undefined ? offset : 0;
-            while (--i >= 0) {
-
-                d = PixelCalculator.getDistance(pixel, self.palette.pixels[i], offset);
+            
+            // determin closest pixel in palette
+            for (i = 0; i < self.palette.pixels.length; i += 1) {
+                other = self.palette.pixels[i];
+                
+                // calculate distance
+                d = Math.sqrt(
+                    Math.pow(pixel[0] - other[0] - offset, 2) +
+                        Math.pow(pixel[1] - other[1] - offset, 2) +
+                        Math.pow(pixel[2] - other[2] - offset, 2)
+                );
 
                 if (minVal === undefined || d < minVal) {
                     minVal = d;
@@ -59,6 +46,14 @@ function Remapper(palette) {
 
         };
   
+    /**
+     * Remap a pixel image
+     * @param {PixelImage} pixelImage - The image to remap
+     * @param {number} [x=0] - X-coordinate of area to remap
+     * @param {number} [y=0] - Y-coordinate of area to remap
+     * @param {number} [w] - Width of area to remap
+     * @param {number} [h] - Height of area to remap
+     */
     this.remap = function (pixelImage, x, y, w, h) {
 
         var xi,
