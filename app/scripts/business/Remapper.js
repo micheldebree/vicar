@@ -1,4 +1,3 @@
-/*global PixelCalculator*/
 /*exported Remapper*/
 /**
  * Remaps a PixelImage to use only colors from a specified palette
@@ -25,7 +24,7 @@ function Remapper(palette) {
 
             offset = offset !== undefined ? offset : 0;
             
-            // determin closest pixel in palette
+            // determine closest pixel in palette
             for (i = 0; i < self.palette.pixels.length; i += 1) {
                 other = self.palette.pixels[i];
                 

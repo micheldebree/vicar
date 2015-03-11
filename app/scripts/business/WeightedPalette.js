@@ -1,4 +1,5 @@
 /*global Palette*/
+/*exported WeightedPalette*/
 function WeightedPalette() {
     'use strict';
     

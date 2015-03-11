@@ -1,12 +1,10 @@
-/*global angular, C64izer, Remapper, PixelImage, NearestNeighbour, CanvasResizer, PeptoPalette, ViceRGBPalette, ViceRGBPALPalette */
+/*global angular, Remapper, PixelImage, PeptoPalette, ViceRGBPalette, ViceRGBPALPalette */
 angular.module('vicarApp').factory('c64izerService', function () {
     'use strict';
     
     var image = new PixelImage(),
-        resizer = new CanvasResizer(),
         remapper = new Remapper(),
-        width = 320,
-        pixelWidth = 2;
+        width = 320;
     
     return {
         convert: function (img, palette, dither, pixelWidth, success) {
@@ -20,10 +18,6 @@ angular.module('vicarApp').factory('c64izerService', function () {
             remapper.pixelWidth = pixelWidth;
           
             image.grab(img, function () {
-                var sW;
-
-                // resize to 320 width
-                image = resizer.resizeWidth(image, width);
 
                 // remap to c64 palette
                 image = remapper.remap(image);
@@ -32,7 +26,7 @@ angular.module('vicarApp').factory('c64izerService', function () {
                 if (typeof success === 'function') {
                     success(image);
                 }
-            });
+            }, width);
         },
         getSupportedDithers: function () {
             return [{

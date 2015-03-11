@@ -13,17 +13,12 @@ function PixelImage() {
     var self = this,
         img,
         callback,
+        resizeW,
         grabData = function () {
-            
-            // draw the image on a canvas
-            var canvas = document.createElement('canvas'),
-                context = canvas.getContext('2d');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            context.drawImage(img, 0, 0);
-            
-            // save the image data from the canvas
-            self.imageData = context.getImageData(0, 0, img.width, img.height);
+            var w = typeof resizeW !== 'undefined' ? resizeW : img.width,
+                h = resizeW * img.height / img.width;
+
+            self.imageData = PixelCalculator.getImageData(img, w, h);
             
             // call the callback event because the image data is ready
             if (typeof callback === 'function') {
@@ -31,16 +26,16 @@ function PixelImage() {
             }
         };
 
-   
-
   
     /**
         Grab image data from an image. Grabbing is defered until the image is loaded.
         @param {Image} imgParam - The image from which to grab the data.
         @param {Function} onLoadHandler - Handler executed after data has been grabbed.
+        @param {number} [w] - Width to resize the image to.
     */
-    this.grab = function (imgParam, successCallback) {
+    this.grab = function (imgParam, successCallback, w) {
         
+        resizeW = w;
         callback = successCallback;
 
         img = imgParam;
@@ -86,16 +81,26 @@ PixelImage.prototype.isReady = function () {
     return this.imageData !== undefined;
 };
 
+/**
+ * @returns {number} The height of the image, or 0 if image is not ready.
+ */
 PixelImage.prototype.getHeight = function () {
     'use strict';
     return this.isReady() ? this.imageData.height : 0;
 };
 
+/**
+ * @returns {number} The width of the image, or 0 if image is not ready.
+ */
 PixelImage.prototype.getWidth = function () {
     'use strict';
     return this.isReady() ? this.imageData.width : 0;
 };
 
+/**
+ * Convert x and y position in image to an index in the image data.
+ * @returns {number} index in the imagedata for the green channel.
+ */
 PixelImage.prototype.coordsToindex = function (x, y) {
     'use strict';
     var result = Math.floor(y) * (this.getWidth() << 2) + (x << 2);

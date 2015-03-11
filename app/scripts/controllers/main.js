@@ -1,4 +1,4 @@
-/*global angular, C64izer, Palette, PeptoPalette, ViceRGBPalette, ViceRGBPALPalette, URL*/
+/*global angular, URL*/
 /**
  * @ngdoc function
  * @name workspaceApp.controller:MainCtrl
