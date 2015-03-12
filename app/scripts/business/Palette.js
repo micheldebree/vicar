@@ -14,6 +14,13 @@ function Palette() {
 
 }
 
+Palette.prototype.addPixel = function(pixel) {
+    'use strict';
+    if (this.indexOf(pixel) === undefined) {
+        this.pixels.push(pixel);
+    }
+};
+
 /** Get the index in de palette for a pixel. undefined if the pixel is not in the palette */
 Palette.prototype.indexOf = function (pixel) {
     'use strict';
