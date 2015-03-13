@@ -5,20 +5,14 @@
     <canvas id="Canvas0" width="320" height="200"></canvas>  
 </div>
 <p>Drag and drop or click on image to change.</p>
-<p>Palette: <select ng-model="selectedPalette" 
-            ng-options="palette.key for palette in palettes" 
+<p>Style: <select ng-model="selectedProfile" 
+            ng-options="profile.key for profile in profiles" 
             ng-change="convert()">
     </select>
 </p>
 <p>
     Dithering: <select ng-model="selectedDither" 
             ng-options="dither.key for dither in dithers" 
-            ng-change="convert()">
-    </select>
-</p>
-<p>
-    Pixel ratio: <select ng-model="selectedPixelWidth" 
-            ng-options="pixelWidth.key for pixelWidth in pixelWidths" 
             ng-change="convert()">
     </select>
 </p>

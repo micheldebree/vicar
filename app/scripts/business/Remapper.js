@@ -8,6 +8,7 @@ function Remapper(palette) {
     'use strict';
     
     this.pixelWidth = 1;
+    this.pixelHeight = 1;
     this.palette = palette;
     
     // an n x n matrix used for ordered dithering
@@ -57,7 +58,8 @@ function Remapper(palette) {
 
         var xi,
             yi,
-            pi,
+            px,
+            py,
             pixel,
             mappedPixel,
             ox,
@@ -68,17 +70,19 @@ function Remapper(palette) {
         w = w !== undefined ? w : pixelImage.getWidth() - x;
         h = h !== undefined ? h : pixelImage.getHeight() - y;
 
-        for (yi = y; yi < y + h; yi += 1) {
+        for (yi = y; yi < y + h; yi += this.pixelHeight) {
             for (xi = x; xi < x + w; xi += this.pixelWidth) {
                 pixel = pixelImage.peek(xi, yi);
 
                 ox = (xi / this.pixelWidth) % self.dither.length;
-                oy = yi % self.dither.length;
+                oy = (yi / this.pixelHeight) % self.dither.length;
 
                 mappedPixel = map(pixel, self.dither[oy][ox]);
                 
-                for (pi = 0; pi < this.pixelWidth; pi += 1) {
-                    pixelImage.poke(xi + pi, yi, mappedPixel);
+                for (py = 0; py < this.pixelHeight; py += 1) {
+                    for (px = 0; px < this.pixelWidth; px += 1) {
+                        pixelImage.poke(xi + px, yi + py, mappedPixel);
+                    }
                 }
             }
         }
