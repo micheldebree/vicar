@@ -1,6 +1,6 @@
 # VICar
 
-Converts an image to Commodore 64 style.
+Applies graphics limitations from old computers to an image.
 
 ## Setup development:
 

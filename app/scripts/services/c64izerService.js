@@ -1,4 +1,4 @@
-/*global angular, Remapper, PixelImage, Palette, PeptoPalette, ViceRGBPalette, ViceRGBPALPalette */
+/*global angular, Remapper, PixelImage, Palette, PeptoPalette */
 angular.module('vicarApp').factory('c64izerService', function () {
     'use strict';
     
@@ -6,7 +6,7 @@ angular.module('vicarApp').factory('c64izerService', function () {
 
         convert: function (img, profile, dither, success) {
         
-             var image = new PixelImage(),
+            var image = new PixelImage(),
                 remapper = new Remapper();
 
              // set the palette
@@ -78,14 +78,14 @@ angular.module('vicarApp').factory('c64izerService', function () {
                 key: 'Commodore 64 hires',
                 value: {
                     'name': 'Commodore 64 hires',
-                    'palette': [[0x44,0x44,0x4],[0x95,0x95,0x95]],
+                    'palette': [[0x44, 0x44, 0x44], [0x95, 0x95, 0x95]],
                     'pixelWidth': 1,
                     'pixelHeight': 1,
                     'width': 320
                 }
             }, {
                 key: 'Teletext',
-                value: { 
+                value: {
                     'name': 'Teletext',
                     'palette': [
                         [0xff, 0x00, 0x00],
@@ -102,22 +102,8 @@ angular.module('vicarApp').factory('c64izerService', function () {
                     'width': 40
                 }
             }, {
-                key: 'CGA palette 1 low intensity',
-                value: { 
-                    'name': 'CGA palette 1 low intensity',
-                    'palette': [
-                        [0x00, 0x00, 0x00],
-                        [0x00, 0xaa, 0xaa],
-                        [0xaa, 0x00, 0xaa],
-                        [0xaa, 0xaa, 0xaa]
-                    ],
-                    'pixelWidth': 1,
-                    'pixelHeight': 1,
-                    'width': 320
-                }
-            }, {
-                key: 'CGA palette 1 high intensity',
-                value: { 
+                key: 'CGA 1',
+                value: {
                     'name': 'CGA palette 1 high intensity',
                     'palette': [
                         [0x00, 0x00, 0x00],
@@ -130,32 +116,32 @@ angular.module('vicarApp').factory('c64izerService', function () {
                     'width': 320
                 }
             }, {
-                key: 'CGA palette 2 low intensity',
-                value: { 
-                    'name': 'CGA palette 1 low intensity',
+                key: 'CGA 2',
+                value: {
+                    'name': 'CGA palette 1 high intensity',
                     'palette': [
                         [0x00, 0x00, 0x00],
-                        [0x00, 0xaa, 0x00],
-                        [0xaa, 0x00, 0x00],
-                        [0xaa, 0x55, 0x00]
+                        [0x55, 0xff, 0x55],
+                        [0xff, 0x55, 0x55],
+                        [0xff, 0xff, 0x55]
                     ],
                     'pixelWidth': 1,
                     'pixelHeight': 1,
                     'width': 320
                 }
             }, {
-                key: 'CGA palette 2 high intensity',
-                value: { 
-                    'name': 'CGA palette 1 high intensity',
+                key: 'Gameboy',
+                value: {
+                    'name': 'Gameboy 4 colors',
                     'palette': [
-                        [0x00, 0x00, 0x00],
-                        [0x55, 0xff, 0x55],
-                        [0xff, 0x55, 0xf55],
-                        [0xff, 0xff, 0x55]
+                        [0x9c, 0xbd, 0x0f],
+                        [0x8c, 0xad, 0x0f],
+                        [0x30, 0x62, 0x30],
+                        [0x0f, 0x38, 0x0f]
                     ],
-                    'pixelWidth': 1,
-                    'pixelHeight': 1,
-                    'width': 320
+                    'pixelWidth': 2,
+                    'pixelHeight': 2,
+                    'width': 160
                 }
             }];
         }

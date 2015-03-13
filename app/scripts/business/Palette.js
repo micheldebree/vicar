@@ -14,11 +14,22 @@ function Palette() {
 
 }
 
-Palette.prototype.addPixel = function(pixel) {
+/**
+ * Add a pixel to the palette.
+ * Doesn't add if an identical pixel is already in the palette.
+ * @return {number} The index where the pixel is (added or existing) in the palette.
+ */
+Palette.prototype.addPixel = function (pixel) {
     'use strict';
-    if (this.indexOf(pixel) === undefined) {
+    
+    var i = this.indexOf(pixel);
+    
+    if (i === undefined) {
         this.pixels.push(pixel);
+        i = this.pixels.length - 1;
     }
+
+    return i;
 };
 
 /** Get the index in de palette for a pixel. undefined if the pixel is not in the palette */
@@ -55,45 +66,3 @@ Palette.prototype.extract = function (pixelImage, x, y, w, h) {
 
 };
 
-/** Add an 'error' pixel to the pixel at x,y in pixelImage */
-Palette.prototype.addError = function (pixelImage, x, y, error) {
-    'use strict';
-    if (x < pixelImage.getWidth() && y < pixelImage.getHeight()) {
-        var nextPixel = pixelImage.peek(x, y),
-            newPixel = PixelCalculator.add(nextPixel, error);
-        pixelImage.poke(x, y, newPixel);
-    }
-};
-
-/** Use floyd-steinberg dithering after mapping a pixel */
-Palette.prototype.fsDither = function (pixelImage, x, y, origPixel) {
-    'use strict';
-    var pixel = pixelImage.peek(x, y),
-        error = PixelCalculator.substract(origPixel, pixel);
-
-    this.addError(pixelImage, x + 1, y, PixelCalculator.multiply(error, 7 / 16));
-    this.addError(pixelImage, x - 1, y + 1, PixelCalculator.multiply(error, 3 / 16));
-    this.addError(pixelImage, x, y + 1, PixelCalculator.multiply(error, 5 / 16));
-    this.addError(pixelImage, x + 1, y + 1, PixelCalculator.multiply(error, 1 / 16));
-
-};
-
-Palette.prototype.jjnDither = function (pixelImage, x, y, origPixel) {
-    'use strict';
-    var pixel = pixelImage.peek(x, y),
-        error = origPixel.substract(pixel);
-
-    this.addError(pixelImage, x + 1, y, error.clone().multiply(7).divide(48));
-    this.addError(pixelImage, x + 2, y, error.clone().multiply(5).divide(48));
-    this.addError(pixelImage, x - 2, y + 1, error.clone().multiply(3).divide(48));
-    this.addError(pixelImage, x - 1, y + 1, error.clone().multiply(5).divide(48));
-    this.addError(pixelImage, x, y + 1, error.clone().multiply(7).divide(48));
-    this.addError(pixelImage, x + 1, y + 1, error.clone().multiply(5).divide(48));
-    this.addError(pixelImage, x + 2, y + 1, error.clone().multiply(3).divide(48));
-    this.addError(pixelImage, x - 2, y + 2, error.clone().multiply(1).divide(48));
-    this.addError(pixelImage, x - 1, y + 2, error.clone().multiply(3).divide(48));
-    this.addError(pixelImage, x, y + 2, error.clone().multiply(5).divide(48));
-    this.addError(pixelImage, x + 1, y + 2, error.clone().multiply(3).divide(48));
-    this.addError(pixelImage, x + 2, y + 2, error.clone().multiply(1).divide(48));
-
-};
