@@ -2,7 +2,7 @@
 function PeptoPalette() {
     'use strict';
     this.pixels = [
-        [0, 0, 0], // black
+        [0, 0, 0, 0xff], // black
         [0xff, 0xff, 0xff], // white
         [0x68, 0x37, 0x2b], //red
         [0x70, 0xa4, 0xb2], //cyan

@@ -21,11 +21,12 @@ function Remapper(palette) {
                 d,
                 minVal,
                 minI = 0,
-                other;
+                other,
+                mappedPixel;
 
             offset = offset !== undefined ? offset : 0;
             
-            // determine closest pixel in palette
+            // determine closest pixel in palette (ignoring alpha)
             for (i = 0; i < self.palette.pixels.length; i += 1) {
                 other = self.palette.pixels[i];
                 
@@ -41,8 +42,11 @@ function Remapper(palette) {
                     minI = i;
                 }
             }
-
-            return self.palette.pixels[minI];
+            mappedPixel = self.palette.pixels[minI];
+            
+            // preserve alpha channel of original pixel
+            mappedPixel[3] = pixel[3];
+            return mappedPixel;
 
         };
   

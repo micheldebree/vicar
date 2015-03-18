@@ -2,12 +2,12 @@ var PixelCalculator = {};
 
 PixelCalculator.add = function (one, other) {
     'use strict';
-    return [one[0] + other[0], one[1] + other[1], one[2] + other[2]];
+    return [one[0] + other[0], one[1] + other[1], one[2] + other[2], one[3] + other[3]];
 };
 
 PixelCalculator.substract = function (one, other) {
     'use strict';
-    return [one[0] - other[0], one[1] - other[1], one[2] - other[2]];
+    return [one[0] - other[0], one[1] - other[1], one[2] - other[2], one[3] - other[3]];
 };
 
 PixelCalculator.multiply = function (one, factor) {
@@ -28,7 +28,7 @@ PixelCalculator.equals = function (one, other) {
 
 PixelCalculator.clone = function (one) {
     'use strict';
-    return [one[0], one[1], one[2]];
+    return [one[0], one[1], one[2], one[3]];
 };
 
 /** Create imageData from an Image, optionally resizing it.

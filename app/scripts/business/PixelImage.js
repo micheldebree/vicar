@@ -114,7 +114,12 @@ PixelImage.prototype.coordsToindex = function (x, y) {
 PixelImage.prototype.peek = function (x, y) {
     'use strict';
     var i = this.coordsToindex(x, y);
-    return [this.imageData.data[i], this.imageData.data[i + 1], this.imageData.data[i + 2]];
+    return [
+        this.imageData.data[i], 
+        this.imageData.data[i + 1],
+        this.imageData.data[i + 2],
+        this.imageData.data[i + 3]
+    ];
 };
 
 /** 
@@ -128,7 +133,7 @@ PixelImage.prototype.poke = function (x, y, pixel) {
         this.imageData.data[i] = pixel[0];
         this.imageData.data[i + 1] = pixel[1];
         this.imageData.data[i + 2] = pixel[2];
-        this.imageData.data[i + 3] = 0xff;
+        this.imageData.data[i + 3] = pixel[3];
     }
 };
 
