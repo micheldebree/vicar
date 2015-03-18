@@ -143,6 +143,29 @@ angular.module('vicarApp').factory('c64izerService', function () {
                     'pixelHeight': 2,
                     'width': 160
                 }
+            }, {
+                key: 'ZX Spectrum',
+                value: {
+                    'name': 'ZX Spectrum',
+                    'palette': [
+                        [0x00, 0x00, 0x00],
+                        [0xcd, 0x00, 0x00],
+                        [0xcd, 0x00, 0xcd],
+                        [0x00, 0xcd, 0x00],
+                        [0x00, 0xcd, 0xcd],
+                        [0xcd, 0xcd, 0x00],
+                        [0xcd, 0xcd, 0xcd],
+                        [0xff, 0x00, 0x00],
+                        [0xff, 0x00, 0xff],
+                        [0x00, 0xff, 0x00],
+                        [0x00, 0xff, 0xff],
+                        [0xff, 0xff, 0x00],
+                        [0xff, 0xff, 0xff]
+                    ],
+                    'pixelWidth': 1,
+                    'pixelHeight': 1,
+                    'width': 256
+                }
             }];
         }
     };
