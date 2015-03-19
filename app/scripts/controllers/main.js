@@ -9,21 +9,35 @@
 angular.module('vicarApp')
     .controller('MainCtrl', ['$scope', 'c64izerService', function ($scope, c64izerService) {
         'use strict';
+        
+        var canvas = document.getElementById('Canvas0'),
+            context = canvas.getContext('2d'),
+            img = new Image();
+        
+        img.src = 'images/rainbowgirl.jpg';
 
         $scope.dithers = c64izerService.getSupportedDithers();
         $scope.selectedDither = $scope.dithers[3];
-
+        $scope.$watch('selectedDither', function () {
+            $scope.convert();
+        });
+        
         $scope.profiles = c64izerService.getSupportedProfiles();
         $scope.selectedProfile = $scope.profiles[0];
-
-        var img = new Image();
-        img.src = 'images/rainbowgirl.jpg';
-
+        $scope.$watch('selectedProfile', function () {
+            $scope.convert();
+        });
+        
+        $scope.selectDither = function (dither) {
+            $scope.selectedDither = dither;
+        };
+        
+        $scope.selectProfile = function (profile) {
+            $scope.selectedProfile = profile;
+        };
+        
         $scope.convert = function () {
-
-            var canvas = document.getElementById('Canvas0'),
-                context = canvas.getContext('2d');
-
+            
             c64izerService.convert(
                 img,
                 $scope.selectedProfile.value,
@@ -32,9 +46,10 @@ angular.module('vicarApp')
                     canvas.width = pixelImage.getWidth();
                     canvas.height = pixelImage.getHeight();
                     context.putImageData(pixelImage.imageData, 0, 0);
+                    //$scope.imageUrl = canvas.toDataURL();
+                    //$scope.$apply();
                 }
             );
-
         };
 
         $scope.upload = function () {
@@ -44,7 +59,6 @@ angular.module('vicarApp')
                     $scope.convert();
                 };
             }
-
         };
 
         $scope.$watch('files', function () {

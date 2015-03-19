@@ -7,11 +7,7 @@
  * Controller of the vicarApp
  */
 angular.module('vicarApp')
-      .controller('AboutCtrl', function ($scope) {
+      .controller('AboutCtrl', function () {
         'use strict';
-        $scope.awesomeThings = [
-            'HTML5 Boilerplate',
-            'AngularJS',
-            'Karma'
-        ];
+        
     });

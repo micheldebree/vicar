@@ -4,15 +4,25 @@
         accept="image/*">
     <canvas id="Canvas0" width="320" height="200"></canvas>  
 </div>
-<p>Drag and drop or click on image to change.</p>
-<p>Style: <select ng-model="selectedProfile" 
-            ng-options="profile.key for profile in profiles" 
-            ng-change="convert()">
-    </select>
-</p>
-<p>
-    Dithering: <select ng-model="selectedDither" 
-            ng-options="dither.key for dither in dithers" 
-            ng-change="convert()">
-    </select>
-</p>
+
+
+
+<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+<div class="btn-group" role="group" aria-label="...">
+  <button data-ng-repeat="profile in profiles"
+          ng-click="selectProfile(profile)" 
+          type="button" 
+          class="btn btn-default btn-sm" 
+          ng-class="{'active' : profile == selectedProfile}">{{profile.key}}</button>
+</div>
+<br/>
+<span class="glyphicon glyphicon-th" aria-hidden="true"></span>
+<div class="btn-group" role="group" aria-label="...">
+  <button data-ng-repeat="dither in dithers"
+          ng-click="selectDither(dither)" 
+          type="button" 
+          class="btn btn-default btn-sm" 
+          ng-class="{'active' : dither == selectedDither}">{{dither.key}}</button>
+</div>
+
+
