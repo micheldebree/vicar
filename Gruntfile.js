@@ -35,7 +35,7 @@ module.exports = function (grunt) {
         nodewebkit: {
             options: {
                 platforms: ['linux64'],
-                buildDir: './webkitbuilds', // Where the build version of my node-webkit app is saved
+                buildDir: './webkitbuilds' // Where the build version of my node-webkit app is saved
             },
             src: ['./**/*'] // Your node-webkit app
         },

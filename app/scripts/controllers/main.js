@@ -15,15 +15,15 @@ angular.module('vicarApp')
 
         $scope.profiles = c64izerService.getSupportedProfiles();
         $scope.selectedProfile = $scope.profiles[0];
-        
+
         var img = new Image();
         img.src = 'images/rainbowgirl.jpg';
-    
+
         $scope.convert = function () {
-           
+
             var canvas = document.getElementById('Canvas0'),
                 context = canvas.getContext('2d');
-            
+
             c64izerService.convert(
                 img,
                 $scope.selectedProfile.value,
@@ -36,7 +36,7 @@ angular.module('vicarApp')
             );
 
         };
-    
+
         $scope.upload = function () {
             if (typeof $scope.files !== 'undefined' && $scope.files.length === 1) {
                 img.src = URL.createObjectURL($scope.files[0]);
@@ -44,13 +44,13 @@ angular.module('vicarApp')
                     $scope.convert();
                 };
             }
-            
+
         };
-    
+
         $scope.$watch('files', function () {
             $scope.upload();
         });
-    
+
         $scope.convert();
-    
+
     }]);

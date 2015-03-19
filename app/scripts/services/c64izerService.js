@@ -1,24 +1,24 @@
-/*global angular, Remapper, PixelImage, Palette, PeptoPalette */
+/*global angular, Remapper, PixelImage, Palette*/
 angular.module('vicarApp').factory('c64izerService', function () {
     'use strict';
-    
+
     return {
 
         convert: function (img, profile, dither, success) {
-        
+
             var image = new PixelImage(),
                 remapper = new Remapper();
 
-             // set the palette
+            // set the palette
             remapper.palette = new Palette();
             remapper.palette.pixels = profile.palette;
-            
+
             // set the ordered dithering algorithm
             remapper.dither = dither;
-            
+
             remapper.pixelWidth = profile.pixelWidth;
             remapper.pixelHeight = profile.pixelHeight;
-          
+
             image.grab(img, function () {
 
                 // remap to c64 palette
@@ -69,7 +69,24 @@ angular.module('vicarApp').factory('c64izerService', function () {
                 key: 'Commodore 64 multicolor',
                 value: {
                     'name': 'Commodore 64 multicolor',
-                    'palette': new PeptoPalette().pixels,
+                    'palette': [
+                        [0, 0, 0, 0xff], // black
+                        [0xff, 0xff, 0xff], // white
+                        [0x68, 0x37, 0x2b], //red
+                        [0x70, 0xa4, 0xb2], //cyan
+                        [0x6f, 0x3d, 0x86], //purple
+                        [0x58, 0x8d, 0x43], //green
+                        [0x35, 0x28, 0x79], //blue
+                        [0xb8, 0xc7, 0x6f], //yellow
+                        [0x6f, 0x4f, 0x25], //orange
+                        [0x43, 0x39, 0x00], //brown
+                        [0x9a, 0x67, 0x59], //light red
+                        [0x44, 0x44, 0x44], //dark gray
+                        [0x6c, 0x6c, 0x6c], //medium gray
+                        [0x9a, 0xd2, 0x84], //light green
+                        [0x6c, 0x5e, 0xb5], //light blue
+                        [0x95, 0x95, 0x95] //green
+                    ],
                     'pixelWidth': 2,
                     'pixelHeight': 1,
                     'width': 160

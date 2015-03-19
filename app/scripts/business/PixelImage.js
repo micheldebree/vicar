@@ -115,7 +115,7 @@ PixelImage.prototype.peek = function (x, y) {
     'use strict';
     var i = this.coordsToindex(x, y);
     return [
-        this.imageData.data[i], 
+        this.imageData.data[i],
         this.imageData.data[i + 1],
         this.imageData.data[i + 2],
         this.imageData.data[i + 3]

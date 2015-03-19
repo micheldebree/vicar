@@ -38,13 +38,13 @@ PixelCalculator.clone = function (one) {
  */
 PixelCalculator.getImageData = function (img, w, h) {
     'use strict';
-        
+
     var canvas = document.createElement('canvas'),
         context = canvas.getContext('2d');
-    
+
     w = typeof w !== 'undefined' ? w : img.width;
     h = typeof h !== 'undefined' ? h : img.height;
-        
+
     canvas.width = w;
     canvas.height = h;
 
@@ -53,5 +53,3 @@ PixelCalculator.getImageData = function (img, w, h) {
     return context.getImageData(0, 0, w, h);
 
 };
-
-
