@@ -10,11 +10,10 @@ angular.module('vicarApp')
     .controller('MainCtrl', ['$scope', 'c64izerService', function ($scope, c64izerService) {
         'use strict';
         
-        var canvas = document.getElementById('Canvas0'),
-            context = canvas.getContext('2d'),
-            img = new Image();
-        
+        var img = new Image();
         img.src = 'images/rainbowgirl.jpg';
+        
+        $scope.thumbnails = [];
 
         $scope.dithers = c64izerService.getSupportedDithers();
         $scope.selectedDither = $scope.dithers[3];
@@ -36,6 +35,18 @@ angular.module('vicarApp')
             $scope.selectedProfile = profile;
         };
         
+        function makeThumbnail(img, profile) {
+            c64izerService.convert(
+                img,
+                profile,
+                $scope.selectedDither.value,
+                function (pixelImage) {
+                    $scope.thumbnails.push(pixelImage);
+                    $scope.$apply();
+                }
+            );
+        }
+        
         $scope.convert = function () {
             
             c64izerService.convert(
@@ -43,13 +54,13 @@ angular.module('vicarApp')
                 $scope.selectedProfile.value,
                 $scope.selectedDither.value,
                 function (pixelImage) {
-                    canvas.width = pixelImage.getWidth();
-                    canvas.height = pixelImage.getHeight();
-                    context.putImageData(pixelImage.imageData, 0, 0);
-                    //$scope.imageUrl = canvas.toDataURL();
-                    //$scope.$apply();
+                    $scope.mainImage = pixelImage;
+                    $scope.$apply();
                 }
             );
+            
+            //makeThumbnail(img, $scope.profiles[1].value);
+            
         };
 
         $scope.upload = function () {

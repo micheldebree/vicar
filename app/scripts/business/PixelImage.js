@@ -50,18 +50,21 @@ function PixelImage() {
 }
 
 /** Create an Image object */
-PixelImage.prototype.toImage = function () {
+PixelImage.prototype.toSrcUrl = function () {
     'use strict';
-    var canvas = document.createElement('canvas'),
-        context = canvas.getContext('2d'),
-        result = new Image();
+    
+    if (this.isReady()) {
+        var canvas = document.createElement('canvas'),
+            context = canvas.getContext('2d');
 
-    canvas.width = this.getWidth();
-    canvas.height = this.getHeight();
-    context.putImageData(this.imageData, 0, 0);
+        canvas.width = this.getWidth();
+        canvas.height = this.getHeight();
+        context.putImageData(this.imageData, 0, 0);
 
-    result.src = canvas.toDataURL();
-    return result;
+        return canvas.toDataURL();
+    } else {
+        return 'images/rainbowgirl.jpg';
+    }
         
 };
 
