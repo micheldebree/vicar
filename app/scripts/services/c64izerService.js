@@ -4,10 +4,12 @@ angular.module('vicarApp').factory('c64izerService', function () {
 
     return {
 
-        convert: function (img, profile, dither, success) {
+        convert: function (img, profile, dither, success, width) {
 
             var image = new PixelImage(),
                 remapper = new Remapper();
+            
+            width = typeof width !== 'undefined' ? width : profile.width * profile.pixelWidth;
 
             // set the palette
             remapper.palette = new Palette();
@@ -28,7 +30,7 @@ angular.module('vicarApp').factory('c64izerService', function () {
                 if (typeof success === 'function') {
                     success(image);
                 }
-            }, profile.width * profile.pixelWidth);
+            }, width);
 
         },
 
@@ -181,7 +183,7 @@ angular.module('vicarApp').factory('c64izerService', function () {
                     ],
                     'pixelWidth': 1,
                     'pixelHeight': 1,
-                    'width': 256
+                    'width': 320
                 }
             }];
         }

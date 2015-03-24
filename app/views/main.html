@@ -2,25 +2,10 @@
 <div id="image" ng-file-drop ng-file-select ng-model="files" class="drop-box" 
         drag-over-class="dragover" ng-multiple="false" allow-dir="false"
         accept="image/*">
-    <img pixel-image="mainImage"/>
+    <img pixel-image="mainImage" width="320"/>
 </div>
 
-<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
-<div class="btn-group" role="group" aria-label="...">
-  <button data-ng-repeat="profile in profiles"
-          ng-click="selectProfile(profile)" 
-          type="button" 
-          class="btn btn-default btn-sm" 
-          ng-class="{'active' : profile == selectedProfile}">{{profile.key}}</button>
-</div>
-<br/>
-<span class="glyphicon glyphicon-th" aria-hidden="true"></span>
-<div class="btn-group" role="group" aria-label="...">
-  <button data-ng-repeat="dither in dithers"
-          ng-click="selectDither(dither)" 
-          type="button" 
-          class="btn btn-default btn-sm" 
-          ng-class="{'active' : dither == selectedDither}">{{dither.key}}</button>
-</div>
-
-
+<img ng-repeat="profile in profiles" 
+     ng-click="selectProfile(profile)" 
+     pixel-image="thumbnails[$index]" 
+     width="{{320 / profiles.length}}"/>

@@ -41,7 +41,17 @@ function PixelImage() {
         img = imgParam;
 
         if (!img.complete) {
-            img.onload = grabData;
+            
+            // stack multiple onload functions onto the onload event
+            var currentOnLoad = img.onload;
+            if (typeof currentOnLoad !== 'function') {
+                img.onload = grabData;
+            } else {
+                img.onload = function () {
+                    currentOnLoad();
+                    grabData();
+                };
+            }
         } else {
             grabData();
         }

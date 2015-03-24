@@ -38,17 +38,29 @@ angular.module('vicarApp')
         function makeThumbnail(img, profile) {
             c64izerService.convert(
                 img,
-                profile,
+                profile.value,
                 $scope.selectedDither.value,
                 function (pixelImage) {
                     $scope.thumbnails.push(pixelImage);
                     $scope.$apply();
-                }
+                },
+                320 / $scope.profiles.length
             );
         }
         
+        $scope.imageChanged = function () {
+            var i;
+            $scope.mainImage = undefined;
+            $scope.convert();
+            // generate thumbnails for all profiles
+            for (i = 0; i < $scope.profiles.length; i += 1) {
+                makeThumbnail(img, $scope.profiles[i]);
+            }
+        };
+        
         $scope.convert = function () {
             
+            // generate main image
             c64izerService.convert(
                 img,
                 $scope.selectedProfile.value,
@@ -59,15 +71,13 @@ angular.module('vicarApp')
                 }
             );
             
-            //makeThumbnail(img, $scope.profiles[1].value);
-            
         };
 
         $scope.upload = function () {
             if (typeof $scope.files !== 'undefined' && $scope.files.length === 1) {
                 img.src = URL.createObjectURL($scope.files[0]);
                 img.onload = function () {
-                    $scope.convert();
+                    $scope.imageChanged();
                 };
             }
         };
@@ -76,6 +86,6 @@ angular.module('vicarApp')
             $scope.upload();
         });
 
-        $scope.convert();
+        $scope.imageChanged();
 
     }]);
