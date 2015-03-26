@@ -4,52 +4,66 @@
  * Remapping of a pixel is done to the nearest pixel in the palette according
  * to euclidian distance.
  */
-function Remapper(palette) {
+function Remapper() {
     'use strict';
     
-    this.pixelWidth = 1;
-    this.pixelHeight = 1;
-    this.palette = palette;
-    
+    var pixelWidth = 1,
+        pixelHeight = 1,
     // an n x n matrix used for ordered dithering
-    this.dither = [0];
+        dither = [0],
+        palette;
     
-    var self = this,
-        map = function (pixel, offset) {
+    function map(pixel, offset) {
    
-            var i = self.palette.pixels.length,
-                d,
-                minVal,
-                minI = 0,
-                other,
-                mappedPixel;
+        var i,
+            d,
+            minVal,
+            minI = 0,
+            other,
+            mappedPixel;
 
-            offset = offset !== undefined ? offset : 0;
-            
-            // determine closest pixel in palette (ignoring alpha)
-            for (i = 0; i < self.palette.pixels.length; i += 1) {
-                other = self.palette.pixels[i];
-                
-                // calculate distance
-                d = Math.sqrt(
-                    Math.pow(pixel[0] - other[0] - offset, 2) +
-                        Math.pow(pixel[1] - other[1] - offset, 2) +
-                        Math.pow(pixel[2] - other[2] - offset, 2)
-                );
+        offset = offset !== undefined ? offset : 0;
 
-                if (minVal === undefined || d < minVal) {
-                    minVal = d;
-                    minI = i;
-                }
+        // determine closest pixel in palette (ignoring alpha)
+        for (i = 0; i < palette.pixels.length; i += 1) {
+            other = palette.pixels[i];
+
+            // calculate distance
+            d = Math.sqrt(
+                Math.pow(pixel[0] - other[0] - offset, 2) +
+                    Math.pow(pixel[1] - other[1] - offset, 2) +
+                    Math.pow(pixel[2] - other[2] - offset, 2)
+            );
+
+            if (minVal === undefined || d < minVal) {
+                minVal = d;
+                minI = i;
             }
-            mappedPixel = self.palette.pixels[minI];
-            
-            // preserve alpha channel of original pixel
-            mappedPixel[3] = pixel[3];
-            return mappedPixel;
+        }
+        mappedPixel = palette.pixels[minI];
 
-        };
-  
+        // preserve alpha channel of original pixel
+        mappedPixel[3] = pixel[3];
+        return mappedPixel;
+
+    }
+    
+    function setPalette(p) {
+        palette = p;
+    }
+    
+    function setPixelWidth(w) {
+        pixelWidth = w;
+    }
+    
+    function setPixelHeight(h) {
+        pixelHeight = h;
+    }
+    
+    function setDither(d) {
+        dither = d;
+    }
+    
     /**
      * Remap a pixel image
      * @param {PixelImage} pixelImage - The image to remap
@@ -58,7 +72,7 @@ function Remapper(palette) {
      * @param {number} [w] - Width of area to remap
      * @param {number} [h] - Height of area to remap
      */
-    this.remap = function (pixelImage, x, y, w, h) {
+    function remap(pixelImage, x, y, w, h) {
 
         var xi,
             yi,
@@ -74,17 +88,17 @@ function Remapper(palette) {
         w = w !== undefined ? w : pixelImage.getWidth() - x;
         h = h !== undefined ? h : pixelImage.getHeight() - y;
 
-        for (yi = y; yi < y + h; yi += this.pixelHeight) {
-            for (xi = x; xi < x + w; xi += this.pixelWidth) {
+        for (yi = y; yi < y + h; yi += pixelHeight) {
+            for (xi = x; xi < x + w; xi += pixelWidth) {
                 pixel = pixelImage.peek(xi, yi);
 
-                ox = (xi / this.pixelWidth) % self.dither.length;
-                oy = (yi / this.pixelHeight) % self.dither.length;
+                ox = (xi / pixelWidth) % dither.length;
+                oy = (yi / pixelHeight) % dither.length;
 
-                mappedPixel = map(pixel, self.dither[oy][ox]);
-                
-                for (py = 0; py < this.pixelHeight; py += 1) {
-                    for (px = 0; px < this.pixelWidth; px += 1) {
+                mappedPixel = map(pixel, dither[oy][ox]);
+
+                for (py = 0; py < pixelHeight; py += 1) {
+                    for (px = 0; px < pixelWidth; px += 1) {
                         pixelImage.poke(xi + px, yi + py, mappedPixel);
                     }
                 }
@@ -92,6 +106,15 @@ function Remapper(palette) {
         }
         return pixelImage;
 
+    }
+    
+    return {
+        setPalette: setPalette,
+        setPixelWidth: setPixelWidth,
+        setPixelHeight: setPixelHeight,
+        setDither: setDither,
+        remap: remap
     };
+    
 }
 

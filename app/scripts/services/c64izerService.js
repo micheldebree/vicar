@@ -4,22 +4,31 @@ angular.module('vicarApp').factory('c64izerService', function () {
 
     return {
 
+        /**
+         * Convert an image.
+         * @param {Image} img - The image to convert
+         * @param {Object} profile - The profile to use for conversion
+         * @param {Array} dither - Matrix to use for ordered dithering
+         * @param {Function} success - Success callback, takes the resulting PixelImage as parameter.
+         * @param [number] width override - Overrides the width from profile.
+         */
         convert: function (img, profile, dither, success, width) {
 
             var image = new PixelImage(),
-                remapper = new Remapper();
+                remapper = new Remapper(),
+                palette = new Palette();
             
             width = typeof width !== 'undefined' ? width : profile.width * profile.pixelWidth;
 
             // set the palette
-            remapper.palette = new Palette();
-            remapper.palette.pixels = profile.palette;
+            palette.pixels = profile.palette;
+            remapper.setPalette(palette);
 
             // set the ordered dithering algorithm
-            remapper.dither = dither;
+            remapper.setDither(dither);
 
-            remapper.pixelWidth = profile.pixelWidth;
-            remapper.pixelHeight = profile.pixelHeight;
+            remapper.setPixelWidth(profile.pixelWidth);
+            remapper.setPixelHeight(profile.pixelHeight);
 
             image.grab(img, function () {
 
