@@ -42,7 +42,6 @@ angular.module('vicarApp')
                 $scope.selectedDither.value,
                 function (pixelImage) {
                     $scope.thumbnails.push(pixelImage);
-                    $scope.$apply();
                 },
                 320 / $scope.profiles.length
             );
@@ -50,7 +49,7 @@ angular.module('vicarApp')
         
         $scope.imageChanged = function () {
             var i;
-            $scope.mainImage = undefined;
+            $scope.thumbnails = [];
             $scope.convert();
             // generate thumbnails for all profiles
             for (i = 0; i < $scope.profiles.length; i += 1) {
@@ -59,7 +58,7 @@ angular.module('vicarApp')
         };
         
         $scope.convert = function () {
-            
+            $scope.mainImage = undefined;
             // generate main image
             c64izerService.convert(
                 img,

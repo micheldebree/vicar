@@ -1,4 +1,4 @@
-/*global angular, Remapper, PixelImage, Palette*/
+/*global angular, Remapper, PixelImage */
 angular.module('vicarApp').factory('c64izerService', function () {
     'use strict';
 
@@ -15,18 +15,12 @@ angular.module('vicarApp').factory('c64izerService', function () {
         convert: function (img, profile, dither, success, width) {
 
             var image = new PixelImage(),
-                remapper = new Remapper(),
-                palette = new Palette();
+                remapper = new Remapper();
             
             width = typeof width !== 'undefined' ? width : profile.width * profile.pixelWidth;
 
-            // set the palette
-            palette.pixels = profile.palette;
-            remapper.setPalette(palette);
-
-            // set the ordered dithering algorithm
+            remapper.setPalette(profile.palette);
             remapper.setDither(dither);
-
             remapper.setPixelWidth(profile.pixelWidth);
             remapper.setPixelHeight(profile.pixelHeight);
 

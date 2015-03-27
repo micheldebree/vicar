@@ -99,7 +99,9 @@ function PixelImage() {
     
     /** 
      * Set the value for a particular pixel. 
-     * @param {Array} Pixel values [r, g, b, a]
+     * @param {number} x - x coordinate
+     * @param {number} y - y coordinate
+     * @param {Array] pixel - Pixel values [r, g, b, a]
      */
     function poke(x, y, pixel) {
         if (pixel !== undefined) {
@@ -126,8 +128,7 @@ function PixelImage() {
 
             return canvas.toDataURL();
         } else {
-            // TODO: use sensible default
-            return 'images/rainbowgirl.jpg';
+            return 'images/spiffygif_30x30.gif';
         }
         
     }

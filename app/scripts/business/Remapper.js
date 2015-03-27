@@ -9,8 +9,7 @@ function Remapper() {
     
     var pixelWidth = 1,
         pixelHeight = 1,
-    // an n x n matrix used for ordered dithering
-        dither = [0],
+        dither = [0], // an n x n matrix used for ordered dithering
         palette;
     
     function map(pixel, offset) {
@@ -25,8 +24,8 @@ function Remapper() {
         offset = offset !== undefined ? offset : 0;
 
         // determine closest pixel in palette (ignoring alpha)
-        for (i = 0; i < palette.pixels.length; i += 1) {
-            other = palette.pixels[i];
+        for (i = 0; i < palette.length; i += 1) {
+            other = palette[i];
 
             // calculate distance
             d = Math.sqrt(
@@ -40,7 +39,7 @@ function Remapper() {
                 minI = i;
             }
         }
-        mappedPixel = palette.pixels[minI];
+        mappedPixel = palette[minI];
 
         // preserve alpha channel of original pixel
         mappedPixel[3] = pixel[3];
