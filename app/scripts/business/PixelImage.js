@@ -80,7 +80,7 @@ function PixelImage() {
      */
     function coordsToindex(x, y) {
         var result = Math.floor(y) * (getWidth() << 2) + (x << 2);
-        return result < imageData.data.length ? result : 0;
+        return result < imageData.data.length ? result : undefined;
     }
     
     /** 
@@ -89,12 +89,16 @@ function PixelImage() {
      */
     function peek(x, y) {
         var i = coordsToindex(x, y);
-        return [
-            imageData.data[i],
-            imageData.data[i + 1],
-            imageData.data[i + 2],
-            imageData.data[i + 3]
-        ];
+        if (typeof i !== 'undefined') {
+            return [
+                imageData.data[i],
+                imageData.data[i + 1],
+                imageData.data[i + 2],
+                imageData.data[i + 3]
+            ];
+        } else {
+            return [0, 0, 0, 0];
+        }
     }
     
     /** 
@@ -106,10 +110,12 @@ function PixelImage() {
     function poke(x, y, pixel) {
         if (pixel !== undefined) {
             var i = coordsToindex(x, y);
-            imageData.data[i] = pixel[0];
-            imageData.data[i + 1] = pixel[1];
-            imageData.data[i + 2] = pixel[2];
-            imageData.data[i + 3] = pixel[3];
+            if (typeof i !== 'undefined') {
+                imageData.data[i] = pixel[0];
+                imageData.data[i + 1] = pixel[1];
+                imageData.data[i + 2] = pixel[2];
+                imageData.data[i + 3] = pixel[3];
+            }
         }
     }
     
@@ -133,13 +139,53 @@ function PixelImage() {
         
     }
     
+    function subtract(pixelImage) {
+        var x,
+            y,
+            thisPixel,
+            otherPixel;
+        for (y = 0; y < pixelImage.getHeight(); y += 1) {
+            for (x = 0; x < pixelImage.getWidth(); x += 1) {
+                thisPixel = peek(x, y);
+                otherPixel = pixelImage.peek(x, y);
+                if (otherPixel[3] > 0 && PixelCalculator.equals(thisPixel, otherPixel)) {
+                    poke(x, y, [0, 0, 0, 0]);
+                }
+            }
+        }
+    }
+    
+    function add(pixelImage) {
+        var x,
+            y,
+            thisPixel;
+        for (y = 0; y < getHeight(); y += 1) {
+            for (x = 0; x < getWidth(); x += 1) {
+                thisPixel = peek(x, y);
+              
+                if (thisPixel[3] === 0) {
+                    poke(x, y, pixelImage.peek(x, y));
+                }
+            }
+        }
+    }
+    
+    function init(w, h) {
+        var canvas = document.createElement('canvas'),
+            context = canvas.getContext('2d');
+        imageData = context.createImageData(w, h);
+    }
+    
     return {
         getWidth: getWidth,
         getHeight: getHeight,
         peek: peek,
         poke: poke,
         grab: grab,
-        toSrcUrl: toSrcUrl
+        toSrcUrl: toSrcUrl,
+        init: init,
+        subtract: subtract,
+        add: add
     };
     
 }

@@ -12,6 +12,12 @@ function Remapper() {
         dither = [0], // an n x n matrix used for ordered dithering
         palette;
     
+    /* 
+     * Map a pixel to the closest pixel in the palette.
+     * Alpha channel is not used but copied to the remapped pixel.
+     * @param {Array} pixel - the pixel to map ([r, g, b, a])
+     * @param {number} [offset] - an optional offset on each channel, used for dithering
+     */
     function map(pixel, offset) {
    
         var i,
@@ -59,6 +65,11 @@ function Remapper() {
         pixelHeight = h;
     }
     
+    /*
+     * Set an n x n matrix of pixel intensity offsets used for ordered dithering.
+     * [0] is no dithering.
+     * @param {Array} n x n array of offsets
+     */
     function setDither(d) {
         dither = d;
     }
