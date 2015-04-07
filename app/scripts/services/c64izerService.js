@@ -1,7 +1,23 @@
-/*global angular, Remapper, PixelImage */
+/*global angular, Remapper, PixelImage, ColorMap */
 angular.module('vicarApp').factory('c64izerService', function () {
     'use strict';
 
+    
+    function extractColorMaps(pixelImage) {
+    
+        var result = [],
+            colorMap;
+        
+        colorMap = new ColorMap(pixelImage, pixelImage.getWidth(), pixelImage.getHeight());
+        
+        pixelImage.subtract(colorMap.toPixelImage());
+        
+        result.push(colorMap);
+        
+        return result;
+        
+    }
+    
     return {
 
         /**
@@ -28,6 +44,18 @@ angular.module('vicarApp').factory('c64izerService', function () {
 
                 // remap to c64 palette
                 image = remapper.remap(image);
+                
+                // make a clone
+                var image2 = image.clone();
+                
+                // extract colorMaps
+                var colorMaps = extractColorMaps(image2);
+                
+                var reRemapper = new Remapper();
+                reRemapper.setColorMaps(colorMaps);
+                
+                reRemapper.remap(image);
+                
 
                 // call the success callback event
                 if (typeof success === 'function') {

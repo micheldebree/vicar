@@ -45,7 +45,7 @@ function Palette(pixels) {
         }
         
     }
-    
+     
     return {
         add: add,
         getMaxColor: getMaxColor

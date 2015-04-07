@@ -37,6 +37,7 @@ function Quantizer() {
                 
                 // determine the max color in this area
                 maxColor = getMaxColor(pixelImage, x, y, w, h);
+                
                 if (maxColor !== undefined) {
                     for (yi = 0; yi < h; yi += 1) {
                         for (xi = 0; xi < w; xi += 1) {

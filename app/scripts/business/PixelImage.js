@@ -2,14 +2,13 @@
 /*exported PixelImage*/
 /*jslint bitwise: true*/
 /** Create an image with access to individual pixels */
-function PixelImage() {
+function PixelImage(imageData) {
  
     'use strict';
    
     var img,
         callback,
-        resizeW,
-        imageData;
+        resizeW;
         
     function grabData() {
         var w = typeof resizeW !== 'undefined' ? resizeW : img.width,
@@ -139,6 +138,11 @@ function PixelImage() {
         
     }
     
+    /**
+     * Subtract another PixelImage:
+     * All the pixels that have the same color value in both images, will be
+     * made transparent in this image.
+     */
     function subtract(pixelImage) {
         var x,
             y,
@@ -148,22 +152,26 @@ function PixelImage() {
             for (x = 0; x < pixelImage.getWidth(); x += 1) {
                 thisPixel = peek(x, y);
                 otherPixel = pixelImage.peek(x, y);
-                if (otherPixel[3] > 0 && PixelCalculator.equals(thisPixel, otherPixel)) {
-                    poke(x, y, [0, 0, 0, 0]);
+                if (!PixelCalculator.isEmpty(otherPixel) && PixelCalculator.equals(thisPixel, otherPixel)) {
+                    poke(x, y, PixelCalculator.emptyPixel);
                 }
             }
         }
     }
     
+    /**
+     * Add another PixelImage:
+     * All the pixels that are transparent in this image will be replaced.
+     * with corresponding pixels from the other image.
+     */
     function add(pixelImage) {
         var x,
             y,
             thisPixel;
+        
         for (y = 0; y < getHeight(); y += 1) {
             for (x = 0; x < getWidth(); x += 1) {
-                thisPixel = peek(x, y);
-              
-                if (thisPixel[3] === 0) {
+                if (PixelCalculator.isEmpty(peek(x, y))) {
                     poke(x, y, pixelImage.peek(x, y));
                 }
             }
@@ -176,6 +184,10 @@ function PixelImage() {
         imageData = context.createImageData(w, h);
     }
     
+    function clone() {
+        return new PixelImage(PixelCalculator.cloneImageData(imageData));
+    }
+    
     return {
         getWidth: getWidth,
         getHeight: getHeight,
@@ -185,7 +197,8 @@ function PixelImage() {
         toSrcUrl: toSrcUrl,
         init: init,
         subtract: subtract,
-        add: add
+        add: add,
+        clone: clone
     };
     
 }

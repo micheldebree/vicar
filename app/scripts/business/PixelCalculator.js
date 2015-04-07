@@ -1,3 +1,6 @@
+/**
+ * Singleton utility for calculations involving pixels and imagedata
+ */
 var PixelCalculator = {};
 
 PixelCalculator.add = function (one, other) {
@@ -31,6 +34,13 @@ PixelCalculator.clone = function (one) {
     return [one[0], one[1], one[2], one[3]];
 };
 
+PixelCalculator.isEmpty = function (pixel) {
+    'use strict';
+    return pixel[3] < 1;
+};
+
+PixelCalculator.emptyPixel = [0, 0, 0, 0];
+
 /** Create imageData from an Image, optionally resizing it.
  * @param {Image} img - HTML5 Image object to get the image data from.
  * @param {number} [w] - Width to rescale image to.
@@ -52,4 +62,22 @@ PixelCalculator.getImageData = function (img, w, h) {
 
     return context.getImageData(0, 0, w, h);
 
+};
+
+PixelCalculator.cloneImageData = function (sourceImageData) {
+    'use strict';
+    
+    if (sourceImageData === undefined) {
+        return undefined;
+    }
+    
+    var canvas = document.createElement('canvas'),
+        context = canvas.getContext('2d');
+    
+    canvas.width = sourceImageData.width;
+    canvas.height = sourceImageData.height;
+    
+    context.putImageData(sourceImageData, 0, 0);
+    return context.getImageData(0, 0, canvas.width, canvas.height);
+    
 };

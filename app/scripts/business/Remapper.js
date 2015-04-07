@@ -1,3 +1,4 @@
+/*global PixelCalculator */
 /*exported Remapper*/
 /**
  * Remaps a PixelImage to use only colors from a specified palette
@@ -10,7 +11,8 @@ function Remapper() {
     var pixelWidth = 1,
         pixelHeight = 1,
         dither = [0], // an n x n matrix used for ordered dithering
-        palette;
+        palette,
+        colorMaps;
     
     /* 
      * Map a pixel to the closest pixel in the palette.
@@ -18,7 +20,7 @@ function Remapper() {
      * @param {Array} pixel - the pixel to map ([r, g, b, a])
      * @param {number} [offset] - an optional offset on each channel, used for dithering
      */
-    function map(pixel, offset) {
+    function map(pixel, offset, palette) {
    
         var i,
             d,
@@ -75,6 +77,23 @@ function Remapper() {
     }
     
     /**
+     * Get a palette for a certain pixel from a set of color maps.
+     */
+    function toPalette(x, y) {
+        var i,
+            result = [],
+            pixel;
+        for (i = 0; i < colorMaps.length; i += 1) {
+            pixel = colorMaps[i].getColor(x, y);
+            
+            if (!PixelCalculator.isEmpty(pixel)) {
+                result.push(pixel);
+            }
+        }
+        return result;
+    }
+    
+    /**
      * Remap a pixel image
      * @param {PixelImage} pixelImage - The image to remap
      * @param {number} [x=0] - X-coordinate of area to remap
@@ -91,7 +110,8 @@ function Remapper() {
             pixel,
             mappedPixel,
             ox,
-            oy;
+            oy,
+            palette2;
 
         x = x !== undefined ? x : 0;
         y = y !== undefined ? y : 0;
@@ -105,7 +125,14 @@ function Remapper() {
                 ox = (xi / pixelWidth) % dither.length;
                 oy = (yi / pixelHeight) % dither.length;
 
-                mappedPixel = map(pixel, dither[oy][ox]);
+                if (colorMaps !== undefined) {
+                    palette2 = toPalette(colorMaps);
+                } else {
+                    palette2 = palette;
+                }
+                
+                
+                mappedPixel = map(pixel, dither[oy][ox], palette2);
 
                 for (py = 0; py < pixelHeight; py += 1) {
                     for (px = 0; px < pixelWidth; px += 1) {
@@ -118,12 +145,19 @@ function Remapper() {
 
     }
     
+   
+    
+    function setColorMaps(colorMapsValue) {
+        colorMaps = colorMapsValue;
+    }
+    
     return {
         setPalette: setPalette,
         setPixelWidth: setPixelWidth,
         setPixelHeight: setPixelHeight,
         setDither: setDither,
-        remap: remap
+        remap: remap,
+        setColorMaps: setColorMaps
     };
     
 }
