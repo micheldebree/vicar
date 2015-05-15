@@ -50,7 +50,9 @@ function Remapper() {
         mappedPixel = palette[minI];
 
         // preserve alpha channel of original pixel
-        mappedPixel[3] = pixel[3];
+        if (mappedPixel !== undefined) {
+            mappedPixel[3] = pixel[3];
+        }
         return mappedPixel;
 
     }
@@ -125,8 +127,9 @@ function Remapper() {
                 ox = (xi / pixelWidth) % dither.length;
                 oy = (yi / pixelHeight) % dither.length;
 
+                // use palette from a set of colormaps, or just a set palette
                 if (colorMaps !== undefined) {
-                    palette2 = toPalette(colorMaps);
+                    palette2 = toPalette(xi, yi);
                 } else {
                     palette2 = palette;
                 }

@@ -2,24 +2,36 @@
 angular.module('vicarApp').factory('c64izerService', function () {
     'use strict';
 
+    function extractColorMap(pixelImage, resX, resY) {
+        var colorMap = new ColorMap(pixelImage, resX, resY);
+        pixelImage.subtract(colorMap.toPixelImage());
+        return colorMap;
+    }
     
     function extractColorMaps(pixelImage) {
     
         var result = [],
-            colorMap;
+            colorMap,
+            i;
         
-        colorMap = new ColorMap(pixelImage, pixelImage.getWidth(), pixelImage.getHeight());
-        
-        pixelImage.subtract(colorMap.toPixelImage());
-        
+        colorMap = extractColorMap(pixelImage, pixelImage.getWidth(), pixelImage.getHeight());
         result.push(colorMap);
+        
+        for (i = 0; i < 3; i += 1) {
+            colorMap =  extractColorMap(pixelImage, 8, 8);
+            result.push(colorMap);
+        }
         
         return result;
         
     }
     
+  
+    
     return {
 
+        extractColorMap: extractColorMap,
+        
         /**
          * Convert an image.
          * @param {Image} img - The image to convert
@@ -36,25 +48,29 @@ angular.module('vicarApp').factory('c64izerService', function () {
             width = typeof width !== 'undefined' ? width : profile.width * profile.pixelWidth;
 
             remapper.setPalette(profile.palette);
-            remapper.setDither(dither);
+            //remapper.setDither(dither);
             remapper.setPixelWidth(profile.pixelWidth);
             remapper.setPixelHeight(profile.pixelHeight);
 
             image.grab(img, function () {
 
-                // remap to c64 palette
-                image = remapper.remap(image);
-                
                 // make a clone
-                var image2 = image.clone();
+                var image2 = image.clone(),
+                    colorMaps,
+                    reRemapper = new Remapper();
                 
-                // extract colorMaps
-                var colorMaps = extractColorMaps(image2);
+                // remap to palette
+                image = remapper.remap(image);
+             
                 
-                var reRemapper = new Remapper();
-                reRemapper.setColorMaps(colorMaps);
+                // extract colorMaps from the remapped image
+                //colorMaps = extractColorMaps(image);
                 
-                reRemapper.remap(image);
+                // remap original using color maps
+                   
+                
+                //reRemapper.setColorMaps(colorMaps);
+                //reRemapper.remap(image2);
                 
 
                 // call the success callback event

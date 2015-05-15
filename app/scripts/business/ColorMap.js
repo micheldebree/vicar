@@ -2,6 +2,7 @@
 /*exported ColorMap*/
 /**
  * Maps x, y coordinates to a pixel value.
+ * The map has a certain resolution specifying the size of an area of the same color.
  * @param {PixelImage} pixelImage - Image to extract the color map from.
  * @param {number} resX - Number of horizontal pixels in color areas.
  * @param {number} resY - Number of vertical pixels in color areas.
@@ -11,6 +12,9 @@ function ColorMap(pixelImage, resX, resY) {
     
     var pixels = [];
     
+    /**
+     * Add a pixel to the color map. Affects the whole area.
+     */
     function add(x, y, pixel) {
         
         var rx = Math.floor(x / resX),
@@ -27,11 +31,18 @@ function ColorMap(pixelImage, resX, resY) {
     function getColor(x, y) {
         
         var mx = Math.floor(x / resX),
-            my = Math.floor(y / resY);
+            my = Math.floor(y / resY),
+            result;
         
         if (mx < pixels.length) {
             if (my < pixels[mx].length) {
-                return pixels[mx][my];
+                result = pixels[mx][my];
+                // TODO: this should never be undefined..
+                if (result !== undefined) {
+                    return result;
+                } else {
+                    return PixelCalculator.emptyPixel;
+                }
             }
         } else {
             return PixelCalculator.emptyPixel;
@@ -40,20 +51,25 @@ function ColorMap(pixelImage, resX, resY) {
       
     }
     
+    /**
+     * Gets the maximum color for an area in the image.
+     * @param {number} x - x coordinate for upper left of the area
+     * @param {number} y - y coordinate for upper left of the area
+     * @returns {Array} The pixel (color), or undefined if the palette is empty.
+     */
     function getMaxColor(pixelImage, x, y) {
         var xi,
             yi,
-            pixel,
             palette = new Palette();
+        
+        // build up a palette with all the pixels in the area
         for (yi = 0; yi < resY; yi += 1) {
             for (xi = 0; xi < resX; xi += 1) {
-                pixel = pixelImage.peek(x + xi, y + yi);
-                if (!PixelCalculator.isEmpty(pixel)) {
-                    palette.add(pixel);
-                }
+                palette.add(pixelImage.peek(x + xi, y + yi));
             }
         }
         
+        // return the maximum color from the palette
         return palette.getMaxColor();
     }
     

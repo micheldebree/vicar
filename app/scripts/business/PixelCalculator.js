@@ -34,6 +34,10 @@ PixelCalculator.clone = function (one) {
     return [one[0], one[1], one[2], one[3]];
 };
 
+/**
+ * Is the pixel empty?
+ * An empty pixel is any pixel with total transparency.
+ */
 PixelCalculator.isEmpty = function (pixel) {
     'use strict';
     return pixel[3] < 1;
@@ -41,7 +45,8 @@ PixelCalculator.isEmpty = function (pixel) {
 
 PixelCalculator.emptyPixel = [0, 0, 0, 0];
 
-/** Create imageData from an Image, optionally resizing it.
+/** 
+ * Create imageData from an Image, optionally resizing it.
  * @param {Image} img - HTML5 Image object to get the image data from.
  * @param {number} [w] - Width to rescale image to.
  * @param {number} [h] - Height to rescale image to.:w
@@ -64,6 +69,9 @@ PixelCalculator.getImageData = function (img, w, h) {
 
 };
 
+/**
+ * Clone image data.
+ */
 PixelCalculator.cloneImageData = function (sourceImageData) {
     'use strict';
     

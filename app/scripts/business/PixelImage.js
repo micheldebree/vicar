@@ -75,7 +75,7 @@ function PixelImage(imageData) {
     
     /**
      * Convert x and y position in image to an index in the image data.
-     * @returns {number} index in the imagedata for the green channel.
+     * @returns {number} index in the imagedata for the first (red) channel.
      */
     function coordsToindex(x, y) {
         var result = Math.floor(y) * (getWidth() << 2) + (x << 2);
@@ -84,7 +84,7 @@ function PixelImage(imageData) {
     
     /** 
      * Get the value of a particular pixel.
-     * @returns {Array} Pixel values [r, g, b, a]
+     * @returns {Array} Pixel values [r, g, b, a], or an empty pixel if x and y are out of range.
      */
     function peek(x, y) {
         var i = coordsToindex(x, y);
@@ -96,7 +96,7 @@ function PixelImage(imageData) {
                 imageData.data[i + 3]
             ];
         } else {
-            return [0, 0, 0, 0];
+            return PixelCalculator.emptyPixel;
         }
     }
     
@@ -166,8 +166,7 @@ function PixelImage(imageData) {
      */
     function add(pixelImage) {
         var x,
-            y,
-            thisPixel;
+            y;
         
         for (y = 0; y < getHeight(); y += 1) {
             for (x = 0; x < getWidth(); x += 1) {
