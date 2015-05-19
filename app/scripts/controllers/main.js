@@ -1,4 +1,4 @@
-/*global angular, URL */
+/*global angular, URL, ColorMap, Remapper */
 /**
  * @ngdoc function
  * @name workspaceApp.controller:MainCtrl
@@ -11,10 +11,7 @@ angular.module('vicarApp')
         'use strict';
         
         var img = new Image();
-            //quantizer = new Quantizer();
         img.src = 'images/rainbowgirl.jpg';
-        
-        $scope.thumbnails = [];
 
         $scope.dithers = c64izerService.getSupportedDithers();
         $scope.selectedDither = $scope.dithers[3];
@@ -36,32 +33,34 @@ angular.module('vicarApp')
             $scope.selectedProfile = profile;
         };
         
-        function makeThumbnail(img, profile) {
-            c64izerService.convert(
-                img,
-                profile.value,
-                $scope.selectedDither.value,
-                function (pixelImage) {
-                    $scope.thumbnails.push(pixelImage);
-                },
-                320 / $scope.profiles.length
-            );
-        }
-        
         $scope.imageChanged = function () {
             var i;
-            $scope.thumbnails = [];
             $scope.convert();
-            // generate thumbnails for all profiles
-            for (i = 0; i < $scope.profiles.length; i += 1) {
-                makeThumbnail(img, $scope.profiles[i]);
-            }
         };
         
         $scope.convert = function () {
             $scope.mainImage = undefined;
             // generate main image
             
+            var image = new PixelImage();
+            
+            image.grab(img, function () {
+                
+                $scope.mainImage = image;
+                $scope.$apply();
+                
+                var remapper = new Remapper();
+                remapper.setPalette($scope.selectedProfile.value.palette);
+                
+                
+                $scope.mainImage = remapper.remap(image);
+                
+                $scope.$apply();
+                
+                
+            }, 320);
+            
+            /*
             c64izerService.convert(
                 img,
                 $scope.selectedProfile.value,
@@ -70,37 +69,42 @@ angular.module('vicarApp')
                     $scope.mainImage = pixelImage;
                     $scope.testImage4 = pixelImage.clone();
                     
-                    var colorMap = new ColorMap(pixelImage, pixelImage.getWidth(), pixelImage.getHeight()),
+                    var colorMap = new ColorMap(pixelImage.getWidth(), pixelImage.getHeight()),
                         colorMaps = [],
                         remapper = new Remapper();
 //                    
-                      colorMaps.push(colorMap);
+                    colorMap.fromPixelImage(pixelImage);
+                    colorMaps.push(colorMap);
 //                    
-                      $scope.testImage = colorMap.toPixelImage();
-                      $scope.mainImage.subtract($scope.testImage);
+                    $scope.testImage = colorMap.toPixelImage();
+                    $scope.mainImage.subtract($scope.testImage);
 //
-                      colorMap = new ColorMap(pixelImage, 8, 8);
-                      colorMaps.push(colorMap);
-                      $scope.testImage1 = colorMap.toPixelImage();
-                      $scope.mainImage.subtract($scope.testImage1);
+                    colorMap = new ColorMap(8, 8);
+                    colorMap.fromPixelImage(pixelImage);
+                    colorMaps.push(colorMap);
+                    $scope.testImage1 = colorMap.toPixelImage();
+                    $scope.mainImage.subtract($scope.testImage1);
 //                    
-                      colorMap = new ColorMap(pixelImage, 8, 8);
-                      //colorMaps.push(colorMap);
-                      $scope.testImage2 = colorMap.toPixelImage();
-                      $scope.mainImage.subtract($scope.testImage2);
+                    colorMap = new ColorMap(8, 8);
+                    colorMap.fromPixelImage(pixelImage);
+                  //colorMaps.push(colorMap);
+                    $scope.testImage2 = colorMap.toPixelImage();
+                    $scope.mainImage.subtract($scope.testImage2);
 //                    
-                      colorMap = new ColorMap(pixelImage, 8, 8);
-                      //colorMaps.push(colorMap);
-                      $scope.testImage3 = colorMap.toPixelImage();
-                      $scope.mainImage.subtract($scope.testImage3);
-                    
-                      remapper.setColorMaps(colorMaps);
+                    colorMap = new ColorMap(8, 8);
+                    colorMap.fromPixelImage(pixelImage);
+                  //colorMaps.push(colorMap);
+                    $scope.testImage3 = colorMap.toPixelImage();
+                    $scope.mainImage.subtract($scope.testImage3);
+
+                    remapper.setColorMaps(colorMaps);
                     
                     //remapper.remap($scope.testImage4);
                     
                     $scope.$apply();
                 }
             );
+            */
             
         };
 

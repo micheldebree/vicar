@@ -113,13 +113,16 @@ function Remapper() {
             mappedPixel,
             ox,
             oy,
-            palette2;
+            palette2,
+            result = new PixelImage();
 
         x = x !== undefined ? x : 0;
         y = y !== undefined ? y : 0;
         w = w !== undefined ? w : pixelImage.getWidth() - x;
         h = h !== undefined ? h : pixelImage.getHeight() - y;
 
+        result.init(w, h);
+        
         for (yi = y; yi < y + h; yi += pixelHeight) {
             for (xi = x; xi < x + w; xi += pixelWidth) {
                 pixel = pixelImage.peek(xi, yi);
@@ -134,17 +137,16 @@ function Remapper() {
                     palette2 = palette;
                 }
                 
-                
                 mappedPixel = map(pixel, dither[oy][ox], palette2);
 
                 for (py = 0; py < pixelHeight; py += 1) {
                     for (px = 0; px < pixelWidth; px += 1) {
-                        pixelImage.poke(xi + px, yi + py, mappedPixel);
+                        result.poke(xi + px, yi + py, mappedPixel);
                     }
                 }
             }
         }
-        return pixelImage;
+        return result;
 
     }
     

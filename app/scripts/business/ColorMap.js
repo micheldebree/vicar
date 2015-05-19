@@ -6,19 +6,29 @@
  * @param {PixelImage} pixelImage - Image to extract the color map from.
  * @param {number} resX - Number of horizontal pixels in color areas.
  * @param {number} resY - Number of vertical pixels in color areas.
+ * @param [number] width - Width of the map in pixels
+ * @param [number] height - Height of the map in pixels
  */
-function ColorMap(pixelImage, resX, resY) {
+function ColorMap(resX, resY, width, height) {
     'use strict';
     
     var pixels = [];
     
+    function mapX(x) {
+        return Math.floor(x / resX);
+    }
+    
+    function mapY(y) {
+        return Math.floor(y / resY);
+    }
+    
     /**
-     * Add a pixel to the color map. Affects the whole area.
+     * Set an area to a certain color.
      */
     function add(x, y, pixel) {
         
-        var rx = Math.floor(x / resX),
-            ry = Math.floor(y / resY);
+        var rx = mapX(x),
+            ry = mapY(y);
 
         // add it to the color map
         if (pixels[rx] === undefined) {
@@ -28,10 +38,21 @@ function ColorMap(pixelImage, resX, resY) {
         
     }
     
+    function setColor(pixel) {
+        var x,
+            y;
+        
+        for (x = 0; x < width; x += resX) {
+            for (y = 0; y < height; y += resY) {
+                add(x, y, pixel);
+            }
+        }
+    }
+    
     function getColor(x, y) {
         
-        var mx = Math.floor(x / resX),
-            my = Math.floor(y / resY),
+        var mx = mapX(x),
+            my = mapY(y),
             result;
         
         if (mx < pixels.length) {
@@ -47,7 +68,6 @@ function ColorMap(pixelImage, resX, resY) {
         } else {
             return PixelCalculator.emptyPixel;
         }
-        
       
     }
     
@@ -73,13 +93,17 @@ function ColorMap(pixelImage, resX, resY) {
         return palette.getMaxColor();
     }
     
-    
-    
-    function extract(pixelImage) {
+    /**
+     * Fill the ColorMap with the most frequent color in pixelImage for each area.
+     */
+    function fromPixelImage(pixelImage) {
         
         var x,
             y,
             maxColor;
+        
+        width = pixelImage.getWidth();
+        height = pixelImage.getHeight();
         
         for (y = 0; y < pixelImage.getHeight(); y += resY) {
             for (x = 0; x < pixelImage.getWidth(); x += resX) {
@@ -92,13 +116,78 @@ function ColorMap(pixelImage, resX, resY) {
         }
     }
     
+    function getMaxColorFromImageData(imageData, x, y) {
+        var xi,
+            yi,
+            palette;
+        
+        
+        // 1 x 1 does not need max color calculation
+        if (resX === 1 && resY === 1) {
+            return PixelCalculator.peek(imageData, x, y);
+        }
+        
+        palette = new Palette();
+        // build up a palette with all the pixels in the area
+        for (yi = 0; yi < resY; yi += 1) {
+            for (xi = 0; xi < resX; xi += 1) {
+                palette.add(PixelCalculator.peek(imageData, x + xi, y + yi));
+            }
+        }
+        
+        // return the maximum color from the palette
+        return palette.getMaxColor();
+    }
+    
+    
+    function fromImageData(imageData) {
+        
+        var x,
+            y,
+            maxColor;
+        
+        width = imageData.width;
+        height = imageData.height;
+        
+        for (y = 0; y < height; y += resY) {
+            for (x = 0; x < width; x += resX) {
+                
+                // determine the max color in this area
+                maxColor = getMaxColorFromImageData(imageData, x, y);
+                add(x, y, maxColor);
+                
+            }
+        }
+    }
+    
+    function toImageData() {
+        var canvas = document.createElement('canvas'),
+            context = canvas.getContext('2d'),
+            imageData = context.createImageData(width * resX, height * resY),
+            x,
+            y;
+        
+        for (y = 0; y < height; y += 1) {
+            for (x = 0; x < width; x += 1) {
+                PixelCalculator.poke(imageData, x, y, getColor(x, y));
+            }
+        }
+     
+        return imageData;
+    }
+    
+    
+    
+    /**
+     * Create a PixelImage to visualize the ColorMap
+     */
     function toPixelImage() {
     
         var x,
             y,
             result = new PixelImage();
         
-        result.init(pixelImage.getWidth(), pixelImage.getHeight());
+        result.init(width, height);
         
         for (y = 0; y < result.getHeight(); y += 1) {
             for (x = 0; x < result.getWidth(); x += 1) {
@@ -109,11 +198,13 @@ function ColorMap(pixelImage, resX, resY) {
         return result;
     }
     
-    extract(pixelImage);
-    
     return {
         getColor: getColor,
-        toPixelImage: toPixelImage
+        setColor: setColor,
+        toPixelImage: toPixelImage,
+        fromPixelImage: fromPixelImage,
+        fromImageData: fromImageData,
+        toImageData: toImageData
     };
     
 }
