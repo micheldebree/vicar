@@ -1,4 +1,4 @@
-/*global angular, URL, ColorMap, Remapper */
+/*global angular, URL, ColorMap, Remapper, PixelImage */
 /**
  * @ngdoc function
  * @name workspaceApp.controller:MainCtrl
@@ -50,61 +50,14 @@ angular.module('vicarApp')
                 $scope.$apply();
                 
                 var remapper = new Remapper();
-                remapper.setPalette($scope.selectedProfile.value.palette);
-                
-                
-                $scope.mainImage = remapper.remap(image);
+               
+                $scope.mainImage = remapper.remap(image, $scope.selectedProfile.value.palette);
                 
                 $scope.$apply();
                 
                 
             }, 320);
-            
-            /*
-            c64izerService.convert(
-                img,
-                $scope.selectedProfile.value,
-                $scope.selectedDither.value,
-                function (pixelImage) {
-                    $scope.mainImage = pixelImage;
-                    $scope.testImage4 = pixelImage.clone();
-                    
-                    var colorMap = new ColorMap(pixelImage.getWidth(), pixelImage.getHeight()),
-                        colorMaps = [],
-                        remapper = new Remapper();
-//                    
-                    colorMap.fromPixelImage(pixelImage);
-                    colorMaps.push(colorMap);
-//                    
-                    $scope.testImage = colorMap.toPixelImage();
-                    $scope.mainImage.subtract($scope.testImage);
-//
-                    colorMap = new ColorMap(8, 8);
-                    colorMap.fromPixelImage(pixelImage);
-                    colorMaps.push(colorMap);
-                    $scope.testImage1 = colorMap.toPixelImage();
-                    $scope.mainImage.subtract($scope.testImage1);
-//                    
-                    colorMap = new ColorMap(8, 8);
-                    colorMap.fromPixelImage(pixelImage);
-                  //colorMaps.push(colorMap);
-                    $scope.testImage2 = colorMap.toPixelImage();
-                    $scope.mainImage.subtract($scope.testImage2);
-//                    
-                    colorMap = new ColorMap(8, 8);
-                    colorMap.fromPixelImage(pixelImage);
-                  //colorMaps.push(colorMap);
-                    $scope.testImage3 = colorMap.toPixelImage();
-                    $scope.mainImage.subtract($scope.testImage3);
-
-                    remapper.setColorMaps(colorMaps);
-                    
-                    //remapper.remap($scope.testImage4);
-                    
-                    $scope.$apply();
-                }
-            );
-            */
+          
             
         };
 

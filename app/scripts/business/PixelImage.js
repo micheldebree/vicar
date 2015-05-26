@@ -20,7 +20,7 @@ function PixelImage(imageData) {
       
         height = h;
         width = w;
-        colorMaps = [ new ColorMap(w, h, w, h) ];
+        colorMaps = [ new ColorMap(w, h) ];
         
         // fill pixelIndex with zeroes (reference to colormap 0);
         for (y = 0; y < h; y += 1) {
@@ -35,16 +35,14 @@ function PixelImage(imageData) {
     
     function fromImageData(imageData) {
         
+        
         init(imageData.width, imageData.height);
         
-        var colorMap = new ColorMap(1, 1);
+        var colorMap = new ColorMap(width, height, 1, 1);
         
         // create a 1x1 colormap from the image data
         colorMap.fromImageData(imageData);
         colorMaps = [ colorMap ];
-        width = imageData.width;
-        height = imageData.height;
-        
         
     }
     
@@ -113,32 +111,80 @@ function PixelImage(imageData) {
         return PixelCalculator.emptyPixel;
     }
     
+    function findColorMap(x, y, color) {
+        var i,
+            mapColor;
+        for (i = 0; i < colorMaps.length; i += 1) {
+            mapColor = colorMaps[i].getColor(x, y);
+            if (!PixelCalculator.isEmpty(mapColor) && PixelCalculator.equals(color,  mapColor)) {
+                return i;
+            }
+        }
+    }
+    
+    function map(pixel, x, y, offset) {
+   
+        var i,
+            d,
+            minVal,
+            minI = 0,
+            other;
+
+        offset = offset !== undefined ? offset : 0;
+
+        // determine closest pixel in palette (ignoring alpha)
+        for (i = 0; i < colorMaps.length; i += 1) {
+            other = colorMaps[i].getColor(x, y);
+
+            if (!PixelCalculator.isEmpty(other)) {
+                // calculate distance
+                d = Math.sqrt(
+                    Math.pow(pixel[0] - other[0] - offset, 2) +
+                        Math.pow(pixel[1] - other[1] - offset, 2) +
+                        Math.pow(pixel[2] - other[2] - offset, 2)
+                );
+
+                if (minVal === undefined || d < minVal) {
+                    minVal = d;
+                    minI = i;
+                }
+            }
+        }
+       
+        return minI;
+
+    }
+    
     /** 
      * Set the value for a particular pixel. 
      * @param {number} x - x coordinate
      * @param {number} y - y coordinate
      * @param {Array] pixel - Pixel values [r, g, b, a]
      */
-    function poke(x, y, pixel) {
+    function poke(x, y, pixel, force) {
         
         // check if a colorMap already has this color
-        var i,
-            mapPixel,
-            newMap;
-        for (i = 0; i < colorMaps.length; i += 1) {
-            mapPixel = colorMaps[i].getColor(x, y);
-            if (!PixelCalculator.isEmpty(mapPixel) && PixelCalculator.equals(pixel,  mapPixel)) {
-                pixelIndex[y][x] = i;
+        var newMap,
+            reUseColorMap;
+           
+       
+        
+        // if reuse not forced, create a new single color map
+        
+        if (!force) {
+            reUseColorMap = findColorMap(x, y, pixel);
+            if (reUseColorMap !== undefined) {
+                pixelIndex[y][x] = reUseColorMap;
                 return;
             }
+            newMap = new ColorMap(width, height, width, height);
+            newMap.setColor(pixel);
+            colorMaps.push(newMap);
+            pixelIndex[y][x] = colorMaps.length - 1;
+        } else {
+            // otherwise, map to an available color
+            pixelIndex[y][x] = map(pixel, x, y, 0);
         }
-        
-        // if not, create a new single color map
-        newMap = new ColorMap(width, height, width, height);
-        newMap.setColor(pixel);
-        colorMaps.push(newMap);
-        pixelIndex[y][x] = colorMaps.length - 1;
-        
         
     }
     
@@ -231,6 +277,13 @@ function PixelImage(imageData) {
         return height;
     }
     
+    function addAvailableColor(color) {
+        var newColor = new ColorMap(width, height);
+        color[3] = 0xff;
+        newColor.setColor(color);
+        colorMaps.push(newColor);
+    }
+    
     return {
         getWidth: getWidth,
         getHeight: getHeight,
@@ -241,7 +294,8 @@ function PixelImage(imageData) {
         init: init,
         subtract: subtract,
         add: add,
-        clone: clone
+        clone: clone,
+        addAvailableColor: addAvailableColor
     };
     
 }

@@ -4,12 +4,6 @@
         accept="image/*">
     <img pixel-image="mainImage" width="320"/>
 </div>
-<p>{{selectedProfile.key}}</p>
-<img ng-repeat="profile in profiles" 
-     ng-click="selectProfile(profile)" 
-     pixel-image="thumbnails[$index]" 
-     width="{{320 / profiles.length}}"/>
-
 <br/>
 <img pixel-image="testImage"/>
 <br/>

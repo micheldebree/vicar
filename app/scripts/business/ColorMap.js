@@ -4,15 +4,24 @@
  * Maps x, y coordinates to a pixel value.
  * The map has a certain resolution specifying the size of an area of the same color.
  * @param {PixelImage} pixelImage - Image to extract the color map from.
- * @param {number} resX - Number of horizontal pixels in color areas.
- * @param {number} resY - Number of vertical pixels in color areas.
- * @param [number] width - Width of the map in pixels
- * @param [number] height - Height of the map in pixels
+ * @param {number} width - Width of the map in pixels
+ * @param {number} height - Height of the map in pixels
+ * @param {number} [resX] - Number of horizontal pixels in color areas.
+ * @param {number} [resY] - Number of vertical pixels in color areas.
  */
-function ColorMap(resX, resY, width, height) {
+function ColorMap(width, height, resX, resY) {
     'use strict';
     
-    var pixels = [];
+    var pixels = [],
+        x,
+        y;
+    
+    resX = resX !== undefined ? resX : width;
+    resY = resY !== undefined ? resY : height;
+    
+    function isInRange(x, y) {
+        return (x >= 0 && x < width && y >= 0 && y < height);
+    }
     
     function mapX(x) {
         return Math.floor(x / resX);
@@ -26,6 +35,10 @@ function ColorMap(resX, resY, width, height) {
      * Set an area to a certain color.
      */
     function add(x, y, pixel) {
+
+        if (!isInRange(x, y)) {
+            return;
+        }
         
         var rx = mapX(x),
             ry = mapY(y);
@@ -51,23 +64,22 @@ function ColorMap(resX, resY, width, height) {
     
     function getColor(x, y) {
         
+        if (!isInRange(x, y)) {
+            return PixelCalculator.emptyPixel;
+        }
+        
         var mx = mapX(x),
             my = mapY(y),
-            result;
-        
-        if (mx < pixels.length) {
-            if (my < pixels[mx].length) {
-                result = pixels[mx][my];
-                // TODO: this should never be undefined..
-                if (result !== undefined) {
-                    return result;
-                } else {
-                    return PixelCalculator.emptyPixel;
-                }
-            }
+            result = pixels[mx][my];
+
+        // TODO: this should never be undefined..
+        if (result !== undefined) {
+            return result;
         } else {
             return PixelCalculator.emptyPixel;
         }
+            
+       
       
     }
     
@@ -91,29 +103,6 @@ function ColorMap(resX, resY, width, height) {
         
         // return the maximum color from the palette
         return palette.getMaxColor();
-    }
-    
-    /**
-     * Fill the ColorMap with the most frequent color in pixelImage for each area.
-     */
-    function fromPixelImage(pixelImage) {
-        
-        var x,
-            y,
-            maxColor;
-        
-        width = pixelImage.getWidth();
-        height = pixelImage.getHeight();
-        
-        for (y = 0; y < pixelImage.getHeight(); y += resY) {
-            for (x = 0; x < pixelImage.getWidth(); x += resX) {
-                
-                // determine the max color in this area
-                maxColor = getMaxColor(pixelImage, x, y, resX, resY);
-                add(x, y, maxColor);
-                
-            }
-        }
     }
     
     function getMaxColorFromImageData(imageData, x, y) {
@@ -176,33 +165,12 @@ function ColorMap(resX, resY, width, height) {
         return imageData;
     }
     
-    
-    
-    /**
-     * Create a PixelImage to visualize the ColorMap
-     */
-    function toPixelImage() {
-    
-        var x,
-            y,
-            result = new PixelImage();
-        
-        result.init(width, height);
-        
-        for (y = 0; y < result.getHeight(); y += 1) {
-            for (x = 0; x < result.getWidth(); x += 1) {
-                result.poke(x, y, getColor(x, y));
-            }
-        }
-        
-        return result;
-    }
+    // init
+    setColor(PixelCalculator.emptyPixel);
     
     return {
         getColor: getColor,
         setColor: setColor,
-        toPixelImage: toPixelImage,
-        fromPixelImage: fromPixelImage,
         fromImageData: fromImageData,
         toImageData: toImageData
     };
