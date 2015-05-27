@@ -43,6 +43,7 @@ angular.module('vicarApp')
             // generate main image
             
             var image = new PixelImage();
+            image.setPixelAspect(2, 1);
             
             image.grab(img, function () {
                 

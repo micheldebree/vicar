@@ -51,10 +51,14 @@ function ColorMap(width, height, resX, resY) {
         
     }
     
-    function setColor(pixel) {
+    /**
+     * Fill the map with one color.
+     */
+    function fillWithColor(pixel) {
         var x,
             y;
         
+      
         for (x = 0; x < width; x += resX) {
             for (y = 0; y < height; y += resY) {
                 add(x, y, pixel);
@@ -62,6 +66,9 @@ function ColorMap(width, height, resX, resY) {
         }
     }
     
+    /**
+     * Get the color at x, y coordinate.
+     */
     function getColor(x, y) {
         
         if (!isInRange(x, y)) {
@@ -78,8 +85,6 @@ function ColorMap(width, height, resX, resY) {
         } else {
             return PixelCalculator.emptyPixel;
         }
-            
-       
       
     }
     
@@ -129,7 +134,32 @@ function ColorMap(width, height, resX, resY) {
     }
     
     
+    /**
+     * Convert an image to a colormap with 1x1 resolution.
+    
     function fromImageData(imageData) {
+        
+        var x,
+            y;
+        
+        width = imageData.width;
+        height = imageData.height;
+        resX = 1;
+        resY = 1;
+        pixels = [];
+        
+        for (y = 0; y < height; y += 1) {
+            for (x = 0; x < width; x += 1) {
+                add(x, y, PixelCalculator.peek(imageData, x, y));
+            }
+        }
+    }
+     */
+    /**
+     * Extract color map from an image, using the colormap resolution.
+     * The maximum used color in the colormap resolution area is used to set the color.
+     */
+    function extractFromImage(imageData) {
         
         var x,
             y,
@@ -149,10 +179,13 @@ function ColorMap(width, height, resX, resY) {
         }
     }
     
+    /**
+     * Convert to an image so it can be displayed.
+     */
     function toImageData() {
         var canvas = document.createElement('canvas'),
             context = canvas.getContext('2d'),
-            imageData = context.createImageData(width * resX, height * resY),
+            imageData = context.createImageData(width, height),
             x,
             y;
         
@@ -166,13 +199,14 @@ function ColorMap(width, height, resX, resY) {
     }
     
     // init
-    setColor(PixelCalculator.emptyPixel);
+    fillWithColor(PixelCalculator.emptyPixel);
     
     return {
         getColor: getColor,
-        setColor: setColor,
-        fromImageData: fromImageData,
-        toImageData: toImageData
+        fillWithColor: fillWithColor,
+        //fromImageData: fromImageData,
+        toImageData: toImageData,
+        add: add
     };
     
 }

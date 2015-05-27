@@ -2,17 +2,19 @@
 /*exported PixelImage*/
 /*jslint bitwise: true*/
 /** Create an image with access to individual pixels */
-function PixelImage(imageData) {
+function PixelImage() {
  
     'use strict';
    
-    var img,
-        callback,
-        resizeW,
-        width,
-        height,
-        pixelIndex = [],
-        colorMaps = [];
+    var img, // the source for grabbing image data
+        callback, // callback after grabbing image data
+        resizeW, // resize width when grabbing data
+        width, // width in pixels
+        height, // height in pixels
+        pwidth = 1, // aspect width of one pixel
+        pheight = 1, // aspect height of one pixel
+        pixelIndex = [], // maps pixel x,y to a colormap
+        colorMaps = []; // maps x,y to a color
         
     function init(w, h) {
         var x,
@@ -20,6 +22,8 @@ function PixelImage(imageData) {
       
         height = h;
         width = w;
+        
+        // transparent color map
         colorMaps = [ new ColorMap(w, h) ];
         
         // fill pixelIndex with zeroes (reference to colormap 0);
@@ -33,20 +37,127 @@ function PixelImage(imageData) {
         }
     }
     
-    function fromImageData(imageData) {
+    /**
+     * Find an existing color map that has a specific color at x,y
+     */
+    function findColorMap(x, y, color) {
+        var i,
+            mapColor;
+        for (i = 0; i < colorMaps.length; i += 1) {
+            mapColor = colorMaps[i].getColor(x, y);
+            if (!PixelCalculator.isEmpty(mapColor) && PixelCalculator.equals(color,  mapColor)) {
+                return i;
+            }
+        }
+    }
+    
+    /**
+     * Find an existing color map that has no color at x,y
+     */
+    function findEmptyColor(x, y) {
+        var i,
+            mapColor;
+        for (i = 0; i < colorMaps.length; i += 1) {
+            mapColor = colorMaps[i].getColor(x, y);
+            if (PixelCalculator.isEmpty(mapColor)) {
+                return i;
+            }
+        }
+    }
+    
+    function map(pixel, x, y, offset) {
+   
+        var i,
+            d,
+            minVal,
+            minI = 0,
+            other;
+
+        offset = offset !== undefined ? offset : 0;
+
+        // determine closest pixel in palette (ignoring alpha)
+        for (i = 0; i < colorMaps.length; i += 1) {
+            other = colorMaps[i].getColor(x, y);
+
+            if (!PixelCalculator.isEmpty(other)) {
+                // calculate distance
+                d = Math.sqrt(
+                    Math.pow(pixel[0] - other[0] - offset, 2) +
+                        Math.pow(pixel[1] - other[1] - offset, 2) +
+                        Math.pow(pixel[2] - other[2] - offset, 2)
+                );
+
+                if (minVal === undefined || d < minVal) {
+                    minVal = d;
+                    minI = i;
+                }
+            }
+        }
+       
+        return minI;
+
+    }
+    
+    /** 
+     * Set the value for a particular pixel. 
+     * @param {number} x - x coordinate
+     * @param {number} y - y coordinate
+     * @param {Array] pixel - Pixel values [r, g, b, a]
+     */
+    function poke(x, y, pixel, force) {
         
-        
-        init(imageData.width, imageData.height);
-        
-        var colorMap = new ColorMap(width, height, 1, 1);
-        
-        // create a 1x1 colormap from the image data
-        colorMap.fromImageData(imageData);
-        colorMaps = [ colorMap ];
+        // check if a colorMap already has this color
+        var newMap,
+            reUseColorMap;
+           
+        // try to reuse existing color
+        reUseColorMap = findColorMap(x, y, pixel);
+        if (reUseColorMap !== undefined) {
+            pixelIndex[y][x] = reUseColorMap;
+            return;
+        }
+       
+        // try to claim empty pixel in existing map
+        reUseColorMap = findEmptyColor(x, y);
+        if (reUseColorMap !== undefined) {
+            colorMaps[reUseColorMap].add(x, y, pixel);
+            pixelIndex[y][x] = reUseColorMap;
+            return;
+        }
+
+        // if reuse not forced, create a new single color map
+        if (!force) {
+            
+            //newMap = new ColorMap(width, height, width, height);
+            //newMap.fillWithColor(pixel);
+            //colorMaps.push(newMap);
+            //pixelIndex[y][x] = colorMaps.length - 1;
+        } else {
+            // otherwise, map to an available color
+            pixelIndex[y][x] = map(pixel, x, y, 0);
+        }
         
     }
     
+    function fromImageData(imageData) {
+        
+        init(imageData.width / pwidth, imageData.height / pheight);
+        
+        var colorMap = new ColorMap(width, height, 1, 1),
+            x,
+            y,
+            pixel;
     
+        colorMaps = [ colorMap ];
+        for (y = 0; y < height; y += 1) {
+            for (x = 0; x < width; x += 1) {
+                
+                pixel = PixelCalculator.peek(imageData, x * pwidth, y * pheight);
+                poke(x, y, pixel);
+            }
+        }
+        
+    }
     
     function grabData() {
         var w = typeof resizeW !== 'undefined' ? resizeW : img.width,
@@ -111,83 +222,7 @@ function PixelImage(imageData) {
         return PixelCalculator.emptyPixel;
     }
     
-    function findColorMap(x, y, color) {
-        var i,
-            mapColor;
-        for (i = 0; i < colorMaps.length; i += 1) {
-            mapColor = colorMaps[i].getColor(x, y);
-            if (!PixelCalculator.isEmpty(mapColor) && PixelCalculator.equals(color,  mapColor)) {
-                return i;
-            }
-        }
-    }
-    
-    function map(pixel, x, y, offset) {
-   
-        var i,
-            d,
-            minVal,
-            minI = 0,
-            other;
-
-        offset = offset !== undefined ? offset : 0;
-
-        // determine closest pixel in palette (ignoring alpha)
-        for (i = 0; i < colorMaps.length; i += 1) {
-            other = colorMaps[i].getColor(x, y);
-
-            if (!PixelCalculator.isEmpty(other)) {
-                // calculate distance
-                d = Math.sqrt(
-                    Math.pow(pixel[0] - other[0] - offset, 2) +
-                        Math.pow(pixel[1] - other[1] - offset, 2) +
-                        Math.pow(pixel[2] - other[2] - offset, 2)
-                );
-
-                if (minVal === undefined || d < minVal) {
-                    minVal = d;
-                    minI = i;
-                }
-            }
-        }
-       
-        return minI;
-
-    }
-    
-    /** 
-     * Set the value for a particular pixel. 
-     * @param {number} x - x coordinate
-     * @param {number} y - y coordinate
-     * @param {Array] pixel - Pixel values [r, g, b, a]
-     */
-    function poke(x, y, pixel, force) {
-        
-        // check if a colorMap already has this color
-        var newMap,
-            reUseColorMap;
-           
-       
-        
-        // if reuse not forced, create a new single color map
-        
-        if (!force) {
-            reUseColorMap = findColorMap(x, y, pixel);
-            if (reUseColorMap !== undefined) {
-                pixelIndex[y][x] = reUseColorMap;
-                return;
-            }
-            newMap = new ColorMap(width, height, width, height);
-            newMap.setColor(pixel);
-            colorMaps.push(newMap);
-            pixelIndex[y][x] = colorMaps.length - 1;
-        } else {
-            // otherwise, map to an available color
-            pixelIndex[y][x] = map(pixel, x, y, 0);
-        }
-        
-    }
-    
+  
     /** 
         Create a URL that can be used as the src for an Image.
         If there is no image data (yet), the URL for a default image is returned.
@@ -199,15 +234,25 @@ function PixelImage(imageData) {
                 context = canvas.getContext('2d'),
                 imageData,
                 x,
-                y;
+                y,
+                px,
+                py,
+                pixel;
             
-            canvas.width = width;
-            canvas.height = height;
-            imageData = context.createImageData(width, height);
+            canvas.width = width * pwidth;
+            canvas.height = height * pheight;
+            imageData = context.createImageData(canvas.width, canvas.height);
             
-            for (x = 0; x < width; x += 1) {
-                for (y = 0; y < height; y += 1) {
-                    PixelCalculator.poke(imageData, x, y, peek(x, y));
+            for (x = 0; x < width; x += pwidth) {
+                for (y = 0; y < height; y += pheight) {
+                    
+                    pixel = peek(x, y);
+                    for (px = 0; px < pwidth; px += 1) {
+                        for (py = 0; py < pheight; py += 1) {
+                            PixelCalculator.poke(imageData, x + px, y + py,
+                                                 pixel);
+                        }
+                    }
                 }
             }
             
@@ -217,56 +262,6 @@ function PixelImage(imageData) {
             return 'images/spiffygif_30x30.gif';
         }
         
-    }
-    
-    /**
-     * Subtract another PixelImage:
-     * All the pixels that have the same color value in both images, will be
-     * made transparent in this image.
-     */
-    function subtract(pixelImage) {
-        var x,
-            y,
-            thisPixel,
-            otherPixel;
-        for (y = 0; y < pixelImage.getHeight(); y += 1) {
-            for (x = 0; x < pixelImage.getWidth(); x += 1) {
-                thisPixel = peek(x, y);
-                otherPixel = pixelImage.peek(x, y);
-                if (!PixelCalculator.isEmpty(otherPixel) && PixelCalculator.equals(thisPixel, otherPixel)) {
-                    poke(x, y, PixelCalculator.emptyPixel);
-                }
-            }
-        }
-    }
-    
-    /**
-     * Add another PixelImage:
-     * All the pixels that are transparent in this image will be replaced.
-     * with corresponding pixels from the other image.
-     */
-    function add(pixelImage) {
-        var x,
-            y;
-        
-        for (y = 0; y < height; y += 1) {
-            for (x = 0; x < width; x += 1) {
-                if (PixelCalculator.isEmpty(peek(x, y))) {
-                    poke(x, y, pixelImage.peek(x, y));
-                }
-            }
-        }
-    }
-    
-    /**
-     * Clone this PixelImage
-     */
-    function clone() {
-        return new PixelImage(PixelCalculator.cloneImageData(imageData));
-    }
-    
-    if (imageData !== undefined) {
-        fromImageData(imageData);
     }
     
     function getWidth() {
@@ -280,8 +275,13 @@ function PixelImage(imageData) {
     function addAvailableColor(color) {
         var newColor = new ColorMap(width, height);
         color[3] = 0xff;
-        newColor.setColor(color);
+        newColor.fillWithColor(color);
         colorMaps.push(newColor);
+    }
+    
+    function setPixelAspect(width, height) {
+        pwidth = width;
+        pheight = height;
     }
     
     return {
@@ -292,10 +292,9 @@ function PixelImage(imageData) {
         grab: grab,
         toSrcUrl: toSrcUrl,
         init: init,
-        subtract: subtract,
-        add: add,
-        clone: clone,
-        addAvailableColor: addAvailableColor
+        addAvailableColor: addAvailableColor,
+        fromImageData: fromImageData,
+        setPixelAspect: setPixelAspect
     };
     
 }
