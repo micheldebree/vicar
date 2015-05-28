@@ -14,8 +14,16 @@ function PixelImage() {
         pwidth = 1, // aspect width of one pixel
         pheight = 1, // aspect height of one pixel
         pixelIndex = [], // maps pixel x,y to a colormap
-        colorMaps = []; // maps x,y to a color
-        
+        colorMaps = [], // maps x,y to a color
+        dither = [[0]]; // an n x n matrix used for ordered dithering
+    
+    dither = [
+        [1, 9, 3, 11],
+        [13, 5, 15, 7],
+        [4, 12, 2, 10],
+        [16, 8, 14, 6]];
+    
+    
     function init(w, h) {
         var x,
             y;
@@ -65,16 +73,17 @@ function PixelImage() {
         }
     }
     
-    function map(pixel, x, y, offset) {
+    function map(pixel, x, y) {
    
         var i,
             d,
             minVal,
             minI = 0,
-            other;
-
-        offset = offset !== undefined ? offset : 0;
-
+            other,
+            ox = x % dither.length,
+            oy = y % dither.length,
+            offset = dither[oy][ox];
+        
         // determine closest pixel in palette (ignoring alpha)
         for (i = 0; i < colorMaps.length; i += 1) {
             other = colorMaps[i].getColor(x, y);
@@ -243,13 +252,13 @@ function PixelImage() {
             canvas.height = height * pheight;
             imageData = context.createImageData(canvas.width, canvas.height);
             
-            for (x = 0; x < width; x += pwidth) {
-                for (y = 0; y < height; y += pheight) {
+            for (x = 0; x < width; x += 1) {
+                for (y = 0; y < height; y += 1) {
                     
                     pixel = peek(x, y);
                     for (px = 0; px < pwidth; px += 1) {
                         for (py = 0; py < pheight; py += 1) {
-                            PixelCalculator.poke(imageData, x + px, y + py,
+                            PixelCalculator.poke(imageData, x * pwidth + px, y * pheight + py,
                                                  pixel);
                         }
                     }
@@ -270,6 +279,14 @@ function PixelImage() {
     
     function getHeight() {
         return height;
+    }
+    
+    function getPixelWidth() {
+        return pwidth;
+    }
+    
+    function getPixelHeight() {
+        return pheight;
     }
     
     function addAvailableColor(color) {
@@ -294,7 +311,9 @@ function PixelImage() {
         init: init,
         addAvailableColor: addAvailableColor,
         fromImageData: fromImageData,
-        setPixelAspect: setPixelAspect
+        setPixelAspect: setPixelAspect,
+        getPixelWidth: getPixelWidth,
+        getPixelHeight: getPixelHeight
     };
     
 }
