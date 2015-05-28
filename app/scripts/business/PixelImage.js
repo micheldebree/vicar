@@ -1,7 +1,13 @@
 /*global document, PixelCalculator, ColorMap */
 /*exported PixelImage*/
 /*jslint bitwise: true*/
-/** Create an image with access to individual pixels */
+/** Create an image with access to individual pixels 
+    
+    Pixels are indexed:
+    - index 0 = transparant
+    - index > 0 = color is stored in color map with that index (actual array starts at 0)
+
+*/
 function PixelImage() {
  
     'use strict';
@@ -25,24 +31,8 @@ function PixelImage() {
     
     
     function init(w, h) {
-        var x,
-            y;
-      
         height = h;
         width = w;
-        
-        // transparent color map
-        colorMaps = [ new ColorMap(w, h) ];
-        
-        // fill pixelIndex with zeroes (reference to colormap 0);
-        for (y = 0; y < h; y += 1) {
-            for (x = 0; x < w; x += 1) {
-                if (pixelIndex[y] === undefined) {
-                    pixelIndex[y] = [];
-                }
-                pixelIndex[y][x] = 0;
-            }
-        }
     }
     
     /**
@@ -54,7 +44,7 @@ function PixelImage() {
         for (i = 0; i < colorMaps.length; i += 1) {
             mapColor = colorMaps[i].getColor(x, y);
             if (!PixelCalculator.isEmpty(mapColor) && PixelCalculator.equals(color,  mapColor)) {
-                return i;
+                return i + 1;
             }
         }
     }
@@ -68,11 +58,14 @@ function PixelImage() {
         for (i = 0; i < colorMaps.length; i += 1) {
             mapColor = colorMaps[i].getColor(x, y);
             if (PixelCalculator.isEmpty(mapColor)) {
-                return i;
+                return i + 1;
             }
         }
     }
     
+    /**
+     * Map a pixel to the closest available color at x, y
+     */
     function map(pixel, x, y) {
    
         var i,
@@ -103,8 +96,33 @@ function PixelImage() {
             }
         }
        
-        return minI;
+        return minI + 1;
 
+    }
+    
+    function isInRange(x, y) {
+        return x < width && y < height && x >= 0 && y >= 0;
+    }
+    
+    function setPixelIndex(x, y, index) {
+        if (isInRange(x, y)) {
+            if (pixelIndex[y] === undefined) {
+                pixelIndex[y] = [];
+            }
+            pixelIndex[y][x] = index;
+        }
+    }
+    
+    function getPixelIndex(x, y) {
+        if (isInRange(x, y)) {
+            if (pixelIndex[y] !== undefined) {
+                return pixelIndex[y][x];
+            } else {
+                return 0;
+            }
+        } else {
+            return 0;
+        }
     }
     
     /** 
@@ -121,30 +139,31 @@ function PixelImage() {
            
         // try to reuse existing color
         reUseColorMap = findColorMap(x, y, pixel);
-        if (reUseColorMap !== undefined) {
-            pixelIndex[y][x] = reUseColorMap;
-            return;
+        if (reUseColorMap === undefined) {
+            // otherwise, claim an empty color
+            reUseColorMap = findEmptyColor(x, y);
+            if (reUseColorMap !== undefined) {
+                colorMaps[reUseColorMap - 1].add(x, y, pixel);
+            } else {
+                // if all else fails, map to closest existing color
+                reUseColorMap = map(pixel, x, y, 0);
+            }
         }
-       
-        // try to claim empty pixel in existing map
-        reUseColorMap = findEmptyColor(x, y);
-        if (reUseColorMap !== undefined) {
-            colorMaps[reUseColorMap].add(x, y, pixel);
-            pixelIndex[y][x] = reUseColorMap;
-            return;
-        }
-
+    
         // if reuse not forced, create a new single color map
-        if (!force) {
+        //if (!force) {
             
             //newMap = new ColorMap(width, height, width, height);
             //newMap.fillWithColor(pixel);
             //colorMaps.push(newMap);
             //pixelIndex[y][x] = colorMaps.length - 1;
-        } else {
+        //} else {
             // otherwise, map to an available color
-            pixelIndex[y][x] = map(pixel, x, y, 0);
-        }
+        
+        
+        
+        setPixelIndex(x, y, reUseColorMap);
+        //}
         
     }
     
@@ -225,8 +244,12 @@ function PixelImage() {
     function peek(x, y) {
         
         if (x >= 0 && x < width && y >= 0 && y < height) {
-            var ci = pixelIndex[y][x];
-            return colorMaps[ci].getColor(x, y);
+            var ci = getPixelIndex(x, y);
+            if (ci > 0) {
+                return colorMaps[ci - 1].getColor(x, y);
+            } else {
+                return PixelCalculator.emptyPixel;
+            }
         }
         return PixelCalculator.emptyPixel;
     }
@@ -258,8 +281,7 @@ function PixelImage() {
                     pixel = peek(x, y);
                     for (px = 0; px < pwidth; px += 1) {
                         for (py = 0; py < pheight; py += 1) {
-                            PixelCalculator.poke(imageData, x * pwidth + px, y * pheight + py,
-                                                 pixel);
+                            PixelCalculator.poke(imageData, x * pwidth + px, y * pheight + py, pixel);
                         }
                     }
                 }

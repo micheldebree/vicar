@@ -1,4 +1,4 @@
-/*global PixelImage, Palette, PixelCalculator */
+/*global Palette, PixelCalculator */
 /*exported ColorMap*/
 /**
  * Maps x, y coordinates to a pixel value.
@@ -12,9 +12,7 @@
 function ColorMap(width, height, resX, resY) {
     'use strict';
     
-    var pixels = [],
-        x,
-        y;
+    var colors = [];
     
     resX = resX !== undefined ? resX : width;
     resY = resY !== undefined ? resY : height;
@@ -34,7 +32,7 @@ function ColorMap(width, height, resX, resY) {
     /**
      * Set an area to a certain color.
      */
-    function add(x, y, pixel) {
+    function add(x, y, color) {
 
         if (!isInRange(x, y)) {
             return;
@@ -44,10 +42,10 @@ function ColorMap(width, height, resX, resY) {
             ry = mapY(y);
 
         // add it to the color map
-        if (pixels[rx] === undefined) {
-            pixels[rx] = [];
+        if (colors[rx] === undefined) {
+            colors[rx] = [];
         }
-        pixels[rx][ry] = pixel;
+        colors[rx][ry] = color;
         
     }
     
@@ -57,7 +55,6 @@ function ColorMap(width, height, resX, resY) {
     function fillWithColor(pixel) {
         var x,
             y;
-        
       
         for (x = 0; x < width; x += resX) {
             for (y = 0; y < height; y += resY) {
@@ -77,7 +74,7 @@ function ColorMap(width, height, resX, resY) {
         
         var mx = mapX(x),
             my = mapY(y),
-            result = pixels[mx][my];
+            result = colors[mx][my];
 
         // TODO: this should never be undefined..
         if (result !== undefined) {
@@ -132,29 +129,7 @@ function ColorMap(width, height, resX, resY) {
         // return the maximum color from the palette
         return palette.getMaxColor();
     }
-    
-    
-    /**
-     * Convert an image to a colormap with 1x1 resolution.
-    
-    function fromImageData(imageData) {
-        
-        var x,
-            y;
-        
-        width = imageData.width;
-        height = imageData.height;
-        resX = 1;
-        resY = 1;
-        pixels = [];
-        
-        for (y = 0; y < height; y += 1) {
-            for (x = 0; x < width; x += 1) {
-                add(x, y, PixelCalculator.peek(imageData, x, y));
-            }
-        }
-    }
-     */
+   
     /**
      * Extract color map from an image, using the colormap resolution.
      * The maximum used color in the colormap resolution area is used to set the color.
@@ -204,7 +179,6 @@ function ColorMap(width, height, resX, resY) {
     return {
         getColor: getColor,
         fillWithColor: fillWithColor,
-        //fromImageData: fromImageData,
         toImageData: toImageData,
         add: add
     };

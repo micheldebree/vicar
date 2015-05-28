@@ -8,8 +8,6 @@
 function Remapper() {
     'use strict';
     
-
-    
     /**
      * Remap a pixel image
      * @param {PixelImage} pixelImage - The image to remap
@@ -36,23 +34,12 @@ function Remapper() {
         for (yi = 0; yi < h; yi += 1) {
             for (xi = 0; xi < w; xi += 1) {
                 pixel = pixelImage.peek(xi, yi);
-
-              
-
                 result.poke(xi, yi, pixel, true);
-                
-                
-
             }
         }
         return result;
 
     }
-    
-   
-    
-  
-    
     return {
         remap: remap
        
