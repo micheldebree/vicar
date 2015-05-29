@@ -1,11 +1,11 @@
-/*global document, PixelCalculator, ColorMap */
+/*global document, PixelCalculator, ColorMap, Palette */
 /*exported PixelImage*/
 /*jslint bitwise: true*/
 /** Create an image with access to individual pixels 
     
     Pixels are indexed:
     - index 0 = transparant
-    - index > 0 = color is stored in color map with that index (actual array starts at 0)
+    - index > 0 = color is stored in color map with that index (-1, as actual array starts at 0)
 
 */
 function PixelImage() {
@@ -23,16 +23,29 @@ function PixelImage() {
         colorMaps = [], // maps x,y to a color
         dither = [[0]]; // an n x n matrix used for ordered dithering
     
+    
     dither = [
         [1, 9, 3, 11],
         [13, 5, 15, 7],
         [4, 12, 2, 10],
         [16, 8, 14, 6]];
     
+    dither = [
+        [1, 49, 13, 61, 4, 52, 16, 64],
+        [33, 17, 45, 29, 36, 20, 48, 31],
+        [9, 57, 5, 53, 12, 60, 8, 56],
+        [41, 25, 37, 21, 44, 28, 40, 24],
+        [3, 51, 15, 63, 2, 50, 14, 62],
+        [35, 19, 47, 31, 34, 18, 46, 30],
+        [11, 59, 7, 55, 10, 58, 6, 54],
+        [43, 27, 39, 23, 42, 26, 38, 22]];
     
-    function init(w, h) {
+    function init(w, h, colorMap) {
         height = h;
         width = w;
+        if (colorMap !== undefined) {
+            colorMaps.push(colorMap);
+        }
     }
     
     /**
@@ -131,7 +144,7 @@ function PixelImage() {
      * @param {number} y - y coordinate
      * @param {Array] pixel - Pixel values [r, g, b, a]
      */
-    function poke(x, y, pixel, force) {
+    function poke(x, y, pixel, forceMap) {
         
         // check if a colorMap already has this color
         var newMap,
@@ -141,11 +154,14 @@ function PixelImage() {
         reUseColorMap = findColorMap(x, y, pixel);
         if (reUseColorMap === undefined) {
             // otherwise, claim an empty color
-            reUseColorMap = findEmptyColor(x, y);
-            if (reUseColorMap !== undefined) {
-                colorMaps[reUseColorMap - 1].add(x, y, pixel);
-            } else {
-                // if all else fails, map to closest existing color
+            if (forceMap === undefined) {
+                reUseColorMap = findEmptyColor(x, y);
+                if (reUseColorMap !== undefined) {
+                    colorMaps[reUseColorMap - 1].add(x, y, pixel);
+                }
+            }
+             // if all else fails, map to closest existing color
+            if (reUseColorMap === undefined) {
                 reUseColorMap = map(pixel, x, y, 0);
             }
         }
@@ -167,26 +183,68 @@ function PixelImage() {
         
     }
     
-    function fromImageData(imageData) {
-        
-        init(imageData.width / pwidth, imageData.height / pheight);
-        
-        var colorMap = new ColorMap(width, height, 1, 1),
-            x,
+    function drawImageData(imageData, forceMap) {
+        var x,
             y,
             pixel;
-    
-        colorMaps = [ colorMap ];
+        
         for (y = 0; y < height; y += 1) {
             for (x = 0; x < width; x += 1) {
                 
                 pixel = PixelCalculator.peek(imageData, x * pwidth, y * pheight);
-                poke(x, y, pixel);
+                poke(x, y, pixel, forceMap);
+            }
+        }
+    }
+    
+    function fromImageData(imageData) {
+        
+        init(imageData.width / pwidth, imageData.height / pheight);
+        
+        var colorMap = new ColorMap(width, height, 1, 1);
+      
+        colorMaps = [ colorMap ];
+      
+        drawImageData(imageData);
+        
+    }
+
+    function reduceToMax(x, y, w, h) {
+        
+        var weights = [],
+            ix,
+            iy,
+            idx,
+            maxWeight,
+            maxIndex;
+        
+        x = x !== undefined ? x : 0;
+        y = y !== undefined ? y : 0;
+        w = w !== undefined ? w : width;
+        h = h !== undefined ? h : height;
+        
+        for (ix = x; ix < x + w; ix += 1) {
+            for (iy = y; iy < y + h; iy += 1) {
+                idx = getPixelIndex(ix, iy);
+                if (idx > 0) {
+                    if (weights[idx] === undefined) {
+                        weights[idx] = 1;
+                    } else {
+                        weights[idx] = weights[idx] + 1;
+                    }
+
+                    if (maxWeight === undefined || weights[idx] > maxWeight) {
+                        maxWeight = weights[idx];
+                        maxIndex = idx;
+                    }
+                }
             }
         }
         
+        return maxIndex;
+        
     }
-    
+  
     function grabData() {
         var w = typeof resizeW !== 'undefined' ? resizeW : img.width,
             h = resizeW * img.height / img.width,
@@ -254,6 +312,95 @@ function PixelImage() {
         return PixelCalculator.emptyPixel;
     }
     
+    /**
+     Get the color that is used the most in a certain area of the image.
+    */
+    function extractColor(x, y, w, h) {
+        
+        var ix,
+            iy,
+            palette;
+        
+        x = x !== undefined ? x : 0;
+        y = y !== undefined ? y : 0;
+        w = w !== undefined ? w : width;
+        h = h !== undefined ? h : height;
+        
+        palette = new Palette();
+        for (ix = x; ix < x + w; ix += 1) {
+            for (iy = y; iy < y + h; iy += 1) {
+                palette.add(peek(ix, iy));
+            }
+        }
+        
+        return palette.getMaxColor(); // undefined if all pixels empty
+        
+    }
+    
+    /**
+        Extract an image with a single color map
+    */
+    function extractColorMap(pixelImage) {
+        
+        var x,
+            y,
+            xx,
+            yy,
+            colorMap = pixelImage.getColorMaps()[0],
+            rx = colorMap.getAreaWidth(),
+            ry = colorMap.getAreaHeight(),
+            color,
+            pixel;
+        
+        for (x = 0; x < width; x += rx) {
+            for (y = 0; y < height; y += ry) {
+                // find the maximum used color map in this area
+                color = extractColor(x, y, rx, ry);
+                
+                if (color !== undefined) {
+                
+                    colorMap.add(x, y, color);
+                
+                    for (xx = x; xx < x + rx; xx += 1) {
+                        for (yy = y; yy < y + ry; yy += 1) {
+                            
+                            pixel = peek(xx, yy);
+                            if (PixelCalculator.equals(pixel, color)) {
+                                setPixelIndex(xx, yy, 0);
+                                pixelImage.setPixelIndex(xx, yy, 1);
+                            }
+                        }
+                    }
+                }
+                
+            }
+        }
+        
+        return pixelImage;
+        
+    }
+    
+    function merge(otherPixelImage) {
+        
+        var offset = colorMaps.length,
+            x,
+            y,
+            otherMaps = otherPixelImage.getColorMaps(),
+            ci;
+            
+        for (ci = 0; ci < otherMaps.length; ci += 1) {
+            colorMaps.push(otherMaps[ci]);
+        }
+         
+        for (x = 0; x < width; x += 1) {
+            for (y = 0; y < height; y += 1) {
+                if (getPixelIndex(x, y) === 0 || PixelCalculator.isEmpty(peek(x, y))) {
+                    setPixelIndex(x, y, offset + otherPixelImage.getPixelIndex(x, y));
+                }
+            }
+        }
+        
+    }
   
     /** 
         Create a URL that can be used as the src for an Image.
@@ -311,16 +458,29 @@ function PixelImage() {
         return pheight;
     }
     
+    function addColorMap(colorMap) {
+        colorMaps.push(colorMap);
+    }
+    
     function addAvailableColor(color) {
         var newColor = new ColorMap(width, height);
         color[3] = 0xff;
         newColor.fillWithColor(color);
-        colorMaps.push(newColor);
+        addColorMap(newColor);
+        
     }
     
     function setPixelAspect(width, height) {
         pwidth = width;
         pheight = height;
+    }
+    
+    function getColorMaps() {
+        return colorMaps;
+    }
+    
+    function setDither(ditherVal) {
+        dither = ditherVal;
     }
     
     return {
@@ -335,7 +495,16 @@ function PixelImage() {
         fromImageData: fromImageData,
         setPixelAspect: setPixelAspect,
         getPixelWidth: getPixelWidth,
-        getPixelHeight: getPixelHeight
+        getPixelHeight: getPixelHeight,
+        extractColorMap: extractColorMap,
+        getPixelIndex: getPixelIndex,
+        setPixelIndex: setPixelIndex,
+        addColorMap: addColorMap,
+        getColorMaps: getColorMaps,
+        merge: merge,
+        drawImageData: drawImageData,
+        setDither: setDither
+        
     };
     
 }

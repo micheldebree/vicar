@@ -1,4 +1,4 @@
-/*global Palette, PixelCalculator */
+/*global Palette, PixelCalculator, console */
 /*exported ColorMap*/
 /**
  * Maps x, y coordinates to a pixel value.
@@ -13,9 +13,6 @@ function ColorMap(width, height, resX, resY) {
     'use strict';
     
     var colors = [];
-    
-    resX = resX !== undefined ? resX : width;
-    resY = resY !== undefined ? resY : height;
     
     function isInRange(x, y) {
         return (x >= 0 && x < width && y >= 0 && y < height);
@@ -86,75 +83,6 @@ function ColorMap(width, height, resX, resY) {
     }
     
     /**
-     * Gets the maximum color for an area in the image.
-     * @param {number} x - x coordinate for upper left of the area
-     * @param {number} y - y coordinate for upper left of the area
-     * @returns {Array} The pixel (color), or undefined if the palette is empty.
-     */
-    function getMaxColor(pixelImage, x, y) {
-        var xi,
-            yi,
-            palette = new Palette();
-        
-        // build up a palette with all the pixels in the area
-        for (yi = 0; yi < resY; yi += 1) {
-            for (xi = 0; xi < resX; xi += 1) {
-                palette.add(pixelImage.peek(x + xi, y + yi));
-            }
-        }
-        
-        // return the maximum color from the palette
-        return palette.getMaxColor();
-    }
-    
-    function getMaxColorFromImageData(imageData, x, y) {
-        var xi,
-            yi,
-            palette;
-        
-        
-        // 1 x 1 does not need max color calculation
-        if (resX === 1 && resY === 1) {
-            return PixelCalculator.peek(imageData, x, y);
-        }
-        
-        palette = new Palette();
-        // build up a palette with all the pixels in the area
-        for (yi = 0; yi < resY; yi += 1) {
-            for (xi = 0; xi < resX; xi += 1) {
-                palette.add(PixelCalculator.peek(imageData, x + xi, y + yi));
-            }
-        }
-        
-        // return the maximum color from the palette
-        return palette.getMaxColor();
-    }
-   
-    /**
-     * Extract color map from an image, using the colormap resolution.
-     * The maximum used color in the colormap resolution area is used to set the color.
-     */
-    function extractFromImage(imageData) {
-        
-        var x,
-            y,
-            maxColor;
-        
-        width = imageData.width;
-        height = imageData.height;
-        
-        for (y = 0; y < height; y += resY) {
-            for (x = 0; x < width; x += resX) {
-                
-                // determine the max color in this area
-                maxColor = getMaxColorFromImageData(imageData, x, y);
-                add(x, y, maxColor);
-                
-            }
-        }
-    }
-    
-    /**
      * Convert to an image so it can be displayed.
      */
     function toImageData() {
@@ -173,14 +101,32 @@ function ColorMap(width, height, resX, resY) {
         return imageData;
     }
     
+    function getAreaWidth() {
+        return resX;
+    }
+    
+    function getAreaHeight() {
+        return resY;
+    }
+    
+    function debug() {
+        console.log(width + ' x ' + height + ' pixels (' + resX + ' x ' + resY + ' resolution) ' + (width / resX) + ' x ' + (height / resY) + ' areas');
+        console.log(colors);
+    }
+    
     // init
+    resX = resX !== undefined ? resX : width;
+    resY = resY !== undefined ? resY : height;
     fillWithColor(PixelCalculator.emptyPixel);
     
     return {
         getColor: getColor,
         fillWithColor: fillWithColor,
         toImageData: toImageData,
-        add: add
+        add: add,
+        getAreaWidth: getAreaWidth,
+        getAreaHeight: getAreaHeight,
+        debug: debug
     };
     
 }

@@ -24,12 +24,6 @@ PixelCalculator.divide = function (one, factor) {
     return [one[0] / factor, one[1] / factor, one[2] / factor];
 };
 
-/** Compare pixels by color value */
-PixelCalculator.equals = function (one, other) {
-    'use strict';
-    return one[0] === other[0] && one[1] === other[1] && one[2] === other[2];
-};
-
 PixelCalculator.clone = function (one) {
     'use strict';
     return [one[0], one[1], one[2], one[3]];
@@ -41,7 +35,14 @@ PixelCalculator.clone = function (one) {
  */
 PixelCalculator.isEmpty = function (pixel) {
     'use strict';
-    return pixel[3] < 1;
+    return pixel[3] === undefined ||  pixel[3] < 1;
+};
+
+/** Compare pixels by color value */
+PixelCalculator.equals = function (one, other) {
+    'use strict';
+    
+    return !PixelCalculator.isEmpty(one) && !PixelCalculator.isEmpty(other) && one[0] === other[0] && one[1] === other[1] && one[2] === other[2];
 };
 
 PixelCalculator.emptyPixel = [0, 0, 0, 0];
