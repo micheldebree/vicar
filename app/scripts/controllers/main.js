@@ -48,7 +48,6 @@ angular.module('vicarApp')
             image.grab(img, function () {
                 
                 $scope.mainImage = image;
-                $scope.$apply();
                 
                 var remapper = new Remapper(),
                     secondImage;
@@ -59,47 +58,47 @@ angular.module('vicarApp')
                     cm1 =  new ColorMap($scope.mainImage.getWidth(), $scope.mainImage.getHeight(), 4, 8),
                     cm2 =  new ColorMap($scope.mainImage.getWidth(), $scope.mainImage.getHeight(), 4, 8),
                     cm3 =  new ColorMap($scope.mainImage.getWidth(), $scope.mainImage.getHeight(), 4, 8);
-                
-                var pimage = new PixelImage(),
-                    pimage1 = new PixelImage(),
-                    pimage2 = new PixelImage(),
-                    pimage3 = new PixelImage();
-                
-                pimage.init($scope.mainImage.getWidth(), $scope.mainImage.getHeight(), cm);
-                pimage1.init($scope.mainImage.getWidth(), $scope.mainImage.getHeight(), cm1);
-                pimage2.init($scope.mainImage.getWidth(), $scope.mainImage.getHeight(), cm2);
-                pimage3.init($scope.mainImage.getWidth(), $scope.mainImage.getHeight(), cm3);
-                pimage = $scope.mainImage.extractColorMap(pimage);
-                pimage1 = $scope.mainImage.extractColorMap(pimage1);
-                pimage2 = $scope.mainImage.extractColorMap(pimage2);
-                pimage3 = $scope.mainImage.extractColorMap(pimage3);
-                
-                $scope.testImage = pimage;
-                $scope.testImage1 = pimage1;
-                $scope.testImage2 = pimage2;
-                $scope.testImage3 = pimage3;
-                
-                $scope.testImage3.merge($scope.testImage2);
-                $scope.testImage3.merge($scope.testImage1);
-                $scope.testImage3.merge($scope.testImage);
-               
               
+                cm = $scope.mainImage.extractColorMap(cm);
+                cm1 = $scope.mainImage.extractColorMap(cm1);
+                cm2 = $scope.mainImage.extractColorMap(cm2);
+                cm3 = $scope.mainImage.extractColorMap(cm3);
+              
+                $scope.colorMap0 = new PixelImage();
+                $scope.colorMap0.init(image.getWidth(), image.getHeight());
+                $scope.colorMap0.addColorMap(new ColorMap(image.getWidth(), image.getHeight(), 1, 1));
+                $scope.colorMap0.drawImageData(cm.toImageData());
                 
+                $scope.colorMap1 = new PixelImage();
+                $scope.colorMap1.init(image.getWidth(), image.getHeight());
+                $scope.colorMap1.addColorMap(new ColorMap(image.getWidth(), image.getHeight(), 1, 1));
+                $scope.colorMap1.drawImageData(cm1.toImageData());
+                
+                $scope.colorMap2 = new PixelImage();
+                $scope.colorMap2.init(image.getWidth(), image.getHeight());
+                $scope.colorMap2.addColorMap(new ColorMap(image.getWidth(), image.getHeight(), 1, 1));
+                $scope.colorMap2.drawImageData(cm2.toImageData());
+                
+                $scope.colorMap3 = new PixelImage();
+                $scope.colorMap3.init(image.getWidth(), image.getHeight());
+                $scope.colorMap3.addColorMap(new ColorMap(image.getWidth(), image.getHeight(), 1, 1));
+                $scope.colorMap3.drawImageData(cm3.toImageData());
+                
+                
+                
+                
+                $scope.testImage = new PixelImage();
+                $scope.testImage.init(image.getWidth(), image.getHeight());
+                //$scope.testImage.setPixelAspect(2, 1);
+                $scope.testImage.addColorMap(cm);
+                $scope.testImage.addColorMap(cm1);
+                $scope.testImage.addColorMap(cm2);
+                $scope.testImage.addColorMap(cm3);
                 
                 secondImage = PixelCalculator.getImageData(img, image.getWidth(), image.getHeight());
+                $scope.testImage.drawImageData(secondImage, true);
+                $scope.testImage.setPixelAspect(2, 1);
                 
-                $scope.testImage3.setDither([
-        [1, 49, 13, 61, 4, 52, 16, 64],
-        [33, 17, 45, 29, 36, 20, 48, 31],
-        [9, 57, 5, 53, 12, 60, 8, 56],
-        [41, 25, 37, 21, 44, 28, 40, 24],
-        [3, 51, 15, 63, 2, 50, 14, 62],
-        [35, 19, 47, 31, 34, 18, 46, 30],
-        [11, 59, 7, 55, 10, 58, 6, 54],
-        [43, 27, 39, 23, 42, 26, 38, 22]]);
-                
-                $scope.testImage3.drawImageData(secondImage, true);
-                $scope.testImage3.setPixelAspect(2, 1);
                 $scope.$apply();
                 
                 

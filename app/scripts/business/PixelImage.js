@@ -30,6 +30,7 @@ function PixelImage() {
         [4, 12, 2, 10],
         [16, 8, 14, 6]];
     
+    
     dither = [
         [1, 49, 13, 61, 4, 52, 16, 64],
         [33, 17, 45, 29, 36, 20, 48, 31],
@@ -165,21 +166,8 @@ function PixelImage() {
                 reUseColorMap = map(pixel, x, y, 0);
             }
         }
-    
-        // if reuse not forced, create a new single color map
-        //if (!force) {
-            
-            //newMap = new ColorMap(width, height, width, height);
-            //newMap.fillWithColor(pixel);
-            //colorMaps.push(newMap);
-            //pixelIndex[y][x] = colorMaps.length - 1;
-        //} else {
-            // otherwise, map to an available color
-        
-        
         
         setPixelIndex(x, y, reUseColorMap);
-        //}
         
     }
     
@@ -340,13 +328,12 @@ function PixelImage() {
     /**
         Extract an image with a single color map
     */
-    function extractColorMap(pixelImage) {
+    function extractColorMap(colorMap) {
         
         var x,
             y,
             xx,
             yy,
-            colorMap = pixelImage.getColorMaps()[0],
             rx = colorMap.getAreaWidth(),
             ry = colorMap.getAreaHeight(),
             color,
@@ -367,7 +354,7 @@ function PixelImage() {
                             pixel = peek(xx, yy);
                             if (PixelCalculator.equals(pixel, color)) {
                                 setPixelIndex(xx, yy, 0);
-                                pixelImage.setPixelIndex(xx, yy, 1);
+                                
                             }
                         }
                     }
@@ -376,29 +363,7 @@ function PixelImage() {
             }
         }
         
-        return pixelImage;
-        
-    }
-    
-    function merge(otherPixelImage) {
-        
-        var offset = colorMaps.length,
-            x,
-            y,
-            otherMaps = otherPixelImage.getColorMaps(),
-            ci;
-            
-        for (ci = 0; ci < otherMaps.length; ci += 1) {
-            colorMaps.push(otherMaps[ci]);
-        }
-         
-        for (x = 0; x < width; x += 1) {
-            for (y = 0; y < height; y += 1) {
-                if (getPixelIndex(x, y) === 0 || PixelCalculator.isEmpty(peek(x, y))) {
-                    setPixelIndex(x, y, offset + otherPixelImage.getPixelIndex(x, y));
-                }
-            }
-        }
+        return colorMap;
         
     }
   
@@ -501,7 +466,6 @@ function PixelImage() {
         setPixelIndex: setPixelIndex,
         addColorMap: addColorMap,
         getColorMaps: getColorMaps,
-        merge: merge,
         drawImageData: drawImageData,
         setDither: setDither
         
