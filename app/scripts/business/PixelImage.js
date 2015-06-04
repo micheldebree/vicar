@@ -12,10 +12,7 @@ function PixelImage() {
  
     'use strict';
    
-    var img, // the source for grabbing image data
-        callback, // callback after grabbing image data
-        resizeW, // resize width when grabbing data
-        width, // width in pixels
+    var width, // width in pixels
         height, // height in pixels
         pwidth = 1, // aspect width of one pixel
         pheight = 1, // aspect height of one pixel
@@ -233,49 +230,8 @@ function PixelImage() {
         
     }
   
-    function grabData() {
-        var w = typeof resizeW !== 'undefined' ? resizeW : img.width,
-            h = resizeW * img.height / img.width,
-            imageData = PixelCalculator.getImageData(img, w, h);
-        
-        fromImageData(imageData);
-
-        // call the callback event because the image data is ready
-        if (typeof callback === 'function') {
-            callback();
-        }
-    }
+   
   
-    /**
-        Grab image data from an image. Grabbing is defered until the image is loaded.
-        @param {Image} imgParam - The image from which to grab the data.
-        @param {Function} successCallback - Handler executed after data has been grabbed.
-        @param {number} [w] - Width to resize the image to.
-    */
-    function grab(imgParam, successCallback, w) {
-        
-        resizeW = w;
-        callback = successCallback;
-
-        img = imgParam;
-
-        if (!img.complete) {
-            
-            // chain multiple onload functions onto the onload event
-            var currentOnLoad = img.onload;
-            if (typeof currentOnLoad !== 'function') {
-                img.onload = grabData;
-            } else {
-                img.onload = function () {
-                    currentOnLoad();
-                    grabData();
-                };
-            }
-        } else {
-            grabData();
-        }
-    }
-    
     /**
      * @returns {Boolean} Is the image ready to be used?
      */
@@ -453,7 +409,6 @@ function PixelImage() {
         getHeight: getHeight,
         peek: peek,
         poke: poke,
-        grab: grab,
         toSrcUrl: toSrcUrl,
         init: init,
         addAvailableColor: addAvailableColor,

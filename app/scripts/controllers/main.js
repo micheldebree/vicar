@@ -1,4 +1,4 @@
-/*global angular, URL, ColorMap, Remapper, PixelImage */
+/*global angular, URL, ColorMap, Remapper, PixelImage, ImageGrabber, PixelCalculator */
 /**
  * @ngdoc function
  * @name workspaceApp.controller:MainCtrl
@@ -42,27 +42,23 @@ angular.module('vicarApp')
             $scope.mainImage = undefined;
             // generate main image
             
-            var image = new PixelImage();
-            image.setPixelAspect(2, 1);
+            var grabber = new ImageGrabber();
             
-            image.grab(img, function () {
-                
-                $scope.mainImage = image;
+            grabber.grab(img, function (imageData) {
                 
                 var remapper = new Remapper(),
-                    secondImage;
-               
-                $scope.mainImage = remapper.remap(image, $scope.selectedProfile.value.palette);
+                    secondImage,
+                    image = remapper.remap(imageData, $scope.selectedProfile.value.palette, 2, 1);
                 
-                var cm = new ColorMap($scope.mainImage.getWidth(), $scope.mainImage.getHeight()),
-                    cm1 =  new ColorMap($scope.mainImage.getWidth(), $scope.mainImage.getHeight(), 4, 8),
-                    cm2 =  new ColorMap($scope.mainImage.getWidth(), $scope.mainImage.getHeight(), 4, 8),
-                    cm3 =  new ColorMap($scope.mainImage.getWidth(), $scope.mainImage.getHeight(), 4, 8);
+                var cm = new ColorMap(image.getWidth(), image.getHeight()),
+                    cm1 =  new ColorMap(image.getWidth(), image.getHeight(), 4, 8),
+                    cm2 =  new ColorMap(image.getWidth(), image.getHeight(), 4, 8),
+                    cm3 =  new ColorMap(image.getWidth(), image.getHeight(), 4, 8);
               
-                cm = $scope.mainImage.extractColorMap(cm);
-                cm1 = $scope.mainImage.extractColorMap(cm1);
-                cm2 = $scope.mainImage.extractColorMap(cm2);
-                cm3 = $scope.mainImage.extractColorMap(cm3);
+                cm = image.extractColorMap(cm);
+                cm1 = image.extractColorMap(cm1);
+                cm2 = image.extractColorMap(cm2);
+                cm3 = image.extractColorMap(cm3);
               
                 $scope.colorMap0 = new PixelImage();
                 $scope.colorMap0.init(image.getWidth(), image.getHeight());
@@ -85,20 +81,20 @@ angular.module('vicarApp')
                 $scope.colorMap3.drawImageData(cm3.toImageData());
                 
                 
-                
-                
                 $scope.testImage = new PixelImage();
                 $scope.testImage.init(image.getWidth(), image.getHeight());
-                //$scope.testImage.setPixelAspect(2, 1);
+               
                 $scope.testImage.addColorMap(cm);
                 $scope.testImage.addColorMap(cm1);
                 $scope.testImage.addColorMap(cm2);
                 $scope.testImage.addColorMap(cm3);
                 
                 secondImage = PixelCalculator.getImageData(img, image.getWidth(), image.getHeight());
+               
                 $scope.testImage.drawImageData(secondImage, true);
                 $scope.testImage.setPixelAspect(2, 1);
                 
+                $scope.mainImage = image;
                 $scope.$apply();
                 
                 
