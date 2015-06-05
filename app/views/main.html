@@ -2,10 +2,9 @@
 <div id="image" ng-file-drop ng-file-select ng-model="files" class="drop-box" 
         drag-over-class="dragover" ng-multiple="false" allow-dir="false"
         accept="image/*">
-    <img pixel-image="mainImage"/>
+    <img pixel-image="mainImage"/><img pixel-image="testImage"/>
 </div>
 <br/>
-<img pixel-image="testImage"/>
-<img pixel-image="colorMap0"/><img pixel-image="colorMap1"/><img pixel-image="colorMap2"/><img pixel-image="colorMap3"/>
+<img ng-repeat="cmap in colorMap" pixel-image="cmap"/>
 
 

@@ -53,14 +53,13 @@ PixelCalculator.emptyPixel = [0, 0, 0, 0];
  * @param {number} [w] - Width to rescale image to.
  * @param {number} [h] - Height to rescale image to.:w
  */
-PixelCalculator.getImageData = function (img, w, h) {
+PixelCalculator.getImageData = function (img) {
     'use strict';
 
     var canvas = document.createElement('canvas'),
-        context = canvas.getContext('2d');
-
-    w = typeof w !== 'undefined' ? w : img.width;
-    h = typeof h !== 'undefined' ? h : img.height;
+        context = canvas.getContext('2d'),
+        w = 160,
+        h = 200;
 
     canvas.width = w;
     canvas.height = h;
@@ -132,4 +131,18 @@ PixelCalculator.peek = function (imageData, x, y) {
     } else {
         return PixelCalculator.emptyPixel;
     }
+};
+
+PixelCalculator.resize = function (imageData, w, h) {
+    'use strict';
+    
+    var canvas = document.createElement('canvas'),
+        context = canvas.getContext('2d');
+    
+    canvas.width = w;
+    canvas.height = h;
+    
+    context.putImageData(imageData, 0, 0, 0, 0, w, h);
+    return context.getImageData(0, 0, w, h);
+    
 };

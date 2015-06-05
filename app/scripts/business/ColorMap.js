@@ -1,4 +1,4 @@
-/*global Palette, PixelCalculator, console */
+/*global PixelCalculator, console */
 /*exported ColorMap*/
 /**
  * Maps x, y coordinates to a pixel value.
@@ -8,6 +8,8 @@
  * @param {number} height - Height of the map in pixels
  * @param {number} [resX] - Number of horizontal pixels in color areas.
  * @param {number} [resY] - Number of vertical pixels in color areas.
+ *
+ * A color is an index into a palette. A pixel is a set of RGBA values.
  */
 function ColorMap(width, height, resX, resY) {
     'use strict';
@@ -49,13 +51,13 @@ function ColorMap(width, height, resX, resY) {
     /**
      * Fill the map with one color.
      */
-    function fillWithColor(pixel) {
+    function fillWithColor(color) {
         var x,
             y;
       
         for (x = 0; x < width; x += resX) {
             for (y = 0; y < height; y += resY) {
-                add(x, y, pixel);
+                add(x, y, color);
             }
         }
     }
@@ -65,40 +67,47 @@ function ColorMap(width, height, resX, resY) {
      */
     function getColor(x, y) {
         
-        if (!isInRange(x, y)) {
-            return PixelCalculator.emptyPixel;
-        }
+        var mX = mapX(x),
+            mY = mapY(y);
         
-        var mx = mapX(x),
-            my = mapY(y),
-            result = colors[mx][my];
-
-        // TODO: this should never be undefined..
-        if (result !== undefined) {
-            return result;
+        if (colors[mX] !== undefined) {
+            return colors[mX][mY];
         } else {
-            return PixelCalculator.emptyPixel;
+            return undefined;
         }
-      
+    
     }
     
     /**
      * Convert to an image so it can be displayed.
+     * @param {Palette} the palette to use for looking up the colors.
      */
-    function toImageData() {
+    function toImageData(palette) {
         var canvas = document.createElement('canvas'),
             context = canvas.getContext('2d'),
             imageData = context.createImageData(width, height),
             x,
-            y;
+            y,
+            colorIndex,
+            color;
         
         for (y = 0; y < height; y += 1) {
             for (x = 0; x < width; x += 1) {
-                PixelCalculator.poke(imageData, x, y, getColor(x, y));
+                colorIndex = getColor(x, y);
+                color = palette.get(colorIndex);
+                PixelCalculator.poke(imageData, x, y, color);
             }
         }
      
         return imageData;
+    }
+    
+    function getWidth() {
+        return width;
+    }
+    
+    function getHeight() {
+        return height;
     }
     
     function getAreaWidth() {
@@ -117,13 +126,14 @@ function ColorMap(width, height, resX, resY) {
     // init
     resX = resX !== undefined ? resX : width;
     resY = resY !== undefined ? resY : height;
-    fillWithColor(PixelCalculator.emptyPixel);
     
     return {
         getColor: getColor,
         fillWithColor: fillWithColor,
         toImageData: toImageData,
         add: add,
+        getWidth: getWidth,
+        getHeight: getHeight,
         getAreaWidth: getAreaWidth,
         getAreaHeight: getAreaHeight,
         debug: debug

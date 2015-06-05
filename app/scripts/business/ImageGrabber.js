@@ -1,15 +1,13 @@
+/*exported ImageGrabber*/
 /*global PixelCalculator */
 function ImageGrabber() {
     'use strict';
     
     var img, // the source for grabbing image data 
-        resizeW,
         callback; // callback after grabbing image data// resize width when grabbing data
         
     function grabData() {
-        var w = typeof resizeW !== 'undefined' ? resizeW : img.width,
-            h = resizeW * img.height / img.width,
-            imageData = PixelCalculator.getImageData(img, w, h);
+        var imageData = PixelCalculator.getImageData(img);
 
         // call the callback event because the image data is ready
         if (typeof callback === 'function') {
@@ -23,9 +21,8 @@ function ImageGrabber() {
         @param {Function} successCallback - Handler executed after data has been grabbed.
         @param {number} [w] - Width to resize the image to.
     */
-    function grab(imgParam, successCallback, w) {
+    function grab(imgParam, successCallback) {
         
-        resizeW = w;
         callback = successCallback;
 
         img = imgParam;

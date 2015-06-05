@@ -1,4 +1,4 @@
-/*global angular, URL, ColorMap, Remapper, PixelImage, ImageGrabber, PixelCalculator */
+/*global angular, URL, ColorMap, Remapper, PixelImage, ImageGrabber, PixelCalculator, Palette */
 /**
  * @ngdoc function
  * @name workspaceApp.controller:MainCtrl
@@ -34,71 +34,109 @@ angular.module('vicarApp')
         };
         
         $scope.imageChanged = function () {
-            var i;
             $scope.convert();
         };
+        
+        function toPixelImage(colorMap, palette) {
+            var result = new PixelImage();
+           
+            result.setPalette(palette);
+            result.setDither([[0]]);
+            result.init(colorMap.getWidth(), colorMap.getHeight());
+            result.addColorMap(new ColorMap(colorMap.getWidth(), colorMap.getHeight(), 1, 1));
+            result.drawImageData(colorMap.toImageData(palette));
+           
+            return result;
+        }
         
         $scope.convert = function () {
             $scope.mainImage = undefined;
             // generate main image
             
-            var grabber = new ImageGrabber();
+            var grabber = new ImageGrabber(),
+                palette = new Palette(),
+                i;
+            
+            for (i = 0; i < $scope.selectedProfile.value.palette.length; i +=  1) {
+                palette.add($scope.selectedProfile.value.palette[i]);
+            }
+            
+            function convertToPixelImage(imageData, pW, pH, colorMaps) {
+                var w = imageData.width,
+                    h = imageData.height,
+                    unrestrictedImage = new PixelImage(),
+                    restrictedImage,
+                   
+                    ci,
+                    cm;
+                   
+                // create an unrestricted image (one colormap of 1 x 1 resolution).                 
+                unrestrictedImage.setPalette(palette);
+                unrestrictedImage.setPixelAspect(pW, pH);
+                unrestrictedImage.init(w, h, new ColorMap(w, h, 1, 1));
+                unrestrictedImage.drawImageData(imageData);
+              
+                
+                 // create an image with the extracted color maps
+                restrictedImage = new PixelImage();
+                restrictedImage.setPixelAspect(pW, pH);
+                restrictedImage.init(w, h);
+                restrictedImage.setPalette(palette);
+                
+                $scope.colorMap = [];
+                for (ci = 0; ci < colorMaps.length; ci += 1) {
+                    cm = unrestrictedImage.extractColorMap(colorMaps[ci]);
+                    restrictedImage.addColorMap(cm);
+                    $scope.colorMap[ci] = toPixelImage(cm, palette);
+                    $scope.colorMap[ci].setPixelAspect(pW, pH);
+                }
+      
+                // draw the image again in the restricted image
+                restrictedImage.drawImageData(imageData, true);
+                
+                $scope.mainImage = unrestrictedImage;
+                $scope.testImage = restrictedImage;
+                $scope.$apply();
+            }
+            
+            function convertTo2ColorHires(imageData) {
+             var  colorMaps = [],
+                    w = imageData.width,
+                    h = imageData.height;
+            
+                colorMaps.push(new ColorMap(w, h, w, h));
+                colorMaps.push(new ColorMap(w, h, w, h));
+                convertToPixelImage(imageData, 1, 1, colorMaps);
+            }
+            
+            function convertToHires(imageData) {
+                var  colorMaps = [],
+                    w = imageData.width,
+                    h = imageData.height;
+            
+                colorMaps.push(new ColorMap(w, h, 8, 8));
+                colorMaps.push(new ColorMap(w, h, 8, 8));
+                convertToPixelImage(imageData, 1, 1, colorMaps);
+            }
+            
+            
+            function convertToMultiColor(imageData) {
+                var  colorMaps = [],
+                    w = imageData.width,
+                    h = imageData.height;
+                
+                colorMaps.push(new ColorMap(w, h));
+                colorMaps.push(new ColorMap(w, h, 4, 8));
+                colorMaps.push(new ColorMap(w, h, 4, 8));
+                colorMaps.push(new ColorMap(w, h, 4, 8));
+                convertToPixelImage(imageData, 2, 1, colorMaps);
+            }
             
             grabber.grab(img, function (imageData) {
-                
-                var remapper = new Remapper(),
-                    secondImage,
-                    image = remapper.remap(imageData, $scope.selectedProfile.value.palette, 2, 1);
-                
-                var cm = new ColorMap(image.getWidth(), image.getHeight()),
-                    cm1 =  new ColorMap(image.getWidth(), image.getHeight(), 4, 8),
-                    cm2 =  new ColorMap(image.getWidth(), image.getHeight(), 4, 8),
-                    cm3 =  new ColorMap(image.getWidth(), image.getHeight(), 4, 8);
-              
-                cm = image.extractColorMap(cm);
-                cm1 = image.extractColorMap(cm1);
-                cm2 = image.extractColorMap(cm2);
-                cm3 = image.extractColorMap(cm3);
-              
-                $scope.colorMap0 = new PixelImage();
-                $scope.colorMap0.init(image.getWidth(), image.getHeight());
-                $scope.colorMap0.addColorMap(new ColorMap(image.getWidth(), image.getHeight(), 1, 1));
-                $scope.colorMap0.drawImageData(cm.toImageData());
-                
-                $scope.colorMap1 = new PixelImage();
-                $scope.colorMap1.init(image.getWidth(), image.getHeight());
-                $scope.colorMap1.addColorMap(new ColorMap(image.getWidth(), image.getHeight(), 1, 1));
-                $scope.colorMap1.drawImageData(cm1.toImageData());
-                
-                $scope.colorMap2 = new PixelImage();
-                $scope.colorMap2.init(image.getWidth(), image.getHeight());
-                $scope.colorMap2.addColorMap(new ColorMap(image.getWidth(), image.getHeight(), 1, 1));
-                $scope.colorMap2.drawImageData(cm2.toImageData());
-                
-                $scope.colorMap3 = new PixelImage();
-                $scope.colorMap3.init(image.getWidth(), image.getHeight());
-                $scope.colorMap3.addColorMap(new ColorMap(image.getWidth(), image.getHeight(), 1, 1));
-                $scope.colorMap3.drawImageData(cm3.toImageData());
-                
-                
-                $scope.testImage = new PixelImage();
-                $scope.testImage.init(image.getWidth(), image.getHeight());
-               
-                $scope.testImage.addColorMap(cm);
-                $scope.testImage.addColorMap(cm1);
-                $scope.testImage.addColorMap(cm2);
-                $scope.testImage.addColorMap(cm3);
-                
-                secondImage = PixelCalculator.getImageData(img, image.getWidth(), image.getHeight());
-               
-                $scope.testImage.drawImageData(secondImage, true);
-                $scope.testImage.setPixelAspect(2, 1);
-                
-                $scope.mainImage = image;
-                $scope.$apply();
-                
-                
-            }, 320);
+                convertToMultiColor(imageData);
+                //convertToHires(imageData);
+                //convertTo2ColorHires(imageData);
+            });
           
             
         };
