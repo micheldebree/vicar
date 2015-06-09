@@ -100,7 +100,7 @@ angular.module('vicarApp')
             }
             
             function convertTo2ColorHires(imageData) {
-             var  colorMaps = [],
+                var colorMaps = [],
                     w = imageData.width,
                     h = imageData.height;
             

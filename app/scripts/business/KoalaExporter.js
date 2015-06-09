@@ -1,10 +1,12 @@
 /*exported KoalaExporter*/
+/*global Uint8ClampedArray */
+/*jslint bitwise: true*/
 function KoalaExporter() {
     
-    // backgr: 00 - map 1
-    // Screen ram upper nibble: 01 - map 2
-    // Screen ram lower nibble: 10 - map 3 
-    // color ram: 11 - map 4
+    // backgr: 00 - map 0
+    // Screen ram upper nibble: 01 - map 1
+    // Screen ram lower nibble: 10 - map 2 
+    // color ram: 11 - map 3
     
     
     
@@ -20,17 +22,103 @@ function KoalaExporter() {
     
     //http://dustlayer.com/vic-ii/2013/4/26/vic-ii-for-beginners-screen-modes-cheaper-by-the-dozen
     
+    /*
+    Hires bitmap mode
+(You'd generally set this up with: $d011=$3b, $d016=8)
+
+In this mode (as in all bitmap modes), the VIC reads the graphics data from a 320×200 bitmap in which every bit corresponds to one pixel on the screen. The data from the screen memory is used for color information. As the screen memory is still only a 40×25 matrix, you can only specify the colors for blocks of 8×8 pixels individually (sort of a YC 8:1 format). As the designers of the VIC wanted to realize the bitmap mode with as little additional circuitry as possible (the VIC-I didn't have a bitmap mode), the arrangement of the bitmap in memory is somewhat weird: In contrast to modern video chips that read the bitmap in a linear fashion from memory, the VIC forms an 8×8 pixel block on the screen from 8 successive bytes of the bitmap. The video matrix and the bitmap can be moved in memory with the bits VM10-VM13 and CB13 of register $d018.
+
+In standard bitmap mode, every bit in the bitmap directly corresponds to one pixel on the screen. Foreground and background color can be arbitrarily set for every 8×8 block.
+
+ +---------------------------------------+
+ |         8 pixels (1 bit/pixel)        |
+ |                                       |
+ | "0": Color from bits 0-3 of screen mem|
+ | "1": Color from bits 4-7 of screen mem|
+ +---------------------------------------+
+Multicolor bitmap mode
+(You'd generally set this up with: $d011=$3b, $d016=$18)
+
+Similar to the multicolor text mode, this mode also forms (twice as wide) pixels by combining two adjacent bits. So the resolution is reduced to 160×200 pixels.
+
+The bit combination “01” is also treated as “background” for the sprite priority and collision detection, as in multicolor text mode.
+
+ +----------------------------------------+
+ |         (2 bits/pixel)                 |
+ |                                        |
+ | "00": Background color 0 ($d021)       |
+ | "01": Color from bits 4-7 of screen mem|
+ | "10": Color from bits 0-3 of screen mem|
+ | "11": Color from bits 8-11 of color mem|
+ +----------------------------------------+
+    */
+    
+    
     'use strict';
     
     function convert(pixelImage) {
     
         var colorMaps = pixelImage.getColorMaps(),
-            colorMap2Pixel = {
-                0 : 0,
-                1 : 1,
-                2 : 2,
-                3 : 3
-            };
+            bitmap = new Uint8ClampedArray(),
+            videoRam = new Uint8ClampedArray(),
+            colorRam = new Uint8ClampedArray(),
+            charY,
+            charX,
+            bitmapY,
+            colorX,
+            colorY,
+            imageW = pixelImage.getWidth(),
+            imageH = pixelImage.getHeight(),
+            color00,
+            color01,
+            color10,
+            color11,
+            bits01,
+            bits23,
+            bits45,
+            bits67,
+            bitmapIndex = 0,
+            colorIndex = 0,
+            result,
+            byteValue;
+            
+        for (charY = 0; charY < pixelImage.getHeight(); charY += 8) {
+            for (charX = 0; charX < pixelImage.getWidth(); charX += 4) {
+                for (bitmapY = 0; bitmapY < 8; bitmapY += 1) {
+                    bits67 = pixelImage.getPixelIndex(charX * 4, charY * 8) << 6;
+                    bits45 = pixelImage.getPixelIndex(charX * 4 + 1, charY * 8) << 4;
+                    bits23 = pixelImage.getPixelIndex(charX * 4 + 2, charY * 8) << 2;
+                    bits01 = pixelImage.getPixelIndex(charX * 4 + 3, charY * 8);
+                    
+                    bitmap[bitmapIndex] = bits67 | bits45 | bits23 | bits01;
+                    bitmapIndex += 1;
+                }
+                
+                
+            }
+        }
+        
+        // background color from first map
+        color00 = pixelImage.getColorMaps[0].getColor(0, 0);
+        
+        for (colorY = 0; colorY < imageH; colorY += 8) {
+            for (colorX = 0; colorX < imageW; colorX += 4) {
+             
+                color01 = pixelImage.getColorMaps[1].getColor(colorX, colorY);
+                color10 = pixelImage.getColorMaps[2].getColor(colorX, colorY);
+                color11 = pixelImage.getColorMaps[3].getColor(colorX, colorY);
+                 
+                videoRam[colorIndex] = ((color01 << 4) & 0xf0) | (color10 & 0x0f);
+                colorRam[colorIndex] = color11 & 0x0f;
+                colorIndex += 1;
+                 
+            }
+        }
+        
+        result = bitmap.concat(videoRam).concat(colorRam);
+        result.push(color00);
+        
+        return result;
             
     }
     

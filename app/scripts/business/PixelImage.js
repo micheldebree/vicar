@@ -157,7 +157,7 @@ function PixelImage() {
         
         for (y = 0; y < height; y += 1) {
             for (x = 0; x < width; x += 1) {
-                pixel = PixelCalculator.peek(imageData, x , y );
+                pixel = PixelCalculator.peek(imageData, x, y);
                 poke(x, y, pixel);
             }
         }
