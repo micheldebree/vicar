@@ -1,4 +1,4 @@
-/*global angular, URL, ColorMap, Remapper, PixelImage, ImageGrabber, PixelCalculator, Palette */
+/*global angular, URL, ColorMap, Remapper, PixelImage, ImageGrabber, PixelCalculator, Palette, KoalaExporter, KoalaPicture, FileReader */
 /**
  * @ngdoc function
  * @name workspaceApp.controller:MainCtrl
@@ -42,8 +42,8 @@ angular.module('vicarApp')
            
             result.setPalette(palette);
             result.setDither([[0]]);
-            result.init(colorMap.getWidth(), colorMap.getHeight());
-            result.addColorMap(new ColorMap(colorMap.getWidth(), colorMap.getHeight(), 1, 1));
+            result.init(colorMap.width, colorMap.height);
+            result.addColorMap(new ColorMap(colorMap.width, colorMap.height, 1, 1));
             result.drawImageData(colorMap.toImageData(palette));
            
             return result;
@@ -54,12 +54,10 @@ angular.module('vicarApp')
             // generate main image
             
             var grabber = new ImageGrabber(),
-                palette = new Palette(),
-                i;
-            
-            for (i = 0; i < $scope.selectedProfile.value.palette.length; i +=  1) {
-                palette.add($scope.selectedProfile.value.palette[i]);
-            }
+                palette = new Palette($scope.selectedProfile.value.palette),
+                i,
+                converter = new KoalaExporter(),
+                koalaPic;
             
             function convertToPixelImage(imageData, pW, pH, colorMaps) {
                 var w = imageData.width,
@@ -96,6 +94,11 @@ angular.module('vicarApp')
                 
                 $scope.mainImage = unrestrictedImage;
                 $scope.testImage = restrictedImage;
+                
+                koalaPic = converter.convert($scope.testImage);
+                $scope.mainImage = converter.toPixelImage(koalaPic, palette);
+                
+                
                 $scope.$apply();
             }
             
@@ -153,7 +156,8 @@ angular.module('vicarApp')
         $scope.$watch('files', function () {
             $scope.upload();
         });
-
+        
+      
         $scope.imageChanged();
 
     }]);

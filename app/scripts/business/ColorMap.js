@@ -11,132 +11,115 @@
  *
  * A color is an index into a palette. A pixel is a set of RGBA values.
  */
-function ColorMap(width, height, resX, resY) {
+
+// http://stackoverflow.com/questions/8580540/javascript-calling-private-method-from-prototype-method
+
+function ColorMap(widthVal, heightVal, resXVal, resYVal) {
     'use strict';
     
-    var colors = [];
+    this.colors = [];
+    this.width = widthVal;
+    this.height = heightVal;
+    this.resX = resXVal !== undefined ? resXVal : widthVal;
+    this.resY = resYVal !== undefined ? resYVal : heightVal;
     
-    function isInRange(x, y) {
-        return (x >= 0 && x < width && y >= 0 && y < height);
-    }
+}
+
+
+ColorMap.prototype.isInRange = function (x, y) {
+    'use strict';
     
-    function mapX(x) {
-        return Math.floor(x / resX);
-    }
-    
-    function mapY(y) {
-        return Math.floor(y / resY);
-    }
-    
-    /**
+    return (x >= 0 && x < this.width && y >= 0 && y < this.height);
+};
+
+ColorMap.prototype.mapX = function (x) {
+    'use strict';
+    return Math.floor(x / this.resX);
+};
+
+ColorMap.prototype.mapY = function mapY(y) {
+    'use strict';
+    return Math.floor(y / this.resY);
+};
+
+  /**
      * Set an area to a certain color.
      */
-    function add(x, y, color) {
-
-        if (!isInRange(x, y)) {
-            return;
-        }
-        
-        var rx = mapX(x),
-            ry = mapY(y);
-
-        // add it to the color map
-        if (colors[rx] === undefined) {
-            colors[rx] = [];
-        }
-        colors[rx][ry] = color;
-        
+ColorMap.prototype.add = function (x, y, color) {
+    'use strict';
+    if (!this.isInRange(x, y)) {
+        return;
     }
+
+    var rx = this.mapX(x),
+        ry = this.mapY(y);
+
+    // add it to the color map
+    if (this.colors[rx] === undefined) {
+        this.colors[rx] = [];
+    }
+    this.colors[rx][ry] = color;
+        
+};
     
-    /**
+
+ /**
      * Fill the map with one color.
      */
-    function fillWithColor(color) {
-        var x,
-            y;
-      
-        for (x = 0; x < width; x += resX) {
-            for (y = 0; y < height; y += resY) {
-                add(x, y, color);
-            }
+ColorMap.prototype.fillWithColor = function (color) {
+    'use strict';
+    var x,
+        y;
+
+    for (x = 0; x < this.width; x += this.resX) {
+        for (y = 0; y < this.height; y += this.resY) {
+            this.add(x, y, color);
         }
     }
-    
-    /**
-     * Get the color at x, y coordinate.
-     */
-    function getColor(x, y) {
-        
-        var mX = mapX(x),
-            mY = mapY(y);
-        
-        if (colors[mX] !== undefined) {
-            return colors[mX][mY];
-        } else {
-            return undefined;
-        }
-    
-    }
-    
-    /**
+};
+
+ /**
      * Convert to an image so it can be displayed.
      * @param {Palette} the palette to use for looking up the colors.
      */
-    function toImageData(palette) {
-        var canvas = document.createElement('canvas'),
-            context = canvas.getContext('2d'),
-            imageData = context.createImageData(width, height),
-            x,
-            y,
-            colorIndex,
-            color;
+ColorMap.prototype.toImageData = function toImageData(palette) {
         
-        for (y = 0; y < height; y += 1) {
-            for (x = 0; x < width; x += 1) {
-                colorIndex = getColor(x, y);
-                color = palette.get(colorIndex);
-                PixelCalculator.poke(imageData, x, y, color);
-            }
+    'use strict';
+    
+    var canvas = document.createElement('canvas'),
+        context = canvas.getContext('2d'),
+        imageData = context.createImageData(this.width, this.height),
+        x,
+        y,
+        colorIndex,
+        color;
+        
+    for (y = 0; y < this.height; y += 1) {
+        for (x = 0; x < this.width; x += 1) {
+            colorIndex = this.getColor(x, y);
+            color = palette.get(colorIndex);
+            PixelCalculator.poke(imageData, x, y, color);
         }
-     
-        return imageData;
+    }
+
+    return imageData;
+};
+
+  /**
+     * Get the color at x, y coordinate.
+     */
+ColorMap.prototype.getColor = function (x, y) {
+    
+    'use strict';
+        
+    var mX = this.mapX(x),
+        mY = this.mapY(y);
+
+    if (this.colors[mX] !== undefined) {
+        return this.colors[mX][mY];
+    } else {
+        return undefined;
     }
     
-    function getWidth() {
-        return width;
-    }
-    
-    function getHeight() {
-        return height;
-    }
-    
-    function getAreaWidth() {
-        return resX;
-    }
-    
-    function getAreaHeight() {
-        return resY;
-    }
-    
-    function debug() {
-        console.log(width + ' x ' + height + ' pixels (' + resX + ' x ' + resY + ' resolution) ' + (width / resX) + ' x ' + (height / resY) + ' areas');
-        console.log(colors);
-    }
-    
-    // init
-    resX = resX !== undefined ? resX : width;
-    resY = resY !== undefined ? resY : height;
-    
-    return {
-        getColor: getColor,
-        fillWithColor: fillWithColor,
-        toImageData: toImageData,
-        add: add,
-        getWidth: getWidth,
-        getHeight: getHeight,
-        getAreaWidth: getAreaWidth,
-        getAreaHeight: getAreaHeight,
-        debug: debug
-    };
-    
-}
+};
+   

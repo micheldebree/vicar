@@ -99,6 +99,7 @@ function PixelImage() {
             }
             pixelIndex[y][x] = index;
         }
+
     }
     
     function getPixelIndex(x, y) {
@@ -248,8 +249,8 @@ function PixelImage() {
             y,
             xx,
             yy,
-            rx = colorMap.getAreaWidth(),
-            ry = colorMap.getAreaHeight(),
+            rx = colorMap.resX,
+            ry = colorMap.resY,
             color,
             curColor,
             pixel;
@@ -344,14 +345,6 @@ function PixelImage() {
         colorMaps.push(colorMap);
     }
     
-    function addAvailableColor(color) {
-        var newColor = new ColorMap(width, height);
-        color[3] = 0xff;
-        newColor.fillWithColor(color);
-        addColorMap(newColor);
-        
-    }
-    
     function setPixelAspect(width, height) {
         pwidth = width;
         pheight = height;
@@ -376,7 +369,6 @@ function PixelImage() {
         poke: poke,
         toSrcUrl: toSrcUrl,
         init: init,
-        addAvailableColor: addAvailableColor,
         fromImageData: fromImageData,
         setPixelAspect: setPixelAspect,
         getPixelWidth: getPixelWidth,
