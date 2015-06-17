@@ -1,4 +1,4 @@
-/*global angular, URL, Quantizer, PixelImage*/
+/*global angular, URL, ColorMap, Remapper, PixelImage, ImageGrabber, PixelCalculator, Palette, KoalaExporter, KoalaPicture, FileReader */
 /**
  * @ngdoc function
  * @name workspaceApp.controller:MainCtrl
@@ -10,11 +10,8 @@ angular.module('vicarApp')
     .controller('MainCtrl', ['$scope', 'c64izerService', function ($scope, c64izerService) {
         'use strict';
         
-        var img = new Image(),
-            quantizer = new Quantizer();
+        var img = new Image();
         img.src = 'images/rainbowgirl.jpg';
-        
-        $scope.thumbnails = [];
 
         $scope.dithers = c64izerService.getSupportedDithers();
         $scope.selectedDither = $scope.dithers[3];
@@ -36,59 +33,114 @@ angular.module('vicarApp')
             $scope.selectedProfile = profile;
         };
         
-        function makeThumbnail(img, profile) {
-            c64izerService.convert(
-                img,
-                profile.value,
-                $scope.selectedDither.value,
-                function (pixelImage) {
-                    $scope.thumbnails.push(pixelImage);
-                },
-                320 / $scope.profiles.length
-            );
-        }
-        
         $scope.imageChanged = function () {
-            var i;
-            $scope.thumbnails = [];
             $scope.convert();
-            // generate thumbnails for all profiles
-            for (i = 0; i < $scope.profiles.length; i += 1) {
-                makeThumbnail(img, $scope.profiles[i]);
-            }
         };
+        
+        function toPixelImage(colorMap, palette) {
+            var result = new PixelImage();
+           
+            result.setPalette(palette);
+            result.setDither([[0]]);
+            result.init(colorMap.width, colorMap.height);
+            result.addColorMap(new ColorMap(colorMap.width, colorMap.height, 1, 1));
+            result.drawImageData(colorMap.toImageData(palette));
+           
+            return result;
+        }
         
         $scope.convert = function () {
             $scope.mainImage = undefined;
             // generate main image
-            c64izerService.convert(
-                img,
-                $scope.selectedProfile.value,
-                $scope.selectedDither.value,
-                function (pixelImage) {
-                    $scope.mainImage = pixelImage;
-                    $scope.testImage = quantizer.quantize(pixelImage, pixelImage.getWidth(), pixelImage.getHeight());
-                    
-                    $scope.mainImage.subtract($scope.testImage);
-                    
-                    $scope.testImage1 = quantizer.quantize($scope.mainImage, 8, 8);
-                    $scope.mainImage.subtract($scope.testImage1);
-                    $scope.testImage2 = quantizer.quantize($scope.mainImage, 8, 8);
-                    $scope.mainImage.subtract($scope.testImage2);
-                    $scope.testImage3 = quantizer.quantize($scope.mainImage, 8, 8);
-                    $scope.mainImage.subtract($scope.testImage3);
-                    
-                    $scope.testImage4 = new PixelImage();
-                    $scope.testImage4.init($scope.mainImage.getWidth(), $scope.mainImage.getHeight());
-                    
-                    $scope.testImage4.add($scope.testImage);
-                    $scope.testImage4.add($scope.testImage1);
-                    $scope.testImage4.add($scope.testImage2);
-                    $scope.testImage4.add($scope.testImage3);
-                    
-                    $scope.$apply();
+            
+            var grabber = new ImageGrabber(),
+                palette = new Palette($scope.selectedProfile.value.palette),
+                i,
+                converter = new KoalaExporter(),
+                koalaPic;
+            
+            function convertToPixelImage(imageData, pW, pH, colorMaps) {
+                var w = imageData.width,
+                    h = imageData.height,
+                    unrestrictedImage = new PixelImage(),
+                    restrictedImage,
+                   
+                    ci,
+                    cm;
+                   
+                // create an unrestricted image (one colormap of 1 x 1 resolution).                 
+                unrestrictedImage.setPalette(palette);
+                unrestrictedImage.setPixelAspect(pW, pH);
+                unrestrictedImage.init(w, h, new ColorMap(w, h, 1, 1));
+                unrestrictedImage.drawImageData(imageData);
+              
+                
+                 // create an image with the extracted color maps
+                restrictedImage = new PixelImage();
+                restrictedImage.setPixelAspect(pW, pH);
+                restrictedImage.init(w, h);
+                restrictedImage.setPalette(palette);
+                
+                $scope.colorMap = [];
+                for (ci = 0; ci < colorMaps.length; ci += 1) {
+                    cm = unrestrictedImage.extractColorMap(colorMaps[ci]);
+                    restrictedImage.addColorMap(cm);
+                    $scope.colorMap[ci] = toPixelImage(cm, palette);
+                    $scope.colorMap[ci].setPixelAspect(pW, pH);
                 }
-            );
+      
+                // draw the image again in the restricted image
+                restrictedImage.drawImageData(imageData, true);
+                
+                $scope.mainImage = unrestrictedImage;
+                $scope.testImage = restrictedImage;
+                
+                koalaPic = converter.convert($scope.testImage);
+                $scope.mainImage = converter.toPixelImage(koalaPic, palette);
+                $scope.koalaDownloadLink = koalaPic.toUrl();
+                
+                $scope.$apply();
+            }
+            
+            function convertTo2ColorHires(imageData) {
+                var colorMaps = [],
+                    w = imageData.width,
+                    h = imageData.height;
+            
+                colorMaps.push(new ColorMap(w, h, w, h));
+                colorMaps.push(new ColorMap(w, h, w, h));
+                convertToPixelImage(imageData, 1, 1, colorMaps);
+            }
+            
+            function convertToHires(imageData) {
+                var  colorMaps = [],
+                    w = imageData.width,
+                    h = imageData.height;
+            
+                colorMaps.push(new ColorMap(w, h, 8, 8));
+                colorMaps.push(new ColorMap(w, h, 8, 8));
+                convertToPixelImage(imageData, 1, 1, colorMaps);
+            }
+            
+            
+            function convertToMultiColor(imageData) {
+                var  colorMaps = [],
+                    w = imageData.width,
+                    h = imageData.height;
+                
+                colorMaps.push(new ColorMap(w, h));
+                colorMaps.push(new ColorMap(w, h, 4, 8));
+                colorMaps.push(new ColorMap(w, h, 4, 8));
+                colorMaps.push(new ColorMap(w, h, 4, 8));
+                convertToPixelImage(imageData, 2, 1, colorMaps);
+            }
+            
+            grabber.grab(img, function (imageData) {
+                convertToMultiColor(imageData);
+                //convertToHires(imageData);
+                //convertTo2ColorHires(imageData);
+            });
+          
             
         };
 
@@ -104,7 +156,8 @@ angular.module('vicarApp')
         $scope.$watch('files', function () {
             $scope.upload();
         });
-
+        
+      
         $scope.imageChanged();
 
     }]);

@@ -1,9 +1,37 @@
-/*global angular, Remapper, PixelImage */
+/*global angular, Remapper, PixelImage, ColorMap */
 angular.module('vicarApp').factory('c64izerService', function () {
     'use strict';
 
+    function extractColorMap(pixelImage, resX, resY) {
+        var colorMap = new ColorMap(pixelImage, resX, resY);
+        pixelImage.subtract(colorMap.toPixelImage());
+        return colorMap;
+    }
+    
+    function extractColorMaps(pixelImage) {
+    
+        var result = [],
+            colorMap,
+            i;
+        
+        colorMap = extractColorMap(pixelImage, pixelImage.getWidth(), pixelImage.getHeight());
+        result.push(colorMap);
+        
+        for (i = 0; i < 3; i += 1) {
+            colorMap =  extractColorMap(pixelImage, 8, 8);
+            result.push(colorMap);
+        }
+        
+        return result;
+        
+    }
+    
+  
+    
     return {
 
+        extractColorMap: extractColorMap,
+        
         /**
          * Convert an image.
          * @param {Image} img - The image to convert
@@ -20,14 +48,30 @@ angular.module('vicarApp').factory('c64izerService', function () {
             width = typeof width !== 'undefined' ? width : profile.width * profile.pixelWidth;
 
             remapper.setPalette(profile.palette);
-            remapper.setDither(dither);
+            //remapper.setDither(dither);
             remapper.setPixelWidth(profile.pixelWidth);
             remapper.setPixelHeight(profile.pixelHeight);
 
             image.grab(img, function () {
 
-                // remap to c64 palette
+                // make a clone
+                var image2 = image.clone(),
+                    colorMaps,
+                    reRemapper = new Remapper();
+                
+                // remap to palette
                 image = remapper.remap(image);
+             
+                
+                // extract colorMaps from the remapped image
+                //colorMaps = extractColorMaps(image);
+                
+                // remap original using color maps
+                   
+                
+                //reRemapper.setColorMaps(colorMaps);
+                //reRemapper.remap(image2);
+                
 
                 // call the success callback event
                 if (typeof success === 'function') {
@@ -76,21 +120,21 @@ angular.module('vicarApp').factory('c64izerService', function () {
                     'name': 'Commodore 64 multicolor',
                     'palette': [
                         [0, 0, 0, 0xff], // black
-                        [0xff, 0xff, 0xff], // white
-                        [0x68, 0x37, 0x2b], //red
-                        [0x70, 0xa4, 0xb2], //cyan
-                        [0x6f, 0x3d, 0x86], //purple
-                        [0x58, 0x8d, 0x43], //green
-                        [0x35, 0x28, 0x79], //blue
-                        [0xb8, 0xc7, 0x6f], //yellow
-                        [0x6f, 0x4f, 0x25], //orange
-                        [0x43, 0x39, 0x00], //brown
-                        [0x9a, 0x67, 0x59], //light red
-                        [0x44, 0x44, 0x44], //dark gray
-                        [0x6c, 0x6c, 0x6c], //medium gray
-                        [0x9a, 0xd2, 0x84], //light green
-                        [0x6c, 0x5e, 0xb5], //light blue
-                        [0x95, 0x95, 0x95] //green
+                        [0xff, 0xff, 0xff, 0xff], // white
+                        [0x68, 0x37, 0x2b, 0xff], //red
+                        [0x70, 0xa4, 0xb2, 0xff], //cyan
+                        [0x6f, 0x3d, 0x86, 0xff], //purple
+                        [0x58, 0x8d, 0x43, 0xff], //green
+                        [0x35, 0x28, 0x79, 0xff], //blue
+                        [0xb8, 0xc7, 0x6f, 0xff], //yellow
+                        [0x6f, 0x4f, 0x25, 0xff], //orange
+                        [0x43, 0x39, 0x00, 0xff], //brown
+                        [0x9a, 0x67, 0x59, 0xff], //light red
+                        [0x44, 0x44, 0x44, 0xff], //dark gray
+                        [0x6c, 0x6c, 0x6c, 0xff], //medium gray
+                        [0x9a, 0xd2, 0x84, 0xff], //light green
+                        [0x6c, 0x5e, 0xb5, 0xff], //light blue
+                        [0x95, 0x95, 0x95, 0xff] //green
                     ],
                     'pixelWidth': 2,
                     'pixelHeight': 1,

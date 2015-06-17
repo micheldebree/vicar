@@ -14,7 +14,7 @@ angular
        
         'angularFileUpload'
     ])
-      .config(function ($routeProvider) {
+      .config(function ($routeProvider, $compileProvider) {
         'use strict';
     
         $routeProvider
@@ -22,11 +22,15 @@ angular
                 templateUrl: 'views/main.html',
                 controller: 'MainCtrl'
             })
-              .when('/about', {
-                templateUrl: 'views/about.html',
-                controller: 'AboutCtrl'
+              .when('/koala', {
+                templateUrl: 'views/koala.html',
+                controller: 'KoalaCtrl'
             })
               .otherwise({
                 redirectTo: '/'
             });
+    
+        $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension|blob):/);
+    
     });
+ 

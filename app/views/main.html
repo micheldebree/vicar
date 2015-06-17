@@ -2,21 +2,11 @@
 <div id="image" ng-file-drop ng-file-select ng-model="files" class="drop-box" 
         drag-over-class="dragover" ng-multiple="false" allow-dir="false"
         accept="image/*">
-    <img pixel-image="mainImage" width="320"/>
+    <img pixel-image="mainImage"/><img pixel-image="testImage"/>
+   
 </div>
-<p>{{selectedProfile.key}}</p>
-<img ng-repeat="profile in profiles" 
-     ng-click="selectProfile(profile)" 
-     pixel-image="thumbnails[$index]" 
-     width="{{320 / profiles.length}}"/>
+<a href="{{koalaDownloadLink}}" download="vicar.koa">Download koala</a>
+<br/>
+<img ng-repeat="cmap in colorMap" pixel-image="cmap"/>
 
-<br/>
-<img pixel-image="testImage"/>
-<br/>
-<img pixel-image="testImage1"/>
-<br/>
-<img pixel-image="testImage2"/>
-<br/>
-<img pixel-image="testImage3"/>
-<br>
-<img pixel-image="testImage4"/>
+
