@@ -97,7 +97,7 @@ angular.module('vicarApp')
                 
                 koalaPic = converter.convert($scope.testImage);
                 $scope.mainImage = converter.toPixelImage(koalaPic, palette);
-                
+                $scope.koalaDownloadLink = koalaPic.toUrl();
                 
                 $scope.$apply();
             }

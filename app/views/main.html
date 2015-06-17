@@ -3,11 +3,9 @@
         drag-over-class="dragover" ng-multiple="false" allow-dir="false"
         accept="image/*">
     <img pixel-image="mainImage"/><img pixel-image="testImage"/>
+   
 </div>
-<div ng-file-drop ng-file-select ng-model="koalafile" class="drop-box" 
-        drag-over-class="dragover" ng-multiple="false" allow-dir="false">
-    <img pixel-image="koalaImage"/>
-</div>
+<a href="{{koalaDownloadLink}}" download="vicar.koa">Download koala</a>
 <br/>
 <img ng-repeat="cmap in colorMap" pixel-image="cmap"/>
 

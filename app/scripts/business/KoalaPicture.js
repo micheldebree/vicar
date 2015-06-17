@@ -3,22 +3,20 @@ function KoalaPicture() {
 
     'use strict';
     
-    var self = this;
-    
     // 2 bytes load address (default $6000)
-    self.loadAddress = new Uint8Array(2);
-    self.loadAddress[0] = 0;
-    self.loadAddress[1] = 0x60;
+    this.loadAddress = new Uint8Array(2);
+    this.loadAddress[0] = 0;
+    this.loadAddress[1] = 0x60;
     
     // 8000 bytes bitmap data
-    self.bitmap = new Uint8Array(8000);
+    this.bitmap = new Uint8Array(8000);
     // 1000 bytes of screenram ($0400)
-    self.screenRam = new Uint8Array(1000);
+    this.screenRam = new Uint8Array(1000);
     // 1000 bytes of colorram ($d800)
-    self.colorRam = new Uint8Array(1000);
+    this.colorRam = new Uint8Array(1000);
     
     // 1 byte background color
-    self.background = new Uint8Array(1);
+    this.background = new Uint8Array(1);
     
 }
 
@@ -33,12 +31,52 @@ KoalaPicture.prototype.read = function (arrayBuffer) {
     this.background = new Uint8Array(arrayBuffer, 10002, 1);
 };
 
+KoalaPicture.prototype.concat = function (arrayBuffers) {
+    
+    'use strict';
+    
+    var i,
+        ii,
+        iii,
+        outputLength = 0,
+        result;
+       
+    // measure final size
+    for (i = 0; i < arrayBuffers.length; i += 1) {
+        outputLength += arrayBuffers[i].length;
+    }
+    
+    result = new Uint8Array(outputLength);
+    
+    for (i = 0; i < arrayBuffers.length; i += 1) {
+        for (ii = 0; ii < arrayBuffers[i].length; ii += 1) {
+            result[iii] = arrayBuffers[i][ii];
+            iii += 1;
+        }
+    }
+    
+    return result;
+    
+    
+};
+
 KoalaPicture.prototype.toUrl = function () {
     
     'use strict';
     
-    var koalaStream = this.loadAddress.concat(this.bitmap).concat(this.screenRam).concat(this.colorRam).concat(this.background),
-        blob = new Blob(koalaStream, {type: 'application/octet-binary'});
+    var buffers = [],
+        koalaStream,
+        blob;
+    
+    buffers.push(this.loadAddress);
+    buffers.push(this.bitmap);
+    buffers.push(this.screenRam);
+    buffers.push(this.colorRam);
+    buffers.push(this.background);
+    
+    koalaStream = this.concat(buffers);
+    
+    blob = new Blob(koalaStream, {type: 'application/octet-binary'});
     
     return URL.createObjectURL(blob);
 

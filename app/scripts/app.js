@@ -14,7 +14,7 @@ angular
        
         'angularFileUpload'
     ])
-      .config(function ($routeProvider) {
+      .config(function ($routeProvider, $compileProvider) {
         'use strict';
     
         $routeProvider
@@ -29,4 +29,8 @@ angular
               .otherwise({
                 redirectTo: '/'
             });
+    
+        $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension|blob):/);
+    
     });
+ 
