@@ -40,8 +40,8 @@ angular.module('vicarApp')
         function toPixelImage(colorMap, palette) {
             var result = new PixelImage();
            
-            result.setPalette(palette);
-            result.setDither([[0]]);
+            result.palette = palette;
+            result.dither = [[0]];
             result.init(colorMap.width, colorMap.height);
             result.addColorMap(new ColorMap(colorMap.width, colorMap.height, 1, 1));
             result.drawImageData(colorMap.toImageData(palette));
@@ -64,33 +64,36 @@ angular.module('vicarApp')
                     h = imageData.height,
                     unrestrictedImage = new PixelImage(),
                     restrictedImage,
-                   
                     ci,
                     cm;
                    
                 // create an unrestricted image (one colormap of 1 x 1 resolution).                 
-                unrestrictedImage.setPalette(palette);
-                unrestrictedImage.setPixelAspect(pW, pH);
+                unrestrictedImage.palette = palette;
+                unrestrictedImage.pWidth = pW;
+                unrestrictedImage.pHeight = pH;
+                
                 unrestrictedImage.init(w, h, new ColorMap(w, h, 1, 1));
                 unrestrictedImage.drawImageData(imageData);
               
                 
                  // create an image with the extracted color maps
                 restrictedImage = new PixelImage();
-                restrictedImage.setPixelAspect(pW, pH);
+                restrictedImage.pWidth = pW;
+                restrictedImage.pHeight = pH;
                 restrictedImage.init(w, h);
-                restrictedImage.setPalette(palette);
+                restrictedImage.palette = palette;
                 
                 $scope.colorMap = [];
                 for (ci = 0; ci < colorMaps.length; ci += 1) {
                     cm = unrestrictedImage.extractColorMap(colorMaps[ci]);
                     restrictedImage.addColorMap(cm);
                     $scope.colorMap[ci] = toPixelImage(cm, palette);
-                    $scope.colorMap[ci].setPixelAspect(pW, pH);
+                    $scope.colorMap[ci].pWidth = pW;
+                    $scope.colorMap[ci].pHeight = pH;
                 }
       
                 // draw the image again in the restricted image
-                restrictedImage.drawImageData(imageData, true);
+                restrictedImage.drawImageData(imageData);
                 
                 $scope.mainImage = unrestrictedImage;
                 $scope.testImage = restrictedImage;

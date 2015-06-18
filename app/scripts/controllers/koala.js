@@ -22,9 +22,6 @@ angular.module('vicarApp')
                      
                     // convert the pic to a pixelimage
                     $scope.koalaImage = exporter.toPixelImage(pic, peptoPallette);
-                    
-                    console.log($scope.koalaImage.getWidth() + 'x' + $scope.koalaImage.getHeight());
-                    console.log($scope.koalaImage.getColorMaps());
                   
                     $scope.koalaImage.setPixelIndex(0);
                     

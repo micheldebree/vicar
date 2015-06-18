@@ -37,7 +37,7 @@ KoalaPicture.prototype.concat = function (arrayBuffers) {
     
     var i,
         ii,
-        iii,
+        iii = 0,
         outputLength = 0,
         result;
        
@@ -76,7 +76,7 @@ KoalaPicture.prototype.toUrl = function () {
     
     koalaStream = this.concat(buffers);
     
-    blob = new Blob(koalaStream, {type: 'application/octet-binary'});
+    blob = new Blob([koalaStream], {type: 'application/octet-binary'});
     
     return URL.createObjectURL(blob);
 

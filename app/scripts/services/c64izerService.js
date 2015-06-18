@@ -1,36 +1,8 @@
-/*global angular, Remapper, PixelImage, ColorMap */
+/*global angular, PixelImage, ColorMap */
 angular.module('vicarApp').factory('c64izerService', function () {
     'use strict';
-
-    function extractColorMap(pixelImage, resX, resY) {
-        var colorMap = new ColorMap(pixelImage, resX, resY);
-        pixelImage.subtract(colorMap.toPixelImage());
-        return colorMap;
-    }
-    
-    function extractColorMaps(pixelImage) {
-    
-        var result = [],
-            colorMap,
-            i;
-        
-        colorMap = extractColorMap(pixelImage, pixelImage.getWidth(), pixelImage.getHeight());
-        result.push(colorMap);
-        
-        for (i = 0; i < 3; i += 1) {
-            colorMap =  extractColorMap(pixelImage, 8, 8);
-            result.push(colorMap);
-        }
-        
-        return result;
-        
-    }
-    
-  
-    
+ 
     return {
-
-        extractColorMap: extractColorMap,
         
         /**
          * Convert an image.
@@ -42,22 +14,19 @@ angular.module('vicarApp').factory('c64izerService', function () {
          */
         convert: function (img, profile, dither, success, width) {
 
-            var image = new PixelImage(),
-                remapper = new Remapper();
+            var image = new PixelImage();
+             
             
             width = typeof width !== 'undefined' ? width : profile.width * profile.pixelWidth;
 
-            remapper.setPalette(profile.palette);
-            //remapper.setDither(dither);
-            remapper.setPixelWidth(profile.pixelWidth);
-            remapper.setPixelHeight(profile.pixelHeight);
+           
 
             image.grab(img, function () {
 
                 // make a clone
                 var image2 = image.clone(),
-                    colorMaps,
-                    reRemapper = new Remapper();
+                    colorMaps
+                   
                 
                 // remap to palette
                 image = remapper.remap(image);

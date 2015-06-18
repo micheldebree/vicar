@@ -61,9 +61,16 @@ The bit combination “01” is also treated as “background” for the sprite 
     
     'use strict';
     
+    /**
+     * Convert a pixelImage to a KoalaPic
+     * PixelImage must have the following specs:
+     * - 320 x 160 pixels
+     * - colormap 0 has one color
+     * - colormap 1 is  
+     */
     function convert(pixelImage) {
     
-        var colorMaps = pixelImage.getColorMaps(),
+        var colorMaps = pixelImage.colorMaps,
             koalaPic = new KoalaPicture(),
             charY,
             charX,
@@ -72,8 +79,8 @@ The bit combination “01” is also treated as “background” for the sprite 
             bitmapY,
             colorX,
             colorY,
-            imageW = pixelImage.getWidth(),
-            imageH = pixelImage.getHeight(),
+            imageW = pixelImage.width,
+            imageH = pixelImage.height,
             color01,
             color10,
             color11,
@@ -86,10 +93,11 @@ The bit combination “01” is also treated as “background” for the sprite 
             result,
             byteValue;
             
-        for (charY = 0; charY < pixelImage.getHeight(); charY += 8) {
-            for (charX = 0; charX < pixelImage.getWidth(); charX += 4) {
+        for (charY = 0; charY < imageH; charY += 8) {
+            for (charX = 0; charX < imageW; charX += 4) {
                 for (bitmapY = 0; bitmapY < 8; bitmapY += 1) {
                     
+                    // pack 4 pixels into one byte
                     bits67 = pixelImage.getPixelIndex(charX, charY + bitmapY) << 6;
                     bits45 = pixelImage.getPixelIndex(charX + 1, charY + bitmapY) << 4;
                     bits23 = pixelImage.getPixelIndex(charX  + 2, charY + bitmapY) << 2;
@@ -106,9 +114,9 @@ The bit combination “01” is also treated as “background” for the sprite 
         for (colorY = 0; colorY < imageH; colorY += 8) {
             for (colorX = 0; colorX < imageW; colorX += 4) {
              
-                color01 = pixelImage.getColorMaps()[1].getColor(colorX, colorY);
-                color10 = pixelImage.getColorMaps()[2].getColor(colorX, colorY);
-                color11 = pixelImage.getColorMaps()[3].getColor(colorX, colorY);
+                color01 = pixelImage.colorMaps[1].getColor(colorX, colorY);
+                color10 = pixelImage.colorMaps[2].getColor(colorX, colorY);
+                color11 = pixelImage.colorMaps[3].getColor(colorX, colorY);
                  
                 koalaPic.screenRam[colorIndex] = ((color01 << 4) & 0xf0) | (color10 & 0x0f);
                 koalaPic.colorRam[colorIndex] = color11 & 0x0f;
@@ -117,7 +125,7 @@ The bit combination “01” is also treated as “background” for the sprite 
             }
         }
         
-        koalaPic.background = pixelImage.getColorMaps()[0].getColor(0, 0);
+        koalaPic.background[0] = pixelImage.colorMaps[0].getColor(0, 0);
         
         return koalaPic;
             
@@ -150,14 +158,14 @@ The bit combination “01” is also treated as “background” for the sprite 
             pixelY;
             
         pixelImage.init(imageW, imageH);
-        pixelImage.setPalette(palette);
+        pixelImage.palette = palette;
         pixelImage.addColorMap(new ColorMap(imageW, imageH, imageW, imageH));
         pixelImage.addColorMap(new ColorMap(imageW, imageH, pixelsPerCellHor, pixelsPerCellVer));
         pixelImage.addColorMap(new ColorMap(imageW, imageH, pixelsPerCellHor, pixelsPerCellVer));
         pixelImage.addColorMap(new ColorMap(imageW, imageH, pixelsPerCellHor, pixelsPerCellVer));
         
-        for (charY = 0; charY < pixelImage.getHeight(); charY += pixelsPerCellVer) {
-            for (charX = 0; charX < pixelImage.getWidth(); charX += pixelsPerCellHor) {
+        for (charY = 0; charY < imageH; charY += pixelsPerCellVer) {
+            for (charX = 0; charX < imageW; charX += pixelsPerCellHor) {
                 for (bitmapY = 0; bitmapY < pixelsPerCellVer; bitmapY += 1) {
                     
                     // get 4 pixels from one koala byte
@@ -187,17 +195,18 @@ The bit combination “01” is also treated as “background” for the sprite 
                 color10 = koalaPic.screenRam[colorIndex] & 0x0f;
                 color11 = koalaPic.colorRam[colorIndex] & 0x0f;
                 
-                color01 = pixelImage.getColorMaps()[1].add(colorX, colorY, color01);
-                color01 = pixelImage.getColorMaps()[2].add(colorX, colorY, color10);
-                color01 = pixelImage.getColorMaps()[3].add(colorX, colorY, color11);
+                color01 = pixelImage.colorMaps[1].add(colorX, colorY, color01);
+                color01 = pixelImage.colorMaps[2].add(colorX, colorY, color10);
+                color01 = pixelImage.colorMaps[3].add(colorX, colorY, color11);
                  
                 colorIndex += 1;
                  
             }
         }
-        pixelImage.getColorMaps()[0].add(0, 0, koalaPic.background);
+        pixelImage.colorMaps[0].add(0, 0, koalaPic.background[0]);
         
-        pixelImage.setPixelAspect(2, 1);
+        pixelImage.pWidth = 2;
+        pixelImage.pHeight = 1;
         return pixelImage;
     }
     

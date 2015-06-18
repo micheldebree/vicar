@@ -25,10 +25,8 @@ function ColorMap(widthVal, heightVal, resXVal, resYVal) {
     
 }
 
-
 ColorMap.prototype.isInRange = function (x, y) {
     'use strict';
-    
     return (x >= 0 && x < this.width && y >= 0 && y < this.height);
 };
 
@@ -42,46 +40,29 @@ ColorMap.prototype.mapY = function mapY(y) {
     return Math.floor(y / this.resY);
 };
 
-  /**
-     * Set an area to a certain color.
-     */
+/**
+ * Set an area to a certain color.
+ */
 ColorMap.prototype.add = function (x, y, color) {
     'use strict';
     if (!this.isInRange(x, y)) {
         return;
     }
 
-    var rx = this.mapX(x),
-        ry = this.mapY(y);
+    var rx = this.mapX(x);
 
     // add it to the color map
     if (this.colors[rx] === undefined) {
         this.colors[rx] = [];
     }
-    this.colors[rx][ry] = color;
+    this.colors[rx][this.mapY(y)] = color;
         
 };
-    
 
- /**
-     * Fill the map with one color.
-     */
-ColorMap.prototype.fillWithColor = function (color) {
-    'use strict';
-    var x,
-        y;
-
-    for (x = 0; x < this.width; x += this.resX) {
-        for (y = 0; y < this.height; y += this.resY) {
-            this.add(x, y, color);
-        }
-    }
-};
-
- /**
-     * Convert to an image so it can be displayed.
-     * @param {Palette} the palette to use for looking up the colors.
-     */
+/**
+ * Convert to an image so it can be displayed.
+ * @param {Palette} the palette to use for looking up the colors.
+ */
 ColorMap.prototype.toImageData = function toImageData(palette) {
         
     'use strict';
@@ -90,15 +71,11 @@ ColorMap.prototype.toImageData = function toImageData(palette) {
         context = canvas.getContext('2d'),
         imageData = context.createImageData(this.width, this.height),
         x,
-        y,
-        colorIndex,
-        color;
+        y;
         
     for (y = 0; y < this.height; y += 1) {
         for (x = 0; x < this.width; x += 1) {
-            colorIndex = this.getColor(x, y);
-            color = palette.get(colorIndex);
-            PixelCalculator.poke(imageData, x, y, color);
+            PixelCalculator.poke(imageData, x, y, palette.get(this.getColor(x, y)));
         }
     }
 
