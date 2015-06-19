@@ -1,5 +1,4 @@
 /*exported Palette */
-/*global PixelCalculator */
 function Palette(pixels) {
     
     'use strict';
@@ -8,20 +7,6 @@ function Palette(pixels) {
     
     function get(index) {
         return pixels[index];
-    }
-    
-    /**
-     * Get the index of a pixel (color) in this palette.
-     * @returnsthe index
-     */
-    function getIndexOf(pixel) {
-        var i;
-        for (i = 0; i < pixels.length; i += 1) {
-            if (PixelCalculator.equals(pixel, pixels[i])) {
-                return i;
-            }
-        }
-        return undefined;
     }
     
     /** 

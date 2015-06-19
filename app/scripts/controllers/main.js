@@ -1,4 +1,4 @@
-/*global angular, URL, ColorMap, Remapper, PixelImage, ImageGrabber, PixelCalculator, Palette, KoalaExporter, KoalaPicture, FileReader */
+/*global angular, URL, ColorMap, PixelImage, ImageGrabber, Palette, KoalaExporter */
 /**
  * @ngdoc function
  * @name workspaceApp.controller:MainCtrl
@@ -50,12 +50,9 @@ angular.module('vicarApp')
         }
         
         $scope.convert = function () {
-            $scope.mainImage = undefined;
-            // generate main image
-            
+           
             var grabber = new ImageGrabber(),
                 palette = new Palette($scope.selectedProfile.value.palette),
-                i,
                 converter = new KoalaExporter(),
                 koalaPic;
             
@@ -95,10 +92,8 @@ angular.module('vicarApp')
                 // draw the image again in the restricted image
                 restrictedImage.drawImageData(imageData);
                 
-                $scope.mainImage = unrestrictedImage;
-                $scope.testImage = restrictedImage;
-                
-                koalaPic = converter.convert($scope.testImage);
+                // convert to koala format
+                koalaPic = converter.convert(restrictedImage);
                 $scope.mainImage = converter.toPixelImage(koalaPic, palette);
                 $scope.koalaDownloadLink = koalaPic.toUrl();
                 

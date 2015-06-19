@@ -1,4 +1,4 @@
-/*global PixelCalculator, console */
+/*global PixelCalculator */
 /*exported ColorMap*/
 /**
  * Maps x, y coordinates to a pixel value.

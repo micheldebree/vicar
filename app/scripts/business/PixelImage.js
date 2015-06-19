@@ -119,8 +119,7 @@ PixelImage.prototype.poke = function (x, y, pixel) {
         colorMap,
         ox = x % this.dither.length,
         oy = y % this.dither.length,
-        offset = this.dither[oy][ox],
-        mm;
+        offset = this.dither[oy][ox];
 
     // map to closest color in palette
     mappedPixel = this.palette.mapPixel(pixel, offset);
@@ -199,14 +198,6 @@ PixelImage.prototype.reduceToMax = function (x, y, w, h) {
     return maxColor;
 
 };
-  
-/**
- * @returns {Boolean} Is the image ready to be used?
- */
-PixelImage.prototype.isReady = function () {
-    'use strict';
-    return this.pixelIndex !== undefined;
-};
     
 /** 
  * Get the value of a particular pixel.
@@ -214,13 +205,8 @@ PixelImage.prototype.isReady = function () {
  */
 PixelImage.prototype.peek = function (x, y) {
     'use strict';
-    var ci;
-
-    if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
-        ci = this.getPixelIndex(x, y);
-        return ci !== undefined ? this.palette.get(this.colorMaps[ci].getColor(x, y)) : PixelCalculator.emptyPixel;
-    }
-    return PixelCalculator.emptyPixel;
+    var ci = this.getPixelIndex(x, y);
+    return ci !== undefined ? this.palette.get(this.colorMaps[ci].getColor(x, y)) : PixelCalculator.emptyPixel;
 };
     
 PixelImage.prototype.extractColorMap = function (colorMap) {
@@ -272,37 +258,38 @@ PixelImage.prototype.extractColorMap = function (colorMap) {
 PixelImage.prototype.toSrcUrl = function () {
     'use strict';
     
-    if (this.isReady()) {
-        var canvas = document.createElement('canvas'),
-            context = canvas.getContext('2d'),
-            imageData,
-            x,
-            y,
-            px,
-            py,
-            pixel;
+    var canvas = document.createElement('canvas'),
+        context = canvas.getContext('2d'),
+        imageData,
+        x,
+        y,
+        px,
+        py,
+        xx,
+        yy,
+        pixel;
 
-        canvas.width = this.width * this.pWidth;
-        canvas.height = this.height * this.pHeight;
-        imageData = context.createImageData(canvas.width, canvas.height);
+    canvas.width = this.width * this.pWidth;
+    canvas.height = this.height * this.pHeight;
+    imageData = context.createImageData(canvas.width, canvas.height);
 
-        for (x = 0; x < this.width; x += 1) {
-            for (y = 0; y < this.height; y += 1) {
+    for (x = 0; x < this.width; x += 1) {
+        for (y = 0; y < this.height; y += 1) {
 
-                pixel = this.peek(x, y);
-                for (px = 0; px < this.pWidth; px += 1) {
-                    for (py = 0; py < this.pHeight; py += 1) {
-                        PixelCalculator.poke(imageData, x * this.pWidth + px, y * this.pHeight + py, pixel);
-                    }
+            pixel = this.peek(x, y);
+            for (px = 0; px < this.pWidth; px += 1) {
+                xx = x * this.pWidth + px;
+                yy = y * this.pHeight;
+                for (py = 0; py < this.pHeight; py += 1) {
+                    PixelCalculator.poke(imageData, xx, yy + py, pixel);
                 }
             }
         }
-
-        context.putImageData(imageData, 0, 0);
-        return canvas.toDataURL();
-    } else {
-        return 'images/spiffygif_30x30.gif';
     }
+
+    context.putImageData(imageData, 0, 0);
+    return canvas.toDataURL();
+    
 
 };
     
