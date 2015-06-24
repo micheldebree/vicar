@@ -1,4 +1,4 @@
-/*global angular, URL, ColorMap, Remapper, PixelImage, ImageGrabber, PixelCalculator, Palette, KoalaExporter, KoalaPicture, FileReader */
+/*global angular, URL, ColorMap, Remapper, PixelImage, ImageGrabber, PixelCalculator, Palette, KoalaExporter, KoalaPicture, FileReader, peptoPalette */
 /**
  * @ngdoc function
  * @name workspaceApp.controller:MainCtrl
@@ -11,7 +11,7 @@ angular.module('vicarApp')
         'use strict';
         
         var img = new Image();
-        img.src = 'images/rainbowgirl.jpg';
+        img.src = 'images/girl-face.jpg';
 
         $scope.dithers = c64izerService.getSupportedDithers();
         $scope.selectedDither = $scope.dithers[3];
@@ -48,6 +48,55 @@ angular.module('vicarApp')
            
             return result;
         }
+    
+        function createEmptyMultiColorImage(imageData) {
+            var pixelImage = new PixelImage();
+            pixelImage.pWidth = 2;
+            pixelImage.pHeight = 1;
+            pixelImage.init(160, 200);
+            pixelImage.palette = peptoPalette;
+            pixelImage.colorMaps.push(new ColorMap(160, 200));
+            pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
+            pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
+            pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
+            return pixelImage;
+        }
+        
+        function createEmptyFLIImage() {
+            var pixelImage = new PixelImage();
+            pixelImage.pWidth = 2;
+            pixelImage.pHeight = 1;
+            pixelImage.init(160, 200);
+            pixelImage.palette = peptoPalette;
+            pixelImage.colorMaps.push(new ColorMap(160, 200));
+            pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
+            pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 1));
+            pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 1));
+            return pixelImage;
+        }
+        
+        function createEmptyHiresImage(imageData) {
+            var pixelImage = new PixelImage();
+            pixelImage.pWidth = 1;
+            pixelImage.pHeight = 1;
+            pixelImage.init(320, 200);
+            pixelImage.palette = peptoPalette;
+            pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
+            pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
+            return pixelImage;
+        }
+        
+        function createEmpty2ColorHiresImage(imageData) {
+            var pixelImage = new PixelImage();
+            pixelImage.pWidth = 1;
+            pixelImage.pHeight = 1;
+            pixelImage.init(320, 200);
+            pixelImage.palette = peptoPalette;
+            pixelImage.colorMaps.push(new ColorMap(320, 200));
+            pixelImage.colorMaps.push(new ColorMap(320, 200));
+            return pixelImage;
+        }
+        
         
         $scope.convert = function () {
             $scope.mainImage = undefined;
@@ -57,92 +106,78 @@ angular.module('vicarApp')
                 palette = new Palette($scope.selectedProfile.value.palette),
                 i,
                 converter = new KoalaExporter(),
-                koalaPic;
+                koalaPic,
+                resultImage = createEmptyMultiColorImage();
             
-            function convertToPixelImage(imageData, pW, pH, colorMaps) {
+            function convertToPixelImage(imageData, restrictedImage) {
                 var w = imageData.width,
                     h = imageData.height,
                     unrestrictedImage = new PixelImage(),
-                    restrictedImage,
                     ci,
                     cm;
                    
-                // create an unrestricted image (one colormap of 1 x 1 resolution).                 
+                // create an unrestricted image (one colormap of 1 x 1 resolution).
                 unrestrictedImage.palette = palette;
-                unrestrictedImage.pWidth = pW;
-                unrestrictedImage.pHeight = pH;
-                
+                unrestrictedImage.pWidth = restrictedImage.pWidth;
+                unrestrictedImage.pHeight = restrictedImage.pHeight;
                 unrestrictedImage.init(w, h, new ColorMap(w, h, 1, 1));
                 unrestrictedImage.drawImageData(imageData);
-              
-                
-                 // create an image with the extracted color maps
-                restrictedImage = new PixelImage();
-                restrictedImage.pWidth = pW;
-                restrictedImage.pHeight = pH;
-                restrictedImage.init(w, h);
-                restrictedImage.palette = palette;
                 
                 $scope.colorMap = [];
-                for (ci = 0; ci < colorMaps.length; ci += 1) {
-                    cm = unrestrictedImage.extractColorMap(colorMaps[ci]);
-                    restrictedImage.addColorMap(cm);
+                for (ci = 0; ci < restrictedImage.colorMaps.length; ci += 1) {
+                    cm = unrestrictedImage.extractColorMap(restrictedImage.colorMaps[ci]);
                     $scope.colorMap[ci] = toPixelImage(cm, palette);
-                    $scope.colorMap[ci].pWidth = pW;
-                    $scope.colorMap[ci].pHeight = pH;
+                    $scope.colorMap[ci].pWidth = restrictedImage.pWidth;
+                    $scope.colorMap[ci].pHeight = restrictedImage.pHeight;
                 }
       
                 // draw the image again in the restricted image
                 restrictedImage.drawImageData(imageData);
                 
-                $scope.mainImage = unrestrictedImage;
-                $scope.testImage = restrictedImage;
+                $scope.mainImage = restrictedImage;
+                $scope.testImage = unrestrictedImage;
                 
-                koalaPic = converter.convert($scope.testImage);
-                $scope.mainImage = converter.toPixelImage(koalaPic, palette);
-                $scope.koalaDownloadLink = koalaPic.toUrl();
+                //koalaPic = converter.convert($scope.testImage);
+                //$scope.mainImage = converter.toPixelImage(koalaPic, palette);
+                //$scope.koalaDownloadLink = koalaPic.toUrl();
                 
                 $scope.$apply();
             }
             
-            function convertTo2ColorHires(imageData) {
-                var colorMaps = [],
-                    w = imageData.width,
-                    h = imageData.height;
+           
             
-                colorMaps.push(new ColorMap(w, h, w, h));
-                colorMaps.push(new ColorMap(w, h, w, h));
-                convertToPixelImage(imageData, 1, 1, colorMaps);
-            }
+          
             
-            function convertToHires(imageData) {
+            function convertToAFLI(imageData) {
                 var  colorMaps = [],
                     w = imageData.width,
                     h = imageData.height;
             
                 colorMaps.push(new ColorMap(w, h, 8, 8));
-                colorMaps.push(new ColorMap(w, h, 8, 8));
+                colorMaps.push(new ColorMap(w, h, 8, 1));
                 convertToPixelImage(imageData, 1, 1, colorMaps);
             }
             
-            
-            function convertToMultiColor(imageData) {
-                var  colorMaps = [],
+            function convertToFLI(imageData) {
+                var pixelImage = new PixelImage(),
                     w = imageData.width,
                     h = imageData.height;
                 
-                colorMaps.push(new ColorMap(w, h));
-                colorMaps.push(new ColorMap(w, h, 4, 8));
-                colorMaps.push(new ColorMap(w, h, 4, 8));
-                colorMaps.push(new ColorMap(w, h, 4, 8));
-                convertToPixelImage(imageData, 2, 1, colorMaps);
+                pixelImage.pWidth = 2;
+                pixelImage.pHeight = 1;
+                pixelImage.init(w, h);
+                       // create an image with the extracted color maps
+                pixelImage.palette = peptoPalette;
+                pixelImage.colorMaps.push(new ColorMap(w, h));
+                pixelImage.colorMaps.push(new ColorMap(w, h, 4, 8));
+                pixelImage.colorMaps.push(new ColorMap(w, h, 4, 1));
+                pixelImage.colorMaps.push(new ColorMap(w, h, 4, 1));
+                convertToPixelImage(imageData, pixelImage);
             }
             
             grabber.grab(img, function (imageData) {
-                convertToMultiColor(imageData);
-                //convertToHires(imageData);
-                //convertTo2ColorHires(imageData);
-            });
+                convertToPixelImage(imageData, resultImage);
+            }, resultImage.width, resultImage.height);
           
             
         };

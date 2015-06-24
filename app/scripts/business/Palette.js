@@ -1,92 +1,73 @@
 /*exported Palette */
 /*global PixelCalculator */
 function Palette(pixels) {
-    
     'use strict';
-    
-    pixels = pixels === undefined ? [] : pixels;
-    
-    function get(index) {
-        return pixels[index];
-    }
-    
-    /**
-     * Get the index of a pixel (color) in this palette.
-     * @returnsthe index
-     */
-    function getIndexOf(pixel) {
-        var i;
-        for (i = 0; i < pixels.length; i += 1) {
-            if (PixelCalculator.equals(pixel, pixels[i])) {
-                return i;
-            }
-        }
-        return undefined;
-    }
-    
-    /** 
-     * Get the euclidian distance for a pixel to the pixel in the palette at index
-     */
-    function getDistance(pixel, index, offset) {
-        
-        var other = pixels[index];
-        
-        offset = offset !== undefined ? offset : 0;
-        
-        if (other !== undefined) {
-        
-            return Math.sqrt(
-                Math.pow(pixel[0] - other[0] - offset, 2) +
-                        Math.pow(pixel[1] - other[1] - offset, 2) +
-                        Math.pow(pixel[2] - other[2] - offset, 2)
-            );
-        }
-        
-    }
-    
-    /**
-     * Map a pixel to the closest available color in the palette.
-     * @returns the index into the palette
-     */
-    function mapPixel(pixel, offset) {
-   
-        offset = offset !== undefined ? offset : 0;
-        
-        var i,
-            d,
-            minVal,
-            minI;
-        
-        // determine closest pixel in palette (ignoring alpha)
-        for (i = 0; i < pixels.length; i += 1) {
-            // calculate distance
-            d = getDistance(pixel, i, offset);
-
-            if (minVal === undefined || d < minVal) {
-                minVal = d;
-                minI = i;
-            }
-        }
-       
-        return minI;
-
-    }
-    
-    function getSize() {
-        return pixels.length;
-    }
-     
-    return {
-        getSize: getSize,
-        get: get,
-        mapPixel: mapPixel,
-        getDistance: getDistance
-    };
-    
+    this.pixels = pixels === undefined ? [] : pixels;
 }
 
+Palette.prototype.get = function (index) {
+    'use strict';
+    return this.pixels[index];
+};
+   
+
+Palette.prototype.getDistance = function (onePixel, otherPixel, offsetPixel) {
+    'use strict';
+    offsetPixel = offsetPixel !== undefined ? offsetPixel : [0, 0, 0];
+
+    return Math.sqrt(Math.pow(onePixel[0] - otherPixel[0] - offsetPixel[0], 2) +
+           Math.pow(onePixel[1] - otherPixel[1] - offsetPixel[1], 2) +
+           Math.pow(onePixel[2] - otherPixel[2] - offsetPixel[2], 2));
+};
+
+/** 
+ * Get the euclidian distance for a pixel to the pixel in the palette at index
+ */
+Palette.prototype.getDistanceRGB = function (pixel, index, offsetPixel) {
+    'use strict';
+    return this.getDistance(pixel, this.pixels[index], offsetPixel);
+};
+
+
+
+Palette.prototype.getDistanceYUV = function (pixel, index, offsetPixel) {
+    'use strict';
+    var thisOne = PixelCalculator.toYUV(pixel),
+        otherOne = PixelCalculator.toYUV(this.pixels[index]);
+    return this.getDistance(thisOne, otherOne, offsetPixel);
+    
+};
+    
+/**
+ * Map a pixel to the closest available color in the palette.
+ * @returns the index into the palette
+ */
+Palette.prototype.mapPixel = function (pixel, offset) {
+    'use strict';
+    offset = offset !== undefined ? offset : PixelCalculator.emptyPixel;
+
+    var i,
+        d,
+        minVal,
+        minI;
+
+    // determine closest pixel in palette (ignoring alpha)
+    for (i = 0; i < this.pixels.length; i += 1) {
+        // calculate distance
+        d = this.getDistanceRGB(pixel, i, offset);
+
+        if (minVal === undefined || d < minVal) {
+            minVal = d;
+            minI = i;
+        }
+    }
+
+    return minI;
+
+};
+
 // TODO: put this somewhere but not in a global variable
-var peptoPallette = new Palette([
+var peptoPalette = new Palette([
     [0, 0, 0, 0xff], // black
     [0xff, 0xff, 0xff, 0xff], // white
     [0x68, 0x37, 0x2b, 0xff], //red

@@ -1,4 +1,4 @@
-/*global PixelCalculator, console */
+/*global PixelCalculator */
 /*exported ColorMap*/
 /**
  * Maps x, y coordinates to a pixel value.
@@ -14,7 +14,7 @@
 
 // http://stackoverflow.com/questions/8580540/javascript-calling-private-method-from-prototype-method
 
-function ColorMap(widthVal, heightVal, resXVal, resYVal) {
+function ColorMap(widthVal, heightVal, resXVal, resYVal) { // {{{
     'use strict';
     
     this.colors = [];
@@ -23,27 +23,36 @@ function ColorMap(widthVal, heightVal, resXVal, resYVal) {
     this.resX = resXVal !== undefined ? resXVal : widthVal;
     this.resY = resYVal !== undefined ? resYVal : heightVal;
     
-}
+} // }}}
 
-ColorMap.prototype.isInRange = function (x, y) {
+/**
+ * Is a coordinate in range?
+ */
+ColorMap.prototype.isInRange = function (x, y) { // {{{
     'use strict';
     return (x >= 0 && x < this.width && y >= 0 && y < this.height);
-};
+}; // }}}
 
-ColorMap.prototype.mapX = function (x) {
+/**
+ * Map an image x coordinate to a map x coordinate.
+ */
+ColorMap.prototype.mapX = function (x) { // {{{
     'use strict';
     return Math.floor(x / this.resX);
-};
+}; // }}}
 
-ColorMap.prototype.mapY = function mapY(y) {
+/**
+ * Map an image y coordinate to a map y coordinate.
+ */
+ColorMap.prototype.mapY = function mapY(y) { // {{{
     'use strict';
     return Math.floor(y / this.resY);
-};
+}; // }}}
 
 /**
  * Set an area to a certain color.
  */
-ColorMap.prototype.add = function (x, y, color) {
+ColorMap.prototype.add = function (x, y, color) { // {{{
     'use strict';
     if (!this.isInRange(x, y)) {
         return;
@@ -57,13 +66,13 @@ ColorMap.prototype.add = function (x, y, color) {
     }
     this.colors[rx][this.mapY(y)] = color;
         
-};
+}; // }}}
 
 /**
- * Convert to an image so it can be displayed.
+ * Convert to an image so it can be displayed. 
  * @param {Palette} the palette to use for looking up the colors.
  */
-ColorMap.prototype.toImageData = function toImageData(palette) {
+ColorMap.prototype.toImageData = function toImageData(palette) { // {{{
         
     'use strict';
     
@@ -80,12 +89,12 @@ ColorMap.prototype.toImageData = function toImageData(palette) {
     }
 
     return imageData;
-};
+}; // }}}
 
-  /**
-     * Get the color at x, y coordinate.
-     */
-ColorMap.prototype.getColor = function (x, y) {
+ /**
+  * Get the color at x, y coordinate.
+  */
+ColorMap.prototype.getColor = function (x, y) { // {{{
     
     'use strict';
         
@@ -98,5 +107,5 @@ ColorMap.prototype.getColor = function (x, y) {
         return undefined;
     }
     
-};
+}; // }}}
    

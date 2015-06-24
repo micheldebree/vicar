@@ -53,19 +53,15 @@ PixelCalculator.emptyPixel = [0, 0, 0, 0];
  * @param {number} [w] - Width to rescale image to.
  * @param {number} [h] - Height to rescale image to.:w
  */
-PixelCalculator.getImageData = function (img) {
+PixelCalculator.getImageData = function (img, w, h) {
     'use strict';
 
     var canvas = document.createElement('canvas'),
-        context = canvas.getContext('2d'),
-        w = 160,
-        h = 200;
+        context = canvas.getContext('2d');
 
     canvas.width = w;
     canvas.height = h;
-
     context.drawImage(img, 0, 0, w, h);
-
     return context.getImageData(0, 0, w, h);
 
 };
@@ -91,11 +87,10 @@ PixelCalculator.cloneImageData = function (sourceImageData) {
     
 };
 
- 
-  /**
-     * Convert x and y position in image to an index in the image data.
-     * @returns {number} index in the imagedata for the first (red) channel.
-     */
+/**
+ * Convert x and y position in image to an index in the image data.
+ * @returns {number} index in the imagedata for the first (red) channel.
+ */
 PixelCalculator.coordsToindex = function (imageData, x, y) {
     'use strict';
     
@@ -145,4 +140,25 @@ PixelCalculator.resize = function (imageData, w, h) {
     context.putImageData(imageData, 0, 0, 0, 0, w, h);
     return context.getImageData(0, 0, w, h);
     
+};
+
+
+/**
+RGB -> YUV
+Y = 0.299*Red+0.587*Green+0.114*Blue
+U = -0.147*Red-0.289*Green+0.436*Blue
+V = 0.615*Red-0.515*Green-0.100*Blue
+
+YUV -> RGB
+Red = Y+0.000*U+1.140*V
+Green = Y-0.396*U-0.581*V
+Blue = Y+2.029*U+0.000*V
+*/
+PixelCalculator.toYUV = function (pixel) {
+    'use strict';
+    return [
+        pixel[0] * 0.299 + pixel[1] * 0.587 + pixel[2] * 0.114,
+        pixel[0] * -0.147 - pixel[1] * 0.289 + pixel[2] * 0.436,
+        pixel[0] * 0.615 - pixel[1] * 0.515 - pixel[2] * 0.100
+    ];
 };

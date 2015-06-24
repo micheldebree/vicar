@@ -74,8 +74,6 @@ The bit combination “01” is also treated as “background” for the sprite 
             koalaPic = new KoalaPicture(),
             charY,
             charX,
-            pixelX,
-            pixelY,
             bitmapY,
             colorX,
             colorY,
@@ -89,9 +87,8 @@ The bit combination “01” is also treated as “background” for the sprite 
             bits45,
             bits67,
             bitmapIndex = 0,
-            colorIndex = 0,
-            result,
-            byteValue;
+            colorIndex = 0;
+         
             
         for (charY = 0; charY < imageH; charY += 8) {
             for (charX = 0; charX < imageW; charX += 4) {
@@ -114,9 +111,9 @@ The bit combination “01” is also treated as “background” for the sprite 
         for (colorY = 0; colorY < imageH; colorY += 8) {
             for (colorX = 0; colorX < imageW; colorX += 4) {
              
-                color01 = pixelImage.colorMaps[1].getColor(colorX, colorY);
-                color10 = pixelImage.colorMaps[2].getColor(colorX, colorY);
-                color11 = pixelImage.colorMaps[3].getColor(colorX, colorY);
+                color01 = colorMaps[1].getColor(colorX, colorY);
+                color10 = colorMaps[2].getColor(colorX, colorY);
+                color11 = colorMaps[3].getColor(colorX, colorY);
                  
                 koalaPic.screenRam[colorIndex] = ((color01 << 4) & 0xf0) | (color10 & 0x0f);
                 koalaPic.colorRam[colorIndex] = color11 & 0x0f;
@@ -125,7 +122,7 @@ The bit combination “01” is also treated as “background” for the sprite 
             }
         }
         
-        koalaPic.background[0] = pixelImage.colorMaps[0].getColor(0, 0);
+        koalaPic.background[0] = colorMaps[0].getColor(0, 0);
         
         return koalaPic;
             
@@ -137,7 +134,6 @@ The bit combination “01” is also treated as “background” for the sprite 
         var pixelImage = new PixelImage(),
             charX,
             charY,
-            bitmapX,
             bitmapY,
             pixel0,
             pixel1,
