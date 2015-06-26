@@ -88,7 +88,7 @@ The bit combination “01” is also treated as “background” for the sprite 
             bits67,
             bitmapIndex = 0,
             colorIndex = 0;
-
+         
             
         for (charY = 0; charY < imageH; charY += 8) {
             for (charX = 0; charX < imageW; charX += 4) {

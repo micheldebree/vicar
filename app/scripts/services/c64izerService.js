@@ -1,55 +1,34 @@
-/*global angular, PixelImage, ColorMap */
+/*global angular, Palette */
 angular.module('vicarApp').factory('c64izerService', function () {
     'use strict';
  
+    function getSupportedPalettes() {
+        return {
+            'Pepto' : new Palette([
+                [0, 0, 0, 0xff], // black
+                [0xff, 0xff, 0xff, 0xff], // white
+                [0x68, 0x37, 0x2b, 0xff], //red
+                [0x70, 0xa4, 0xb2, 0xff], //cyan
+                [0x6f, 0x3d, 0x86, 0xff], //purple
+                [0x58, 0x8d, 0x43, 0xff], //green
+                [0x35, 0x28, 0x79, 0xff], //blue
+                [0xb8, 0xc7, 0x6f, 0xff], //yellow
+                [0x6f, 0x4f, 0x25, 0xff], //orange
+                [0x43, 0x39, 0x00, 0xff], //brown
+                [0x9a, 0x67, 0x59, 0xff], //light red
+                [0x44, 0x44, 0x44, 0xff], //dark gray
+                [0x6c, 0x6c, 0x6c, 0xff], //medium gray
+                [0x9a, 0xd2, 0x84, 0xff], //light green
+                [0x6c, 0x5e, 0xb5, 0xff], //light blue
+                [0x95, 0x95, 0x95, 0xff] //green
+            ])
+        };
+    }
+    
+    
     return {
-        
-        /**
-         * Convert an image.
-         * @param {Image} img - The image to convert
-         * @param {Object} profile - The profile to use for conversion
-         * @param {Array} dither - Matrix to use for ordered dithering
-         * @param {Function} success - Success callback, takes the resulting PixelImage as parameter.
-         * @param [number] width override - Overrides the width from profile.
-         */
-        convert: function (img, profile, dither, success, width) {
-
-            var image = new PixelImage();
-             
-            
-            width = typeof width !== 'undefined' ? width : profile.width * profile.pixelWidth;
-
-           
-
-            image.grab(img, function () {
-
-                // make a clone
-                var image2 = image.clone(),
-                    colorMaps
-                   
-                
-                // remap to palette
-                image = remapper.remap(image);
-             
-                
-                // extract colorMaps from the remapped image
-                //colorMaps = extractColorMaps(image);
-                
-                // remap original using color maps
-                   
-                
-                //reRemapper.setColorMaps(colorMaps);
-                //reRemapper.remap(image2);
-                
-
-                // call the success callback event
-                if (typeof success === 'function') {
-                    success(image);
-                }
-            }, width);
-
-        },
-
+       
+        getSupportedPalettes: getSupportedPalettes,
         getSupportedDithers: function () {
             return [{
                 key: 'None',
