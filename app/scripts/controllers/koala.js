@@ -1,4 +1,4 @@
-/*global angular, KoalaExporter, FileReader, KoalaPicture, peptoPalette */
+/*global angular, FileReader, KoalaPicture, peptoPalette */
 angular.module('vicarApp')
     .controller('KoalaCtrl', ['$scope', function ($scope) {
         
@@ -6,7 +6,7 @@ angular.module('vicarApp')
     
         $scope.$watch('koalafile', function () {
             
-            var exporter = new KoalaExporter(),
+            var exporter = new KoalaPicture(),
                 reader = new FileReader();
             
             if (typeof $scope.koalafile !== 'undefined' && $scope.koalafile.length === 1) {

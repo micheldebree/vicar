@@ -1,0 +1,2 @@
+function mos6502() {
+}

@@ -35,7 +35,21 @@ function PixelImage() {
         [3, 51, 15, 63, 2, 50, 14, 62],
         [35, 19, 47, 31, 34, 18, 46, 30],
         [11, 59, 7, 55, 10, 58, 6, 54],
-        [43, 27, 39, 23, 42, 26, 38, 22]];
+        [43, 27, 39, 23, 42, 26, 38, 22]]; // 65
+    
+    this.dither = [
+        [1, 9, 3, 11],
+        [13, 5, 15, 7],
+        [4, 12, 2, 10],
+        [16, 8, 14, 6]]; // 17
+    
+    this.dither = [
+        [3, 7, 4],
+        [6, 1, 9],
+        [2, 8, 5]]; // 10
+    
+    //this.dither = [[0]];
+        
 }
     
 PixelImage.prototype.init = function (w, h, colorMap) {
@@ -189,7 +203,7 @@ PixelImage.prototype.orderedDither = function (x, y, pixel) {
         offsetPixel;
     
     offsetPixel = PixelCalculator.multiply(pixel, -offset);
-    offsetPixel = PixelCalculator.divide(offsetPixel, 65);
+    offsetPixel = PixelCalculator.divide(offsetPixel, 10);
     
     this.addDitherOffset(x + 1, y, offsetPixel);
 };
@@ -410,5 +424,18 @@ PixelImage.prototype.toSrcUrl = function () {
 PixelImage.prototype.addColorMap = function (colorMap) {
     'use strict';
     this.colorMaps.push(colorMap);
+};
+
+PixelImage.prototype.getTransparencyPercentage = function () {
+    'use strict';
+    var x, y, count = 0;
+    
+    for (x = 0; x < this.width; x += 1) {
+        for (y = 0; y < this.height; y += 1) {
+            count += this.getPixelIndex(x, y) === undefined ? 1 : 0;
+        }
+    }
+    
+    return Math.round((100 * count) / (this.width * this.height));
 };
     
