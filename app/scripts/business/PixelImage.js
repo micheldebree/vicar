@@ -101,7 +101,7 @@ PixelImage.prototype.map = function (pixel, x, y, offsetPixel) {
     // determine closest pixel in palette (ignoring alpha)
     for (i = 0; i < this.colorMaps.length; i += 1) {
         other = this.colorMaps[i].getColor(x, y);
-        d = this.palette.getDistanceRGB(pixel, other, offsetPixel);
+        d = this.palette.getDistance(pixel, other, offsetPixel);
         if (minVal === undefined || d < minVal) {
             minVal = d;
             minI = i;

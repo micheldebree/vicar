@@ -11,8 +11,9 @@ Palette.prototype.get = function (index) {
 };
    
 
-Palette.prototype.getDistance = function (onePixel, otherPixel, offsetPixel) {
+Palette.prototype.getDistance = function (onePixel, index, offsetPixel) {
     'use strict';
+    var otherPixel = this.pixels[index];
     offsetPixel = offsetPixel !== undefined ? offsetPixel : [0, 0, 0];
 
     return Math.sqrt(Math.pow(onePixel[0] - otherPixel[0] - offsetPixel[0], 2) +
@@ -20,23 +21,31 @@ Palette.prototype.getDistance = function (onePixel, otherPixel, offsetPixel) {
            Math.pow(onePixel[2] - otherPixel[2] - offsetPixel[2], 2));
 };
 
-/** 
- * Get the euclidian distance for a pixel to the pixel in the palette at index
- */
-Palette.prototype.getDistanceRGB = function (pixel, index, offsetPixel) {
+
+Palette.prototype.getDistanceYUV = function (onePixel, index, offsetPixel) {
     'use strict';
-    return this.getDistance(pixel, this.pixels[index], offsetPixel);
+    var otherPixel = PixelCalculator.toYUV(this.pixels[index]);
+    offsetPixel = offsetPixel !== undefined ? offsetPixel : [0, 0, 0];
+    onePixel = PixelCalculator.toYUV(PixelCalculator.substract(onePixel, offsetPixel));
+  
+
+    return Math.sqrt(Math.pow(onePixel[0] - otherPixel[0], 2) +
+           Math.pow(onePixel[1] - otherPixel[1], 2) +
+           Math.pow(onePixel[2] - otherPixel[2], 2));
+};
+
+Palette.prototype.getDistanceY = function (onePixel, index, offsetPixel) {
+    'use strict';
+    var otherPixel = PixelCalculator.toYUV(this.pixels[index]);
+    offsetPixel = offsetPixel !== undefined ? offsetPixel : [0, 0, 0];
+    onePixel = PixelCalculator.toYUV(PixelCalculator.substract(onePixel, offsetPixel));
+  
+
+    return Math.sqrt(Math.pow(onePixel[0] - otherPixel[0], 2));
+          
 };
 
 
-
-Palette.prototype.getDistanceYUV = function (pixel, index, offsetPixel) {
-    'use strict';
-    var thisOne = PixelCalculator.toYUV(pixel),
-        otherOne = PixelCalculator.toYUV(this.pixels[index]);
-    return this.getDistance(thisOne, otherOne, offsetPixel);
-    
-};
     
 /**
  * Map a pixel to the closest available color in the palette.
@@ -54,7 +63,7 @@ Palette.prototype.mapPixel = function (pixel, offset) {
     // determine closest pixel in palette (ignoring alpha)
     for (i = 0; i < this.pixels.length; i += 1) {
         // calculate distance
-        d = this.getDistanceRGB(pixel, i, offset);
+        d = this.getDistance(pixel, i, offset);
 
         if (minVal === undefined || d < minVal) {
             minVal = d;
