@@ -14,7 +14,7 @@
 
 // http://stackoverflow.com/questions/8580540/javascript-calling-private-method-from-prototype-method
 
-function ColorMap(widthVal, heightVal, resXVal, resYVal) { // {{{
+function ColorMap(widthVal, heightVal, resXVal, resYVal) {
     'use strict';
     
     this.colors = [];
@@ -23,36 +23,36 @@ function ColorMap(widthVal, heightVal, resXVal, resYVal) { // {{{
     this.resX = resXVal !== undefined ? resXVal : widthVal;
     this.resY = resYVal !== undefined ? resYVal : heightVal;
     
-} // }}}
+}
 
 /**
  * Is a coordinate in range?
  */
-ColorMap.prototype.isInRange = function (x, y) { // {{{
+ColorMap.prototype.isInRange = function (x, y) {
     'use strict';
     return (x >= 0 && x < this.width && y >= 0 && y < this.height);
-}; // }}}
+};
 
 /**
  * Map an image x coordinate to a map x coordinate.
  */
-ColorMap.prototype.mapX = function (x) { // {{{
+ColorMap.prototype.mapX = function (x) {
     'use strict';
     return Math.floor(x / this.resX);
-}; // }}}
+};
 
 /**
  * Map an image y coordinate to a map y coordinate.
  */
-ColorMap.prototype.mapY = function mapY(y) { // {{{
+ColorMap.prototype.mapY = function mapY(y) {
     'use strict';
     return Math.floor(y / this.resY);
-}; // }}}
+};
 
 /**
  * Set an area to a certain color.
  */
-ColorMap.prototype.add = function (x, y, color) { // {{{
+ColorMap.prototype.add = function (x, y, color) {
     'use strict';
     if (!this.isInRange(x, y)) {
         return;
@@ -66,7 +66,7 @@ ColorMap.prototype.add = function (x, y, color) { // {{{
     }
     this.colors[rx][this.mapY(y)] = color;
         
-}; // }}}
+};
 
 /**
  * Convert to an image so it can be displayed. 

@@ -27,28 +27,8 @@ function PixelImage() {
     this.palette = undefined; // the palette for all colors used in this image
     this.pixelIndex = []; // maps pixel x,y to a colormap 
     this.ditherOffset = []; // offset for dithering used when mapping color
-    this.dither = [
-        [1, 49, 13, 61, 4, 52, 16, 64],
-        [33, 17, 45, 29, 36, 20, 48, 31],
-        [9, 57, 5, 53, 12, 60, 8, 56],
-        [41, 25, 37, 21, 44, 28, 40, 24],
-        [3, 51, 15, 63, 2, 50, 14, 62],
-        [35, 19, 47, 31, 34, 18, 46, 30],
-        [11, 59, 7, 55, 10, 58, 6, 54],
-        [43, 27, 39, 23, 42, 26, 38, 22]]; // 65
-    
-    this.dither = [
-        [1, 9, 3, 11],
-        [13, 5, 15, 7],
-        [4, 12, 2, 10],
-        [16, 8, 14, 6]]; // 17
-    
-    this.dither = [
-        [3, 7, 4],
-        [6, 1, 9],
-        [2, 8, 5]]; // 10
-    
-    //this.dither = [[0]];
+    this.dither = [[0]]; // n x n bayer matrix for ordered dithering
+    this.errorDiffusionDither = function () { };
         
 }
     
@@ -154,56 +134,15 @@ PixelImage.prototype.getDitherOffset = function (x, y) {
     
 };
 
-PixelImage.prototype.weighError = function (error, mul, div) {
-    'use strict';
-    return [
-        (error[0] * mul) / div,
-        (error[1] * mul) / div,
-        (error[2] * mul) / div
-    ];
-};
-
-PixelImage.prototype.fsDither = function (x, y, error) {
-    'use strict';
-    this.addDitherOffset(x + 1, y,  this.weighError(error, 7, 16));
-    this.addDitherOffset(x - 1, y + 1, this.weighError(error, 3, 16));
-    this.addDitherOffset(x, y + 1, this.weighError(error, 5, 16));
-    this.addDitherOffset(x + 1, y + 1, this.weighError(error, 1, 16));
-};
-
-PixelImage.prototype.jjnDither = function (x, y, error) {
-    'use strict';
-    this.addDitherOffset(x + 1, y,  this.weighError(error, 7, 48));
-    this.addDitherOffset(x + 2, y,  this.weighError(error, 5, 48));
-    this.addDitherOffset(x - 2, y + 1, this.weighError(error, 3, 48));
-    this.addDitherOffset(x - 1, y + 1, this.weighError(error, 5, 48));
-    this.addDitherOffset(x, y + 1, this.weighError(error, 7, 48));
-    this.addDitherOffset(x + 1, y + 1, this.weighError(error, 5, 48));
-    this.addDitherOffset(x + 2, y + 1, this.weighError(error, 3, 48));
-    this.addDitherOffset(x - 2, y + 2, this.weighError(error, 1, 48));
-    this.addDitherOffset(x - 1, y + 2, this.weighError(error, 3, 48));
-    this.addDitherOffset(x, y + 2, this.weighError(error, 5, 48));
-    this.addDitherOffset(x + 1, y + 2, this.weighError(error, 3, 48));
-    this.addDitherOffset(x + 2, y + 2, this.weighError(error, 1, 48));
-};
-
-PixelImage.prototype.atkinsonDither = function (x, y, error) {
-    'use strict';
-    this.addDitherOffset(x + 1, y,  this.weighError(error, 1, 8));
-    this.addDitherOffset(x + 2, y, this.weighError(error, 1, 8));
-    this.addDitherOffset(x - 1, y + 1, this.weighError(error, 1, 8));
-    this.addDitherOffset(x, y + 1, this.weighError(error, 1, 8));
-    this.addDitherOffset(x + 1, y + 1, this.weighError(error, 1, 8));
-    this.addDitherOffset(x, y + 2, this.weighError(error, 1, 8));
-};
-
 PixelImage.prototype.orderedDither = function (x, y, pixel) {
     'use strict';
     var offset = this.dither[y % this.dither.length][x % this.dither.length],
         offsetPixel;
     
-    offsetPixel = PixelCalculator.multiply(pixel, -offset);
-    offsetPixel = PixelCalculator.divide(offsetPixel, 10);
+    //offsetPixel = PixelCalculator.multiply(pixel, -offset);
+    //offsetPixel = PixelCalculator.divide(offsetPixel, 10);
+    
+    offsetPixel = [offset, offset, offset];
     
     this.addDitherOffset(x + 1, y, offsetPixel);
 };
@@ -225,7 +164,6 @@ PixelImage.prototype.poke = function (x, y, pixel) {
         error;
 
     offsetPixel = this.getDitherOffset(x, y);
-    //this.setDitherOffset(x, y, PixelCalculator.emptyPixel);
     
     // map to closest color in palette
     mappedIndex = this.palette.mapPixel(pixel, offsetPixel);
@@ -234,11 +172,8 @@ PixelImage.prototype.poke = function (x, y, pixel) {
     // use the error for dithering
     mappedPixel = this.palette.get(mappedIndex);
     error = PixelCalculator.substract(mappedPixel, pixel);
-    
-    //this.orderedDither(x, y, pixel);
-    //this.fsDither(x, y, error);
-    this.jjnDither(x, y, error);
-    //this.atkinsonDither(x, y, error);
+    this.orderedDither(x, y, pixel);
+    this.errorDiffusionDither(this, x, y, error);
     
     // try to reuse existing color map 
     colorMap = this.findColorMap(x, y, mappedIndex);
@@ -342,10 +277,10 @@ PixelImage.prototype.extractColorMap = function (colorMap) {
             // find the maximum used color in this area
             color = this.reduceToMax(x, y, rx, ry);
 
-            if (color !== undefined) {
+            if ((color !== undefined) && (colorMap.getColor(x, y) === undefined)) {
 
                 colorMap.add(x, y, color);
-
+             
                 // remove matching pixels from this image
                 for (xx = x; xx < x + rx; xx += 1) {
                     for (yy = y; yy < y + ry; yy += 1) {

@@ -28,7 +28,6 @@ Palette.prototype.getDistanceYUV = function (onePixel, index, offsetPixel) {
     offsetPixel = offsetPixel !== undefined ? offsetPixel : [0, 0, 0];
     onePixel = PixelCalculator.toYUV(PixelCalculator.substract(onePixel, offsetPixel));
   
-
     return Math.sqrt(Math.pow(onePixel[0] - otherPixel[0], 2) +
            Math.pow(onePixel[1] - otherPixel[1], 2) +
            Math.pow(onePixel[2] - otherPixel[2], 2));
@@ -40,7 +39,6 @@ Palette.prototype.getDistanceY = function (onePixel, index, offsetPixel) {
     offsetPixel = offsetPixel !== undefined ? offsetPixel : [0, 0, 0];
     onePixel = PixelCalculator.toYUV(PixelCalculator.substract(onePixel, offsetPixel));
   
-
     return Math.sqrt(Math.pow(onePixel[0] - otherPixel[0], 2));
           
 };

@@ -13,42 +13,55 @@ angular.module('vicarApp')
         var img = new Image();
         img.src = 'images/girl-face.jpg';
 
-        $scope.dithers = c64izerService.getSupportedDithers();
-        $scope.selectedDither = $scope.dithers[3];
-        $scope.$watch('selectedDither', function () {
+        // graphic mode selection
+        $scope.graphicModes = c64izerService.supportedGraphicModes;
+        $scope.selectedGraphicMode = $scope.graphicModes[0];
+        $scope.$watch('selectedGraphicMode', function () {
             $scope.convert();
         });
-        
-        $scope.profiles = c64izerService.getSupportedProfiles();
-        $scope.selectedProfile = $scope.profiles[0];
-        $scope.$watch('selectedProfile', function () {
-            $scope.convert();
-        });
-        
-        $scope.selectDither = function (dither) {
-            $scope.selectedDither = dither;
-        };
-        
-        $scope.selectProfile = function (profile) {
-            $scope.selectedProfile = profile;
+        $scope.selectGraphicMode = function (graphicMode) {
+            $scope.selectedGraphicMode = graphicMode;
         };
         
         $scope.imageChanged = function () {
             $scope.convert();
         };
         
+        
+        // ordered dithering selection
+        $scope.dithers = c64izerService.getSupportedDithers();
+        $scope.selectedDither = $scope.dithers[3];
+        $scope.$watch('selectedDither', function () {
+            $scope.convert();
+        });
+        $scope.selectDither = function (dither) {
+            $scope.selectedDither = dither;
+        };
+        
+        // error diffusion dithering selection
+        $scope.errorDiffusionDithers = c64izerService.supportedErrorDiffusionDithers;
+        $scope.selectedErrorDiffusionDither = $scope.errorDiffusionDithers[2];
+        $scope.$watch('selectedErrorDiffusionDither', function () {
+            $scope.convert();
+        });
+        $scope.selectErrorDiffusionDither = function (errorDiffusionDither) {
+            $scope.selectedErrorDiffusionDither = errorDiffusionDither;
+        };
+        
+        $scope.imageChanged = function () {
+            $scope.convert();
+        };
+      
+        
         function toPixelImage(colorMap, palette) {
             var result = new PixelImage();
-           
             result.palette = palette;
             result.dither = [[0]];
             result.init(colorMap.width, colorMap.height);
             result.addColorMap(new ColorMap(colorMap.width, colorMap.height, 1, 1));
             result.drawImageData(colorMap.toImageData(palette));
-           
             return result;
         }
-    
         
         $scope.convert = function () {
             $scope.mainImage = undefined;
@@ -57,7 +70,7 @@ angular.module('vicarApp')
             var palette = peptoPalette,
                 converter = new KoalaPicture(),
                 koalaPic,
-                resultImage = GraphicModes.Multicolor(),
+                resultImage = $scope.selectedGraphicMode.value(),
                 grabber = new ImageGrabber(img, resultImage.width, resultImage.height);
                 
             resultImage.palette = peptoPalette;
@@ -71,6 +84,8 @@ angular.module('vicarApp')
                    
                 // create an unrestricted image (one colormap of 1 x 1 resolution).
                 unrestrictedImage.palette = palette;
+                unrestrictedImage.dither = $scope.selectedDither.value;
+                unrestrictedImage.errorDiffusionDither = $scope.selectedErrorDiffusionDither.value;
                 unrestrictedImage.pWidth = restrictedImage.pWidth;
                 unrestrictedImage.pHeight = restrictedImage.pHeight;
                 unrestrictedImage.init(w, h, new ColorMap(w, h, 1, 1));
@@ -85,10 +100,13 @@ angular.module('vicarApp')
                 }
       
                 // draw the image again in the restricted image
+                restrictedImage.dither = unrestrictedImage.dither;
+                restrictedImage.errorDiffusionDither = unrestrictedImage.errorDiffusionDither;
                 restrictedImage.drawImageData(imageData);
                 
                 $scope.mainImage = restrictedImage;
                 $scope.testImage = unrestrictedImage;
+                $scope.quality = unrestrictedImage.getTransparencyPercentage();
                 
                 //koalaPic = converter.convert($scope.testImage);
                 //$scope.mainImage = converter.toPixelImage(koalaPic, palette);
