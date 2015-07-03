@@ -1,4 +1,5 @@
-/*exported Palette */
+/*exported Palette, peptoPalette */
+/*global PixelCalculator*/
 function Palette(pixels) {
     'use strict';
     this.pixels = pixels === undefined ? [] : pixels;

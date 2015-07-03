@@ -1,4 +1,4 @@
-/*global angular, URL, ColorMap, Remapper, PixelImage, ImageGrabber, PixelCalculator, Palette, KoalaExporter, KoalaPicture, FileReader, peptoPalette */
+/*global angular, URL, ColorMap, GraphicModes, PixelImage, ImageGrabber, KoalaPicture, peptoPalette */
 /**
  * @ngdoc function
  * @name workspaceApp.controller:MainCtrl
@@ -49,62 +49,18 @@ angular.module('vicarApp')
             return result;
         }
     
-        function createEmptyMultiColorImage(imageData) {
-            var pixelImage = new PixelImage();
-            pixelImage.pWidth = 2;
-            pixelImage.pHeight = 1;
-            pixelImage.init(160, 200);
-            pixelImage.palette = peptoPalette;
-            pixelImage.colorMaps.push(new ColorMap(160, 200));
-            pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
-            pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
-            pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
-            return pixelImage;
-        }
-        
-        function createEmptyFLIImage() {
-            var pixelImage = new PixelImage();
-            pixelImage.pWidth = 2;
-            pixelImage.pHeight = 1;
-            pixelImage.init(160, 200);
-            pixelImage.palette = peptoPalette;
-            pixelImage.colorMaps.push(new ColorMap(160, 200));
-            pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
-            pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 1));
-            pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 1));
-            return pixelImage;
-        }
-        
-        function createEmptyHiresImage(imageData) {
-            var pixelImage = new PixelImage();
-            pixelImage.pWidth = 1;
-            pixelImage.pHeight = 1;
-            pixelImage.init(320, 200);
-            pixelImage.palette = peptoPalette;
-            pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
-            pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
-            return pixelImage;
-        }
-        
-        function createEmpty2ColorHiresImage(imageData) {
-            var pixelImage = new PixelImage();
-            pixelImage.pWidth = 1;
-            pixelImage.pHeight = 1;
-            pixelImage.init(320, 200);
-            pixelImage.palette = peptoPalette;
-            pixelImage.colorMaps.push(new ColorMap(320, 200));
-            pixelImage.colorMaps.push(new ColorMap(320, 200));
-            return pixelImage;
-        }
-        
         
         $scope.convert = function () {
-           
-            var grabber = new ImageGrabber(),
-                palette = new Palette($scope.selectedProfile.value.palette),
-                converter = new KoalaExporter(),
+            $scope.mainImage = undefined;
+            // generate main image
+            
+            var palette = peptoPalette,
+                converter = new KoalaPicture(),
                 koalaPic,
-                resultImage = createEmptyMultiColorImage();
+                resultImage = GraphicModes.Multicolor(),
+                grabber = new ImageGrabber(img, resultImage.width, resultImage.height);
+                
+            resultImage.palette = peptoPalette;
             
             function convertToPixelImage(imageData, restrictedImage) {
                 var w = imageData.width,
@@ -141,40 +97,9 @@ angular.module('vicarApp')
                 $scope.$apply();
             }
             
-           
-            
-          
-            
-            function convertToAFLI(imageData) {
-                var  colorMaps = [],
-                    w = imageData.width,
-                    h = imageData.height;
-            
-                colorMaps.push(new ColorMap(w, h, 8, 8));
-                colorMaps.push(new ColorMap(w, h, 8, 1));
-                convertToPixelImage(imageData, 1, 1, colorMaps);
-            }
-            
-            function convertToFLI(imageData) {
-                var pixelImage = new PixelImage(),
-                    w = imageData.width,
-                    h = imageData.height;
-                
-                pixelImage.pWidth = 2;
-                pixelImage.pHeight = 1;
-                pixelImage.init(w, h);
-                       // create an image with the extracted color maps
-                pixelImage.palette = peptoPalette;
-                pixelImage.colorMaps.push(new ColorMap(w, h));
-                pixelImage.colorMaps.push(new ColorMap(w, h, 4, 8));
-                pixelImage.colorMaps.push(new ColorMap(w, h, 4, 1));
-                pixelImage.colorMaps.push(new ColorMap(w, h, 4, 1));
-                convertToPixelImage(imageData, pixelImage);
-            }
-            
-            grabber.grab(img, function (imageData) {
+            grabber.grab(function (imageData) {
                 convertToPixelImage(imageData, resultImage);
-            }, resultImage.width, resultImage.height);
+            });
           
             
         };

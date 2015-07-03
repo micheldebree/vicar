@@ -2,10 +2,10 @@
 <div id="image" ng-file-drop ng-file-select ng-model="files" class="drop-box" 
         drag-over-class="dragover" ng-multiple="false" allow-dir="false"
         accept="image/*">
-    <img pixel-image="mainImage"/>
-   
+    <img pixel-image="mainImage"/><img pixel-image="testImage"/>
 </div>
-<a href="{{koalaDownloadLink}}" download="vicar.koa">Download koala</a>
+<div ng-show="quality">Quality: {{quality}}%</div>
+<a ng-show="koalaDownloadLink" href="{{koalaDownloadLink}}" download="vicar.koa">Download koala</a>
 <br/>
 <img ng-repeat="cmap in colorMap" pixel-image="cmap"/>
 
