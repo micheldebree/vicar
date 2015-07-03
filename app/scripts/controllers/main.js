@@ -1,4 +1,4 @@
-/*global angular, URL, ColorMap, PixelImage, ImageGrabber, Palette, KoalaPicture, peptoPalette, GraphicModes */
+/*global angular, URL, ColorMap, GraphicModes, PixelImage, ImageGrabber, KoalaPicture, peptoPalette */
 /**
  * @ngdoc function
  * @name workspaceApp.controller:MainCtrl
@@ -19,24 +19,36 @@ angular.module('vicarApp')
             $scope.convert();
         });
         
+        $scope.profiles = c64izerService.getSupportedProfiles();
+        $scope.selectedProfile = $scope.profiles[0];
+        $scope.$watch('selectedProfile', function () {
+            $scope.convert();
+        });
+        
         $scope.selectDither = function (dither) {
             $scope.selectedDither = dither;
         };
         
-     
+        $scope.selectProfile = function (profile) {
+            $scope.selectedProfile = profile;
+        };
+        
         $scope.imageChanged = function () {
             $scope.convert();
         };
         
         function toPixelImage(colorMap, palette) {
             var result = new PixelImage();
+           
             result.palette = palette;
             result.dither = [[0]];
             result.init(colorMap.width, colorMap.height);
             result.addColorMap(new ColorMap(colorMap.width, colorMap.height, 1, 1));
             result.drawImageData(colorMap.toImageData(palette));
+           
             return result;
         }
+    
         
         $scope.convert = function () {
             $scope.mainImage = undefined;
@@ -77,11 +89,10 @@ angular.module('vicarApp')
                 
                 $scope.mainImage = restrictedImage;
                 $scope.testImage = unrestrictedImage;
-                $scope.quality = unrestrictedImage.getTransparencyPercentage();
                 
-                koalaPic = converter.convert(restrictedImage);
-                $scope.mainImage = converter.toPixelImage(koalaPic, palette);
-                $scope.koalaDownloadLink = koalaPic.toUrl();
+                //koalaPic = converter.convert($scope.testImage);
+                //$scope.mainImage = converter.toPixelImage(koalaPic, palette);
+                //$scope.koalaDownloadLink = koalaPic.toUrl();
                 
                 $scope.$apply();
             }

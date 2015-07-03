@@ -101,16 +101,13 @@ KoalaPicture.prototype.convertColorram = function (colorMap) {
         colorY,
         imageW = colorMap.width,
         imageH = colorMap.height,
-        color11,
         colorIndex = 0,
         colorRam = new Uint8Array(1000);
     
     for (colorY = 0; colorY < imageH; colorY += 8) {
         for (colorX = 0; colorX < imageW; colorX += 4) {
-
             colorRam[colorIndex] = colorMap.getColor(colorX, colorY) & 0x0f;
             colorIndex += 1;
-
         }
     }
     

@@ -1,6 +1,7 @@
+/*exported GraphicModes */
 /*global PixelImage, ColorMap */
 var GraphicModes = {
-    "Multicolor" : function () {
+    'Multicolor' : function () {
         'use strict';
         var pixelImage = new PixelImage();
         pixelImage.pWidth = 2;
@@ -12,7 +13,7 @@ var GraphicModes = {
         pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
         return pixelImage;
     },
-    "FLI" : function () {
+    'FLI' : function () {
         'use strict';
         var pixelImage = new PixelImage();
         pixelImage.pWidth = 2;
@@ -24,7 +25,7 @@ var GraphicModes = {
         pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 1));
         return pixelImage;
     },
-    "AFLI": function () {
+    'AFLI': function () {
         'use strict';
         var pixelImage = new PixelImage();
         pixelImage.pWidth = 1;
@@ -34,7 +35,7 @@ var GraphicModes = {
         pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 1));
         return pixelImage;
     },
-    "Hires": function () {
+    'Hires': function () {
         'use strict';
         var pixelImage = new PixelImage();
         pixelImage.pWidth = 1;
@@ -44,7 +45,7 @@ var GraphicModes = {
         pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
         return pixelImage;
     },
-    "Hires2" : function () {
+    'Hires2' : function () {
         'use strict';
         var pixelImage = new PixelImage();
         pixelImage.pWidth = 1;
@@ -54,7 +55,7 @@ var GraphicModes = {
         pixelImage.colorMaps.push(new ColorMap(320, 200));
         return pixelImage;
     },
-    "Hires3" : function () {
+    'Hires3' : function () {
         'use strict';
         var pixelImage = new PixelImage(),
             black = new ColorMap(320, 200),
