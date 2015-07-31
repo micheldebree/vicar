@@ -1,12 +1,17 @@
+// Show a Koala Painter picture
+// The (uncompressed) picture is supposed to be concatenated at the end of the output of this code,
 // Compile asm -> prg with http://www.theweb.dk/KickAssembler
 // java -jar KickAss.jar KoalaShower.asm
 
-//.var picture = LoadBinary("dollrider.kla", BF_KOALA)
+.label bitmap = $2000
+.label screenRam = bitmap + 8000
+.label colorRam = screenRam + 1000
+.label background = colorRam + 1000
 
 :BasicUpstart2(start)
 
 start:
-	lda #$38
+	lda #$18
 	sta $d018
 	lda #$d8
 	sta $d016
@@ -19,21 +24,19 @@ start:
 	ldx #0
 !loop:
 	.for (var i = 0; i < 4; i++) {
-		lda screenRam + i * $100,x
-		sta $d800 + i * $100,x
-		lda colorRam + i * $100,x
-		sta $d800 + i * $100,x
+                        .var offs = i * $100
+		lda offs + screenRam,x
+		sta offs + $0400,x
+		lda offs + colorRam,x
+		sta offs + $d800,x
 	}
 	inx
 	bne !loop-
 	jmp *
+            
 
-.label pic = *
-.label bitmap = pic + 2
-.label screenRam = bitmap + 8000
-.label colorRam = screenRam + 1000
-.label background = colorRam + 1000
+// fill up with zero bytes up until the start of the bitmap ($2000)
+// leave out two bytes because the koala picture's first two bytes are the load address, then bitmap starts
+.fill bitmap - * - 2, 0
 
-//.pc = $0c00	"ScreenRam" 		.fill picture.getScreenRamSize(), picture.getScreenRam(i)
-//.pc = $1c00	"ColorRam:" colorRam: 	.fill picture.getColorRamSize(), picture.getColorRam(i)
-//.pc = $2000	"Bitmap"		.fill picture.getBitmapSize(), picture.getBitmap(i)
+
