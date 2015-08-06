@@ -1,7 +1,13 @@
 /* Space out content a bit */
-body {
-  padding-top: 20px;
-  padding-bottom: 20px;
+html, body {
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 0;
+  margin-bottom: 0;
   background-color: #e0e0e0;
 }
 
@@ -82,4 +88,16 @@ body {
 #image {
     border: 1px 1px 1px 1px;
     border-color: red;
+}
+
+.container {
+  padding: 0 0 0 0;
+}
+
+.col-md-12 {
+  padding: 0 0 0 0;
+}
+
+img {
+  padding: 0 0 0 0;
 }

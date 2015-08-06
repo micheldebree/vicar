@@ -1,8 +1,8 @@
 /*global document, PixelCalculator, ColorMap */
 /*exported PixelImage*/
 /*jslint bitwise: true*/
-/** Create an image with access to individual pixels 
-    
+/** Create an image with access to individual pixels
+
     Pixels are indexed:
     - index 0 = transparant
     - index > 0 = color is stored in color map with that index (-1, as actual array starts at 0)
@@ -15,9 +15,9 @@ http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
 
 */
 function PixelImage() {
- 
+
     'use strict';
-   
+
     // public properties
     this.height = undefined;
     this.width = undefined;
@@ -25,34 +25,34 @@ function PixelImage() {
     this.pHeight = 1; // aspect height of one pixel
     this.colorMaps = []; // maps x,y to a color
     this.palette = undefined; // the palette for all colors used in this image
-    this.pixelIndex = []; // maps pixel x,y to a colormap 
+    this.pixelIndex = []; // maps pixel x,y to a colormap
     this.ditherOffset = []; // offset for dithering used when mapping color
     this.dither = [[0]]; // n x n bayer matrix for ordered dithering
     this.errorDiffusionDither = function () { };
-        
+
 }
-    
+
 PixelImage.prototype.init = function (w, h, colorMap) {
     'use strict';
-    
+
     this.height = h;
     this.width = w;
     if (colorMap !== undefined) {
         this.colorMaps.push(colorMap);
     }
 };
-    
+
 /**
  * Find an existing color map that has a specific color at x,y, or has
- * an empty (undefined) spot available 
+ * an empty (undefined) spot available
  */
 PixelImage.prototype.findColorMap = function (x, y, color) {
     'use strict';
-    
+
     var i,
         mapColor,
         match;
-    
+
     for (i = 0; i < this.colorMaps.length; i += 1) {
         mapColor = this.colorMaps[i].getColor(x, y);
         if (mapColor === undefined) {
@@ -65,13 +65,13 @@ PixelImage.prototype.findColorMap = function (x, y, color) {
 
     return match;
 };
-    
-    /**
-     * Map a pixel to the closest available color at x, y
-     */
+
+/**
+ * Map a pixel to the closest available color at x, y
+ */
 PixelImage.prototype.map = function (pixel, x, y, offsetPixel) {
     'use strict';
-   
+
     var i,
         d,
         minVal,
@@ -91,7 +91,7 @@ PixelImage.prototype.map = function (pixel, x, y, offsetPixel) {
     return minI;
 
 };
-    
+
 PixelImage.prototype.setPixelIndex = function s(x, y, index) {
     'use strict';
 
@@ -100,7 +100,7 @@ PixelImage.prototype.setPixelIndex = function s(x, y, index) {
     }
     this.pixelIndex[y][x] = index;
 };
-    
+
 PixelImage.prototype.getPixelIndex = function (x, y) {
     'use strict';
     var row = this.pixelIndex[y];
@@ -115,7 +115,7 @@ PixelImage.prototype.setDitherOffset = function (x, y, offsetPixel) {
         }
         this.ditherOffset[y][x] = offsetPixel;
     }
-    
+
 };
 
 PixelImage.prototype.addDitherOffset = function (x, y, offsetPixel) {
@@ -131,32 +131,32 @@ PixelImage.prototype.getDitherOffset = function (x, y) {
         return row[x];
     }
     return PixelCalculator.emptyPixel;
-    
+
 };
 
 PixelImage.prototype.orderedDither = function (x, y, pixel) {
     'use strict';
     var offset = this.dither[y % this.dither.length][x % this.dither.length],
         offsetPixel;
-    
+
     //offsetPixel = PixelCalculator.multiply(pixel, -offset);
     //offsetPixel = PixelCalculator.divide(offsetPixel, 10);
-    
+
     offsetPixel = [offset, offset, offset];
-    
+
     this.addDitherOffset(x + 1, y, offsetPixel);
 };
 
 
-/** 
- * Set the value for a particular pixel. 
+/**
+ * Set the value for a particular pixel.
  * @param {number} x - x coordinate
  * @param {number} y - y coordinate
  * @param {Array] pixel - Pixel values [r, g, b, a]
  */
 PixelImage.prototype.poke = function (x, y, pixel) {
     'use strict';
-   
+
     var mappedIndex,
         mappedPixel,
         colorMap,
@@ -164,18 +164,18 @@ PixelImage.prototype.poke = function (x, y, pixel) {
         error;
 
     offsetPixel = this.getDitherOffset(x, y);
-    
+
     // map to closest color in palette
     mappedIndex = this.palette.mapPixel(pixel, offsetPixel);
 
-    
+
     // use the error for dithering
     mappedPixel = this.palette.get(mappedIndex);
     error = PixelCalculator.substract(mappedPixel, pixel);
     this.orderedDither(x, y, pixel);
     this.errorDiffusionDither(this, x, y, error);
-    
-    // try to reuse existing color map 
+
+    // try to reuse existing color map
     colorMap = this.findColorMap(x, y, mappedIndex);
     if (colorMap !== undefined) {
         this.colorMaps[colorMap].add(x, y, mappedIndex);
@@ -189,7 +189,7 @@ PixelImage.prototype.poke = function (x, y, pixel) {
     this.setPixelIndex(x, y, colorMap);
 
 };
-    
+
 PixelImage.prototype.drawImageData = function (imageData) {
     'use strict';
     var x,
@@ -204,7 +204,7 @@ PixelImage.prototype.drawImageData = function (imageData) {
     }
 };
 
-    
+
 PixelImage.prototype.fromImageData = function (imageData) {
     'use strict';
     this.init(imageData.width, imageData.height);
@@ -249,8 +249,8 @@ PixelImage.prototype.reduceToMax = function (x, y, w, h) {
     return maxColor;
 
 };
-    
-/** 
+
+/**
  * Get the value of a particular pixel.
  * @returns {Array} Pixel values [r, g, b, a], or an empty pixel if x and y are out of range.
  */
@@ -259,7 +259,7 @@ PixelImage.prototype.peek = function (x, y) {
     var ci = this.getPixelIndex(x, y);
     return ci !== undefined ? this.palette.get(this.colorMaps[ci].getColor(x, y)) : PixelCalculator.emptyPixel;
 };
-    
+
 PixelImage.prototype.extractColorMap = function (colorMap) {
     'use strict';
     var x,
@@ -280,7 +280,7 @@ PixelImage.prototype.extractColorMap = function (colorMap) {
             if ((color !== undefined) && (colorMap.getColor(x, y) === undefined)) {
 
                 colorMap.add(x, y, color);
-             
+
                 // remove matching pixels from this image
                 for (xx = x; xx < x + rx; xx += 1) {
                     for (yy = y; yy < y + ry; yy += 1) {
@@ -301,14 +301,14 @@ PixelImage.prototype.extractColorMap = function (colorMap) {
     return colorMap;
 
 };
-  
-/** 
+
+/**
     Create a URL that can be used as the src for an Image.
     If there is no image data (yet), the URL for a default image is returned.
 */
 PixelImage.prototype.toSrcUrl = function () {
     'use strict';
-    
+
     var canvas = document.createElement('canvas'),
         context = canvas.getContext('2d'),
         imageData,
@@ -340,10 +340,10 @@ PixelImage.prototype.toSrcUrl = function () {
 
     context.putImageData(imageData, 0, 0);
     return canvas.toDataURL();
-    
+
 
 };
-    
+
 PixelImage.prototype.addColorMap = function (colorMap) {
     'use strict';
     this.colorMaps.push(colorMap);
@@ -352,13 +352,12 @@ PixelImage.prototype.addColorMap = function (colorMap) {
 PixelImage.prototype.getTransparencyPercentage = function () {
     'use strict';
     var x, y, count = 0;
-    
+
     for (x = 0; x < this.width; x += 1) {
         for (y = 0; y < this.height; y += 1) {
             count += this.getPixelIndex(x, y) === undefined ? 1 : 0;
         }
     }
-    
+
     return Math.round((100 * count) / (this.width * this.height));
 };
-    

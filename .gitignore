@@ -8,3 +8,8 @@ bower_components
 *.log
 *.orig
 *.swp
+*.jar
+*.prg
+*.sym
+*.vs
+*.kla

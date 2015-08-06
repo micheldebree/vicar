@@ -1,11 +1,11 @@
 /*exported ImageGrabber*/
 function ImageGrabber(img, width, height) {
     'use strict';
-    
+
     var successCallback;
-    
+
     function grabData() {
-        
+
         var w = width === undefined ? img.width : width,
             h = height === undefined ? img.height : height,
             canvas = document.createElement('canvas'),
@@ -16,7 +16,7 @@ function ImageGrabber(img, width, height) {
         context.drawImage(img, 0, 0, w, h);
 
         successCallback(context.getImageData(0, 0, w, h));
-      
+
     }
 
     function grab(callback) {
@@ -37,9 +37,8 @@ function ImageGrabber(img, width, height) {
             grabData();
         }
     }
-    
+
     return {
         grab: grab
     };
 }
-    

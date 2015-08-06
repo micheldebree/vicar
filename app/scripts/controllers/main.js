@@ -1,4 +1,4 @@
-/*global angular, URL, ColorMap, GraphicModes, PixelImage, ImageGrabber, KoalaPicture, peptoPalette */
+/*global angular, Image, URL, ColorMap, GraphicModes, PixelImage, ImageGrabber, KoalaPicture, peptoPalette */
 /**
  * @ngdoc function
  * @name workspaceApp.controller:MainCtrl
@@ -9,7 +9,7 @@
 angular.module('vicarApp')
     .controller('MainCtrl', ['$scope', 'c64izerService', function ($scope, c64izerService) {
         'use strict';
-        
+
         var img = new Image();
         img.src = 'images/girl-face.jpg';
 
@@ -22,12 +22,12 @@ angular.module('vicarApp')
         $scope.selectGraphicMode = function (graphicMode) {
             $scope.selectedGraphicMode = graphicMode;
         };
-        
+
         $scope.imageChanged = function () {
             $scope.convert();
         };
-        
-        
+
+
         // ordered dithering selection
         $scope.dithers = c64izerService.getSupportedDithers();
         $scope.selectedDither = $scope.dithers[3];
@@ -37,7 +37,7 @@ angular.module('vicarApp')
         $scope.selectDither = function (dither) {
             $scope.selectedDither = dither;
         };
-        
+
         // error diffusion dithering selection
         $scope.errorDiffusionDithers = c64izerService.supportedErrorDiffusionDithers;
         $scope.selectedErrorDiffusionDither = $scope.errorDiffusionDithers[2];
@@ -47,12 +47,12 @@ angular.module('vicarApp')
         $scope.selectErrorDiffusionDither = function (errorDiffusionDither) {
             $scope.selectedErrorDiffusionDither = errorDiffusionDither;
         };
-        
+
         $scope.imageChanged = function () {
             $scope.convert();
         };
-      
-        
+
+
         function toPixelImage(colorMap, palette) {
             var result = new PixelImage();
             result.palette = palette;
@@ -62,26 +62,24 @@ angular.module('vicarApp')
             result.drawImageData(colorMap.toImageData(palette));
             return result;
         }
-        
+
         $scope.convert = function () {
             $scope.mainImage = undefined;
             // generate main image
-            
+
             var palette = peptoPalette,
-                converter = new KoalaPicture(),
-                koalaPic,
                 resultImage = $scope.selectedGraphicMode.value(),
                 grabber = new ImageGrabber(img, resultImage.width, resultImage.height);
-                
+
             resultImage.palette = peptoPalette;
-            
+
             function convertToPixelImage(imageData, restrictedImage) {
                 var w = imageData.width,
                     h = imageData.height,
                     unrestrictedImage = new PixelImage(),
                     ci,
                     cm;
-                   
+
                 // create an unrestricted image (one colormap of 1 x 1 resolution).
                 unrestrictedImage.palette = palette;
                 unrestrictedImage.dither = $scope.selectedDither.value;
@@ -90,7 +88,7 @@ angular.module('vicarApp')
                 unrestrictedImage.pHeight = restrictedImage.pHeight;
                 unrestrictedImage.init(w, h, new ColorMap(w, h, 1, 1));
                 unrestrictedImage.drawImageData(imageData);
-                
+
                 $scope.colorMap = [];
                 for (ci = 0; ci < restrictedImage.colorMaps.length; ci += 1) {
                     cm = unrestrictedImage.extractColorMap(restrictedImage.colorMaps[ci]);
@@ -98,32 +96,32 @@ angular.module('vicarApp')
                     $scope.colorMap[ci].pWidth = restrictedImage.pWidth;
                     $scope.colorMap[ci].pHeight = restrictedImage.pHeight;
                 }
-      
+
                 // draw the image again in the restricted image
                 restrictedImage.dither = unrestrictedImage.dither;
                 restrictedImage.errorDiffusionDither = unrestrictedImage.errorDiffusionDither;
                 restrictedImage.drawImageData(imageData);
-                
+
                 $scope.mainImage = restrictedImage;
                 $scope.testImage = unrestrictedImage;
                 $scope.quality = unrestrictedImage.getTransparencyPercentage();
-                
+
                 //koalaPic = converter.convert($scope.testImage);
                 //$scope.mainImage = converter.toPixelImage(koalaPic, palette);
                 //$scope.koalaDownloadLink = koalaPic.toUrl();
-                
+
                 $scope.$apply();
             }
-            
+
             grabber.grab(function (imageData) {
                 convertToPixelImage(imageData, resultImage);
             });
-          
-            
+
+
         };
 
         $scope.upload = function () {
-            if (typeof $scope.files !== 'undefined' && $scope.files.length === 1) {
+            if ($scope.files !== undefined && $scope.files.length === 1) {
                 img.src = URL.createObjectURL($scope.files[0]);
                 img.onload = function () {
                     $scope.imageChanged();
@@ -134,8 +132,7 @@ angular.module('vicarApp')
         $scope.$watch('files', function () {
             $scope.upload();
         });
-        
-      
+
         $scope.imageChanged();
 
     }]);

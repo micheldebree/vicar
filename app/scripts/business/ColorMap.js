@@ -1,4 +1,4 @@
-/*global PixelCalculator */
+/*global PixelCalculator, document */
 /*exported ColorMap*/
 /**
  * Maps x, y coordinates to a pixel value.
@@ -16,13 +16,13 @@
 
 function ColorMap(widthVal, heightVal, resXVal, resYVal) {
     'use strict';
-    
+
     this.colors = [];
     this.width = widthVal;
     this.height = heightVal;
     this.resX = resXVal !== undefined ? resXVal : widthVal;
     this.resY = resYVal !== undefined ? resYVal : heightVal;
-    
+
 }
 
 /**
@@ -65,23 +65,23 @@ ColorMap.prototype.add = function (x, y, color) {
         this.colors[rx] = [];
     }
     this.colors[rx][this.mapY(y)] = color;
-        
+
 };
 
 /**
- * Convert to an image so it can be displayed. 
+ * Convert to an image so it can be displayed.
  * @param {Palette} the palette to use for looking up the colors.
  */
 ColorMap.prototype.toImageData = function toImageData(palette) { // {{{
-        
+
     'use strict';
-    
+
     var canvas = document.createElement('canvas'),
         context = canvas.getContext('2d'),
         imageData = context.createImageData(this.width, this.height),
         x,
         y;
-        
+
     for (y = 0; y < this.height; y += 1) {
         for (x = 0; x < this.width; x += 1) {
             PixelCalculator.poke(imageData, x, y, palette.get(this.getColor(x, y)));
@@ -95,17 +95,16 @@ ColorMap.prototype.toImageData = function toImageData(palette) { // {{{
   * Get the color at x, y coordinate.
   */
 ColorMap.prototype.getColor = function (x, y) { // {{{
-    
+
     'use strict';
-        
+
     var mX = this.mapX(x),
         mY = this.mapY(y);
 
     if (this.colors[mX] !== undefined) {
         return this.colors[mX][mY];
-    } else {
-        return undefined;
     }
-    
+    return undefined;
+
+
 }; // }}}
-   

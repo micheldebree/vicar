@@ -22,13 +22,13 @@ start:
 	lda #background
 	sta $d021
 	ldx #0
+
 !loop:
-	.for (var i = 0; i < 4; i++) {
-                        .var offs = i * $100
-		lda offs + screenRam,x
-		sta offs + $0400,x
-		lda offs + colorRam,x
-		sta offs + $d800,x
+	.for (var i = 0; i < $400; i = i + $100) {
+		lda i + screenRam,x
+		sta i + $0400,x
+		lda i + colorRam,x
+		sta i + $d800,x
 	}
 	inx
 	bne !loop-
@@ -38,5 +38,4 @@ start:
 // fill up with zero bytes up until the start of the bitmap ($2000)
 // leave out two bytes because the koala picture's first two bytes are the load address, then bitmap starts
 .fill bitmap - * - 2, 0
-
 

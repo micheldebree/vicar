@@ -1,6 +1,8 @@
 /*jslint bitwise: true*/
+/*global document*/
 /**
  * Singleton utility for calculations involving pixels and imagedata
+ * TODO: rename to pixelmath or pixelutil or something
  */
 var PixelCalculator = {};
 
@@ -41,13 +43,13 @@ PixelCalculator.isEmpty = function (pixel) {
 /** Compare pixels by color value */
 PixelCalculator.equals = function (one, other) {
     'use strict';
-    
+
     return !PixelCalculator.isEmpty(one) && !PixelCalculator.isEmpty(other) && one[0] === other[0] && one[1] === other[1] && one[2] === other[2];
 };
 
 PixelCalculator.emptyPixel = [0, 0, 0, 0];
 
-/** 
+/**
  * Create imageData from an Image, optionally resizing it.
  * @param {Image} img - HTML5 Image object to get the image data from.
  * @param {number} [w] - Width to rescale image to.
@@ -71,20 +73,20 @@ PixelCalculator.getImageData = function (img, w, h) {
  */
 PixelCalculator.cloneImageData = function (sourceImageData) {
     'use strict';
-    
+
     if (sourceImageData === undefined) {
         return undefined;
     }
-    
+
     var canvas = document.createElement('canvas'),
         context = canvas.getContext('2d');
-    
+
     canvas.width = sourceImageData.width;
     canvas.height = sourceImageData.height;
-    
+
     context.putImageData(sourceImageData, 0, 0);
     return context.getImageData(0, 0, canvas.width, canvas.height);
-    
+
 };
 
 /**
@@ -93,17 +95,17 @@ PixelCalculator.cloneImageData = function (sourceImageData) {
  */
 PixelCalculator.coordsToindex = function (imageData, x, y) {
     'use strict';
-    
+
     var result = Math.floor(y) * (imageData.width << 2) + (x << 2);
     return result < imageData.data.length ? result : undefined;
 };
 
 PixelCalculator.poke = function (imageData, x, y, pixel) {
     'use strict';
-    
+
     if (pixel !== undefined) {
         var i = PixelCalculator.coordsToindex(imageData, x, y);
-        if (typeof i !== 'undefined') {
+        if (i !== undefined) {
             imageData.data[i] = pixel[0];
             imageData.data[i + 1] = pixel[1];
             imageData.data[i + 2] = pixel[2];
@@ -114,32 +116,32 @@ PixelCalculator.poke = function (imageData, x, y, pixel) {
 
 PixelCalculator.peek = function (imageData, x, y) {
     'use strict';
-    
+
     var i = PixelCalculator.coordsToindex(imageData, x, y);
-    if (typeof i !== 'undefined') {
+    if (i !== undefined) {
         return [
             imageData.data[i],
             imageData.data[i + 1],
             imageData.data[i + 2],
             imageData.data[i + 3]
         ];
-    } else {
-        return PixelCalculator.emptyPixel;
     }
+    return PixelCalculator.emptyPixel;
+
 };
 
 PixelCalculator.resize = function (imageData, w, h) {
     'use strict';
-    
+
     var canvas = document.createElement('canvas'),
         context = canvas.getContext('2d');
-    
+
     canvas.width = w;
     canvas.height = h;
-    
+
     context.putImageData(imageData, 0, 0, 0, 0, w, h);
     return context.getImageData(0, 0, w, h);
-    
+
 };
 
 
