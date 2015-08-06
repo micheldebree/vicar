@@ -1,4 +1,4 @@
-/*global angular, Image, URL, ColorMap, GraphicModes, PixelImage, ImageGrabber, KoalaPicture, peptoPalette */
+/*global angular, Image, URL, ColorMap, PixelImage, ImageGrabber, KoalaPicture, peptoPalette */
 /**
  * @ngdoc function
  * @name workspaceApp.controller:MainCtrl
@@ -30,7 +30,7 @@ angular.module('vicarApp')
 
         // ordered dithering selection
         $scope.dithers = c64izerService.getSupportedDithers();
-        $scope.selectedDither = $scope.dithers[3];
+        $scope.selectedDither = $scope.dithers[2];
         $scope.$watch('selectedDither', function () {
             $scope.convert();
         });
@@ -40,7 +40,7 @@ angular.module('vicarApp')
 
         // error diffusion dithering selection
         $scope.errorDiffusionDithers = c64izerService.supportedErrorDiffusionDithers;
-        $scope.selectedErrorDiffusionDither = $scope.errorDiffusionDithers[2];
+        $scope.selectedErrorDiffusionDither = $scope.errorDiffusionDithers[3];
         $scope.$watch('selectedErrorDiffusionDither', function () {
             $scope.convert();
         });
@@ -78,7 +78,10 @@ angular.module('vicarApp')
                     h = imageData.height,
                     unrestrictedImage = new PixelImage(),
                     ci,
-                    cm;
+                    cm,
+                    koalaPic,
+                    converter = new KoalaPicture();
+
 
                 // create an unrestricted image (one colormap of 1 x 1 resolution).
                 unrestrictedImage.palette = palette;
@@ -106,9 +109,9 @@ angular.module('vicarApp')
                 $scope.testImage = unrestrictedImage;
                 $scope.quality = unrestrictedImage.getTransparencyPercentage();
 
-                //koalaPic = converter.convert($scope.testImage);
-                //$scope.mainImage = converter.toPixelImage(koalaPic, palette);
-                //$scope.koalaDownloadLink = koalaPic.toUrl();
+                koalaPic = converter.convert(restrictedImage);
+                $scope.mainImage = converter.toPixelImage(koalaPic, palette);
+                $scope.koalaDownloadLink = koalaPic.toUrl();
 
                 $scope.$apply();
             }

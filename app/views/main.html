@@ -1,53 +1,56 @@
- 
-<div ng-show="true" id="image" ng-file-drop ng-file-select ng-model="files" class="drop-box col-md-12" 
-        drag-over-class="dragover" ng-multiple="false" allow-dir="false"
+<div ng-show="true" id="image" ng-file-drop ng-file-select ng-model="files" class="drop-box col-md-12"
+       drag-over-class="dragover" ng-multiple="false" allow-dir="false"
         accept="image/*">
     <img class="col-md-12" pixel-image="mainImage"/><!--img pixel-image="testImage"/-->
-    <div ng-show="quality">Color bleeding: <span class="badge"><span class="glyphicon glyphicon-tint" aria-hidden="true"></span>&nbsp;{{100-quality}}%</span></div>
+    <!--div ng-show="quality"><span class="badge"><span class="glyphicon glyphicon-tint" aria-hidden="true"></span>&nbsp;{{100-quality}}%</span></div-->
 </div>
 
-<div class="col-md-4">
+<!-- graphics mode selection, to be added in future release -->
+<!--div class="col-md-4">
     <div class="btn-group-vertical btn-group-xs" role="group">
          <span class="label label-default"><span class="glyphicon glyphicon-picture" aria-hidden="true"></span>&nbsp;Graphics mode</span>
-        <button ng-repeat="graphicMode in graphicModes" 
-              ng-click="selectGraphicMode(graphicMode)" 
-              type="button" 
-              class="btn btn-default"
+        <button ng-repeat="graphicMode in graphicModes"
+             ng-click="selectGraphicMode(graphicMode)"
+             type="button"
+             class="btn btn-default"
               ng-class="graphicMode.key === selectedGraphicMode.key ? 'active' : null">
         {{graphicMode.key}}
       </button>
     </div>
-</div>
+</div-->
 
-<div class="col-md-4">
-    <div class="btn-group-vertical btn-group-xs" role="group">
-          <span class="label label-default"><span class="glyphicon glyphicon-th" aria-hidden="true"></span>&nbsp;Ordered dithering</span>
-        <button ng-repeat="dither in dithers" 
-              ng-click="selectDither(dither)" 
-              type="button" 
-              class="btn btn-default"
-              ng-class="dither.key === selectedDither.key ? 'active' : null">
-        {{dither.key}}
+    <button type="button" class="btn btn-default" ng-file-select ng-model="files"><span class="glyphicon glyphicon-folder-open" aria-hidden="true">
+      <span class="hidden-xs">&nbsp;Open</span>
+    </button>
+
+    <div class="btn-group" role="group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span class="glyphicon glyphicon-th" aria-hidden="true"><span class="hidden-xs">&nbsp;Ordered Dithering</span>&nbsp;<span class="caret"></span>
         </button>
+        <ul class="dropdown-menu">
+          <li ng-repeat="dither in dithers" ng-class="dither.key === selectedDither.key ? 'active' : null">
+            <a href ng-click="selectDither(dither)">{{dither.key}}</a></li>
+        </ul>
     </div>
+
+    <div class="btn-group" role="group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span class="glyphicon glyphicon-equalizer" aria-hidden="true"><span class="hidden-xs">&nbsp;Error Diffusion Dithering</span>&nbsp;<span class="caret"></span>&nbsp;
+        </button>
+        <ul class="dropdown-menu">
+          <li ng-repeat="errorDiffusionDither in errorDiffusionDithers" ng-class="errorDiffusionDither.key === selectedErrorDiffusionDither.key ? 'active' : null">
+            <a href ng-click="selectErrorDiffusionDither(errorDiffusionDither)">{{errorDiffusionDither.key}}</a></li>
+        </ul>
+    </div>
+
+<div ng-show="koalaDownloadLink" class="btn-group">
+  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span><span class="hidden-xs">&nbsp;Save</span>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a href="{{koalaDownloadLink}}" download="vicar.kla">Koala Painter (.kla)</a></li>
+    <li><a href="#">Runnable (.prg)</a></li>
+  </ul>
 </div>
 
-<div class="col-md-4">
-    <div class="btn-group-vertical btn-group-xs" role="group">
-        <span class="label label-default"><span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span>&nbsp;Error diffusion dithering</span>
-        <button ng-repeat="errorDiffusionDither in errorDiffusionDithers" 
-              ng-click="selectErrorDiffusionDither(errorDiffusionDither)" 
-              type="button" 
-              class="btn btn-default"
-              ng-class="errorDiffusionDither.key === selectedErrorDiffusionDither.key ? 'active' : null">
-        {{errorDiffusionDither.key}}
-      </button>
-    </div>
-</div>
-
-
-<a ng-show="koalaDownloadLink" href="{{koalaDownloadLink}}" download="vicar.koa">Download koala</a>
-<br/>
 <!--img ng-repeat="cmap in colorMap" pixel-image="cmap"/-->
-
-

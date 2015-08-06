@@ -20,19 +20,12 @@ angular.module('vicarApp')
 
                     // convert the pic to a pixelimage
                     $scope.koalaImage = exporter.toPixelImage(pic, peptoPalette);
-
                     $scope.koalaImage.setPixelIndex(0);
-
                     $scope.$apply();
-
                 };
 
                 reader.readAsArrayBuffer($scope.koalafile[0]);
 
             }
-
-
         });
-
-
     }]);
