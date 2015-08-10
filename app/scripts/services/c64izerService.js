@@ -1,171 +1,142 @@
-/*global angular, Palette, PixelImage, ColorMap */
-angular.module('vicarApp').factory('c64izerService', function () {
-    'use strict';
- 
-    function getSupportedPalettes() {
-        return {
-            'Pepto' : new Palette([
-                [0, 0, 0, 0xff], // black
-                [0xff, 0xff, 0xff, 0xff], // white
-                [0x68, 0x37, 0x2b, 0xff], //red
-                [0x70, 0xa4, 0xb2, 0xff], //cyan
-                [0x6f, 0x3d, 0x86, 0xff], //purple
-                [0x58, 0x8d, 0x43, 0xff], //green
-                [0x35, 0x28, 0x79, 0xff], //blue
-                [0xb8, 0xc7, 0x6f, 0xff], //yellow
-                [0x6f, 0x4f, 0x25, 0xff], //orange
-                [0x43, 0x39, 0x00, 0xff], //brown
-                [0x9a, 0x67, 0x59, 0xff], //light red
-                [0x44, 0x44, 0x44, 0xff], //dark gray
-                [0x6c, 0x6c, 0x6c, 0xff], //medium gray
-                [0x9a, 0xd2, 0x84, 0xff], //light green
-                [0x6c, 0x5e, 0xb5, 0xff], //light blue
-                [0x95, 0x95, 0x95, 0xff] //green
-            ])
-        };
-    }
-    
-    function weighError(error, mul, div) {
-        return [
-            (error[0] * mul) / div,
-            (error[1] * mul) / div,
-            (error[2] * mul) / div
-        ];
-    }
-    
-    function fsDither(pixelImage, x, y, error) {
-        pixelImage.addDitherOffset(x + 1, y,  weighError(error, 7, 16));
-        pixelImage.addDitherOffset(x - 1, y + 1, weighError(error, 3, 16));
-        pixelImage.addDitherOffset(x, y + 1, weighError(error, 5, 16));
-        pixelImage.addDitherOffset(x + 1, y + 1, weighError(error, 1, 16));
-    }
+/*global angular, PixelImage, ColorMap */
+angular.module('vicarApp').factory('c64izerService', function() {
+  'use strict';
 
-    function jjnDither(pixelImage, x, y, error) {
-        pixelImage.addDitherOffset(x + 1, y, weighError(error, 7, 48));
-        pixelImage.addDitherOffset(x + 2, y, weighError(error, 5, 48));
-        pixelImage.addDitherOffset(x - 2, y + 1, weighError(error, 3, 48));
-        pixelImage.addDitherOffset(x - 1, y + 1, weighError(error, 5, 48));
-        pixelImage.addDitherOffset(x, y + 1, weighError(error, 7, 48));
-        pixelImage.addDitherOffset(x + 1, y + 1, weighError(error, 5, 48));
-        pixelImage.addDitherOffset(x + 2, y + 1, weighError(error, 3, 48));
-        pixelImage.addDitherOffset(x - 2, y + 2, weighError(error, 1, 48));
-        pixelImage.addDitherOffset(x - 1, y + 2, weighError(error, 3, 48));
-        pixelImage.addDitherOffset(x, y + 2, weighError(error, 5, 48));
-        pixelImage.addDitherOffset(x + 1, y + 2, weighError(error, 3, 48));
-        pixelImage.addDitherOffset(x + 2, y + 2, weighError(error, 1, 48));
-    }
+  function weighError(error, mul, div) {
+    return [
+      (error[0] * mul) / div, (error[1] * mul) / div, (error[2] * mul) / div
+    ];
+  }
 
-    function atkinsonDither(pixelImage, x, y, error) {
-        pixelImage.addDitherOffset(x + 1, y,  weighError(error, 1, 8));
-        pixelImage.addDitherOffset(x + 2, y, weighError(error, 1, 8));
-        pixelImage.addDitherOffset(x - 1, y + 1, weighError(error, 1, 8));
-        pixelImage.addDitherOffset(x, y + 1, weighError(error, 1, 8));
-        pixelImage.addDitherOffset(x + 1, y + 1, weighError(error, 1, 8));
-        pixelImage.addDitherOffset(x, y + 2, weighError(error, 1, 8));
-    }
-    
-    return {
-       
-        getSupportedPalettes: getSupportedPalettes,
-        supportedGraphicModes: [
-            {
-                key: 'Multicolor',
-                value : function () {
-                    var pixelImage = new PixelImage();
-                    pixelImage.pWidth = 2;
-                    pixelImage.pHeight = 1;
-                    pixelImage.init(160, 200);
-                    pixelImage.colorMaps.push(new ColorMap(160, 200));
-                    pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
-                    pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
-                    pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
-                    return pixelImage;
-                }
-            },
-            {
-                key:  'FLI',
-                value: function () {
-                    var pixelImage = new PixelImage();
-                    pixelImage.pWidth = 2;
-                    pixelImage.pHeight = 1;
-                    pixelImage.init(160, 200);
-                    pixelImage.colorMaps.push(new ColorMap(160, 200));
-                    pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
-                    pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 1));
-                    pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 1));
-                    return pixelImage;
-                }
-            },
-            {
-                key: 'AFLI',
-                value: function () {
-                    var pixelImage = new PixelImage();
-                    pixelImage.pWidth = 1;
-                    pixelImage.pHeight = 1;
-                    pixelImage.init(320, 200);
-                    pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
-                    pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 1));
-                    return pixelImage;
-                }
-            },
-            {
-                key: 'Hires',
-                value:  function () {
-                    var pixelImage = new PixelImage();
-                    pixelImage.pWidth = 1;
-                    pixelImage.pHeight = 1;
-                    pixelImage.init(320, 200);
-                    pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
-                    pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
-                    return pixelImage;
-                }
-            }
-        ],
-        getSupportedDithers: function () {
-            return [{
-                key: 'None',
-                value: [[0]]
-            }, {
-                key: 'Bayer 2 x 2',
-                value: [[1, 3],
-                        [4, 2]]
-            }, {
-                key: 'Bayer 4 x 4',
-                value: [
-                    [1, 9, 3, 11],
-                    [13, 5, 15, 7],
-                    [4, 12, 2, 10],
-                    [16, 8, 14, 6]
-                ]
-            }, {
-                key: 'Bayer 8 x 8',
-                value: [
-                    [1, 49, 13, 61, 4, 52, 16, 64],
-                    [33, 17, 45, 29, 36, 20, 48, 31],
-                    [9, 57, 5, 53, 12, 60, 8, 56],
-                    [41, 25, 37, 21, 44, 28, 40, 24],
-                    [3, 51, 15, 63, 2, 50, 14, 62],
-                    [35, 19, 47, 31, 34, 18, 46, 30],
-                    [11, 59, 7, 55, 10, 58, 6, 54],
-                    [43, 27, 39, 23, 42, 26, 38, 22]
-                ]
-            }];
-        },
-        supportedErrorDiffusionDithers: [
-            {
-                key: 'None',
-                value: function () { }
-            }, {
-                key: 'Floyd-Steinberg',
-                value: fsDither
-            }, {
-                key: 'Jarvis, Judice and Ninke',
-                value: jjnDither
-            }, {
-                key: 'Atkinson',
-                value: atkinsonDither
-            }
+  function fsDither(pixelImage, x, y, error) {
+    pixelImage.addDitherOffset(x + 1, y, weighError(error, 7, 16));
+    pixelImage.addDitherOffset(x - 1, y + 1, weighError(error, 3, 16));
+    pixelImage.addDitherOffset(x, y + 1, weighError(error, 5, 16));
+    pixelImage.addDitherOffset(x + 1, y + 1, weighError(error, 1, 16));
+  }
+
+  function jjnDither(pixelImage, x, y, error) {
+    pixelImage.addDitherOffset(x + 1, y, weighError(error, 7, 48));
+    pixelImage.addDitherOffset(x + 2, y, weighError(error, 5, 48));
+    pixelImage.addDitherOffset(x - 2, y + 1, weighError(error, 3, 48));
+    pixelImage.addDitherOffset(x - 1, y + 1, weighError(error, 5, 48));
+    pixelImage.addDitherOffset(x, y + 1, weighError(error, 7, 48));
+    pixelImage.addDitherOffset(x + 1, y + 1, weighError(error, 5, 48));
+    pixelImage.addDitherOffset(x + 2, y + 1, weighError(error, 3, 48));
+    pixelImage.addDitherOffset(x - 2, y + 2, weighError(error, 1, 48));
+    pixelImage.addDitherOffset(x - 1, y + 2, weighError(error, 3, 48));
+    pixelImage.addDitherOffset(x, y + 2, weighError(error, 5, 48));
+    pixelImage.addDitherOffset(x + 1, y + 2, weighError(error, 3, 48));
+    pixelImage.addDitherOffset(x + 2, y + 2, weighError(error, 1, 48));
+  }
+
+  function atkinsonDither(pixelImage, x, y, error) {
+    pixelImage.addDitherOffset(x + 1, y, weighError(error, 1, 8));
+    pixelImage.addDitherOffset(x + 2, y, weighError(error, 1, 8));
+    pixelImage.addDitherOffset(x - 1, y + 1, weighError(error, 1, 8));
+    pixelImage.addDitherOffset(x, y + 1, weighError(error, 1, 8));
+    pixelImage.addDitherOffset(x + 1, y + 1, weighError(error, 1, 8));
+    pixelImage.addDitherOffset(x, y + 2, weighError(error, 1, 8));
+  }
+
+  return {
+    supportedGraphicModes: [{
+      key: 'Multicolor',
+      value: function() {
+        var pixelImage = new PixelImage();
+        pixelImage.pWidth = 2;
+        pixelImage.pHeight = 1;
+        pixelImage.init(160, 200);
+        pixelImage.colorMaps.push(new ColorMap(160, 200));
+        pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
+        pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
+        pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
+        return pixelImage;
+      }
+    }, {
+      key: 'FLI',
+      value: function() {
+        var pixelImage = new PixelImage();
+        pixelImage.pWidth = 2;
+        pixelImage.pHeight = 1;
+        pixelImage.init(160, 200);
+        pixelImage.colorMaps.push(new ColorMap(160, 200));
+        pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
+        pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 1));
+        pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 1));
+        return pixelImage;
+      }
+    }, {
+      key: 'AFLI',
+      value: function() {
+        var pixelImage = new PixelImage();
+        pixelImage.pWidth = 1;
+        pixelImage.pHeight = 1;
+        pixelImage.init(320, 200);
+        pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
+        pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 1));
+        return pixelImage;
+      }
+    }, {
+      key: 'Hires',
+      value: function() {
+        var pixelImage = new PixelImage();
+        pixelImage.pWidth = 1;
+        pixelImage.pHeight = 1;
+        pixelImage.init(320, 200);
+        pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
+        pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
+        return pixelImage;
+      }
+    }],
+    // TODO: rewrite as an array
+    getSupportedDithers: function() {
+      return [{
+        key: 'None',
+        value: [
+          [0]
         ]
-    };
-      
+      }, {
+        key: 'Bayer 2 x 2',
+        value: [
+          [1, 3],
+          [4, 2]
+        ]
+      }, {
+        key: 'Bayer 4 x 4',
+        value: [
+          [1, 9, 3, 11],
+          [13, 5, 15, 7],
+          [4, 12, 2, 10],
+          [16, 8, 14, 6]
+        ]
+      }, {
+        key: 'Bayer 8 x 8',
+        value: [
+          [1, 49, 13, 61, 4, 52, 16, 64],
+          [33, 17, 45, 29, 36, 20, 48, 31],
+          [9, 57, 5, 53, 12, 60, 8, 56],
+          [41, 25, 37, 21, 44, 28, 40, 24],
+          [3, 51, 15, 63, 2, 50, 14, 62],
+          [35, 19, 47, 31, 34, 18, 46, 30],
+          [11, 59, 7, 55, 10, 58, 6, 54],
+          [43, 27, 39, 23, 42, 26, 38, 22]
+        ]
+      }];
+    },
+    supportedErrorDiffusionDithers: [{
+      key: 'None',
+      value: function() {}
+    }, {
+      key: 'Floyd-Steinberg',
+      value: fsDither
+    }, {
+      key: 'Jarvis, Judice and Ninke',
+      value: jjnDither
+    }, {
+      key: 'Atkinson',
+      value: atkinsonDither
+    }]
+  };
+
 });

@@ -7,7 +7,7 @@
  * Controller of the workspaceApp
  */
 angular.module('vicarApp')
-    .controller('MainCtrl', ['$scope', 'c64izerService', function ($scope, c64izerService) {
+    .controller('MainCtrl', ['$scope', 'c64izerService', '$timeout', function ($scope, c64izerService, $timeout) {
         'use strict';
 
         var img = new Image();
@@ -23,35 +23,29 @@ angular.module('vicarApp')
             $scope.selectedGraphicMode = graphicMode;
         };
 
-        $scope.imageChanged = function () {
-            $scope.convert();
+        $scope.render = function () {
+            $scope.mainImage = undefined;
+            $timeout(function() {$scope.convert();});
         };
 
 
         // ordered dithering selection
         $scope.dithers = c64izerService.getSupportedDithers();
         $scope.selectedDither = $scope.dithers[2];
-        $scope.$watch('selectedDither', function () {
-            $scope.convert();
-        });
+
         $scope.selectDither = function (dither) {
             $scope.selectedDither = dither;
+            $scope.render();
         };
 
         // error diffusion dithering selection
         $scope.errorDiffusionDithers = c64izerService.supportedErrorDiffusionDithers;
         $scope.selectedErrorDiffusionDither = $scope.errorDiffusionDithers[3];
-        $scope.$watch('selectedErrorDiffusionDither', function () {
-            $scope.convert();
-        });
+
         $scope.selectErrorDiffusionDither = function (errorDiffusionDither) {
             $scope.selectedErrorDiffusionDither = errorDiffusionDither;
+            $scope.render();
         };
-
-        $scope.imageChanged = function () {
-            $scope.convert();
-        };
-
 
         function toPixelImage(colorMap, palette) {
             var result = new PixelImage();
@@ -109,17 +103,15 @@ angular.module('vicarApp')
                 $scope.testImage = unrestrictedImage;
                 $scope.quality = unrestrictedImage.getTransparencyPercentage();
 
-                koalaPic = converter.convert(restrictedImage);
-                $scope.mainImage = converter.toPixelImage(koalaPic, palette);
-                $scope.koalaDownloadLink = koalaPic.toUrl();
+                //koalaPic = converter.convert(restrictedImage);
+                //$scope.mainImage = converter.toPixelImage(koalaPic, palette);
+                //$scope.koalaDownloadLink = koalaPic.toUrl();
 
-                $scope.$apply();
             }
 
             grabber.grab(function (imageData) {
                 convertToPixelImage(imageData, resultImage);
             });
-
 
         };
 
@@ -127,7 +119,7 @@ angular.module('vicarApp')
             if ($scope.files !== undefined && $scope.files.length === 1) {
                 img.src = URL.createObjectURL($scope.files[0]);
                 img.onload = function () {
-                    $scope.imageChanged();
+                    $scope.render();
                 };
             }
         };
@@ -136,6 +128,6 @@ angular.module('vicarApp')
             $scope.upload();
         });
 
-        $scope.imageChanged();
+        $scope.render();
 
     }]);
