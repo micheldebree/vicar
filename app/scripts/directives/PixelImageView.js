@@ -12,7 +12,7 @@ angular.module('vicarApp').directive('pixelImage', function () {
                 if (scope.pixelImage !== undefined) {
                     element.attr('src', scope.pixelImage.toSrcUrl());
                 } else {
-                    element.attr('src', 'images/spiffygif_30x30.gif');
+                    element.attr('src', 'images/screen.gif');
                 }
             }
         );

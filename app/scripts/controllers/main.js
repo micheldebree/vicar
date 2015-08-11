@@ -25,7 +25,8 @@ angular.module('vicarApp')
 
         $scope.render = function () {
             $scope.mainImage = undefined;
-            $timeout(function() {$scope.convert();});
+            $scope.koalaDownloadLink = undefined;
+            $timeout(function() {$scope.convert();}, 500);
         };
 
 
@@ -103,9 +104,9 @@ angular.module('vicarApp')
                 $scope.testImage = unrestrictedImage;
                 $scope.quality = unrestrictedImage.getTransparencyPercentage();
 
-                //koalaPic = converter.convert(restrictedImage);
-                //$scope.mainImage = converter.toPixelImage(koalaPic, palette);
-                //$scope.koalaDownloadLink = koalaPic.toUrl();
+                koalaPic = converter.convert(restrictedImage);
+                $scope.mainImage = converter.toPixelImage(koalaPic, palette);
+                $scope.koalaDownloadLink = koalaPic.toUrl();
 
             }
 
@@ -125,7 +126,8 @@ angular.module('vicarApp')
         };
 
         $scope.$watch('files', function () {
-            $scope.upload();
+            $scope.mainImage = undefined;
+            $timeout($scope.upload(), 500);
         });
 
         $scope.render();

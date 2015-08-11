@@ -1,5 +1,5 @@
 <div class="container">
-  <div ng-show="true" id="image" ng-file-drop ng-file-select ng-model="files" class="drop-box col-md-12" drag-over-class="dragover" ng-multiple="false" allow-dir="false" accept="image/*">
+  <div ng-show="true" id="image" class="drop-box col-md-12">
     <img class="col-md-12" pixel-image="mainImage" />
     <!--img pixel-image="testImage"/-->
     <!--div ng-show="quality"><span class="badge"><span class="glyphicon glyphicon-tint" aria-hidden="true"></span>&nbsp;{{100-quality}}%</span></div-->
@@ -21,46 +21,55 @@
 </div-->
 
 <footer class="footer">
-  <div class="container col-xs-12 navbar-fixed-bottom navbar-inverse">
+  <div class="col-xs-12 navbar-fixed-bottom navbar-inverse">
+    <div class="row" id="bottomNav">
 
-    <button type="button" class="btn btn-default col-xs-3 text-center" ng-file-select ng-model="files">
-      <span class="glyphicon glyphicon-folder-open" aria-hidden="true">
-        <span class="hidden-xs">&nbsp;Open</span>
-    </button>
+      <div class="col-xs-3 text-center">
+        <a href ng-file-select ng-model="files" ng-multiple="false" allow-dir="false" accept="image/*">
+          <span class="glyphicon glyphicon-folder-open" aria-hidden="true" />
+          <span class="hidden-xs">
+            <br/>Open</span>
+        </a>
+      </div>
 
-    <div class="btn-group col-xs-3 text-center dropup" role="group">
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <span class="glyphicon glyphicon-th" aria-hidden="true">
-          <span class="hidden-xs">&nbsp;Ordered Dithering</span>&nbsp;
+
+
+      <div class="btn-group col-xs-3 text-center dropup" role="group">
+        <a href data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span class="glyphicon glyphicon-th" aria-hidden="true" />
+          <span class="hidden-xs">
+            <br/>Ordered Dithering</span>&nbsp;
           <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
-        <li ng-repeat="dither in dithers" ng-class="dither.key === selectedDither.key ? 'active' : null">
-          <a href ng-click="selectDither(dither)">{{dither.key}}</a></li>
-      </ul>
-    </div>
+        </a>
+        <ul class="dropdown-menu">
+          <li ng-repeat="dither in dithers" ng-class="dither.key === selectedDither.key ? 'active' : null">
+            <a href ng-click="selectDither(dither)">{{dither.key}}</a></li>
+        </ul>
+      </div>
 
-    <div class="btn-group col-xs-3 text-center dropup" role="group">
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <span class="glyphicon glyphicon-equalizer" aria-hidden="true">
-          <span class="hidden-xs">&nbsp;Error Diffusion Dithering</span>&nbsp;
+      <div class="btn-group col-xs-3 text-center dropup" role="group">
+        <a href data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span class="glyphicon glyphicon-equalizer" aria-hidden="true" />
+          <span class="hidden-xs">
+            <br/>Error Diffusion Dithering</span>&nbsp;
           <span class="caret"></span>&nbsp;
-      </button>
-      <ul class="dropdown-menu">
-        <li ng-repeat="errorDiffusionDither in errorDiffusionDithers" ng-class="errorDiffusionDither.key === selectedErrorDiffusionDither.key ? 'active' : null">
-          <a href ng-click="selectErrorDiffusionDither(errorDiffusionDither)">{{errorDiffusionDither.key}}</a></li>
-      </ul>
-    </div>
+        </a>
+        <ul class="dropdown-menu">
+          <li ng-repeat="errorDiffusionDither in errorDiffusionDithers" ng-class="errorDiffusionDither.key === selectedErrorDiffusionDither.key ? 'active' : null">
+            <a href ng-click="selectErrorDiffusionDither(errorDiffusionDither)">{{errorDiffusionDither.key}}</a></li>
+        </ul>
+      </div>
 
-    <div class="btn-group col-xs-3 text-center dropup" ng-show="koalaDownloadLink" >
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
-        <span class="hidden-xs">&nbsp;Save</span>
-      </button>
-      <ul class="dropdown-menu">
-        <li><a href="{{koalaDownloadLink}}" download="vicar.kla">Koala Painter (.kla)</a></li>
-        <li><a href="#">Runnable (.prg)</a></li>
-      </ul>
+      <div class="btn-group col-xs-3 text-center dropup" ng-show="koalaDownloadLink">
+        <a href class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+          <span class="hidden-xs"><br/>&nbsp;Save</span>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a href="{{koalaDownloadLink}}" download="vicar.kla">Koala Painter (.kla)</a></li>
+          <li><a href="#">Runnable (.prg)</a></li>
+        </ul>
+      </div>
     </div>
   </div>
 </footer>
