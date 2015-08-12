@@ -11,7 +11,7 @@ angular.module('vicarApp')
         'use strict';
 
         var img = new Image();
-        img.src = 'images/girl-face.jpg';
+        img.src = 'images/eye.jpg';
 
         // graphic mode selection
         $scope.graphicModes = c64izerService.supportedGraphicModes;
@@ -23,20 +23,13 @@ angular.module('vicarApp')
             $scope.selectedGraphicMode = graphicMode;
         };
 
-        $scope.render = function () {
-            $scope.mainImage = undefined;
-            $scope.koalaDownloadLink = undefined;
-            $timeout(function() {$scope.convert();}, 500);
-        };
-
-
         // ordered dithering selection
         $scope.dithers = c64izerService.getSupportedDithers();
         $scope.selectedDither = $scope.dithers[2];
 
         $scope.selectDither = function (dither) {
             $scope.selectedDither = dither;
-            $scope.render();
+            $scope.convert();
         };
 
         // error diffusion dithering selection
@@ -45,8 +38,11 @@ angular.module('vicarApp')
 
         $scope.selectErrorDiffusionDither = function (errorDiffusionDither) {
             $scope.selectedErrorDiffusionDither = errorDiffusionDither;
-            $scope.render();
+            $scope.convert();
         };
+
+        /**
+         * Convert a ColorMap to a PixelImage, for debugging visualisation.
 
         function toPixelImage(colorMap, palette) {
             var result = new PixelImage();
@@ -57,14 +53,19 @@ angular.module('vicarApp')
             result.drawImageData(colorMap.toImageData(palette));
             return result;
         }
+        */
 
+        /**
+         * Convert the current Image to a PixelImage and update the scope.
+         */
         $scope.convert = function () {
-            $scope.mainImage = undefined;
-            // generate main image
 
             var palette = peptoPalette,
                 resultImage = $scope.selectedGraphicMode.value(),
                 grabber = new ImageGrabber(img, resultImage.width, resultImage.height);
+
+            $scope.mainImage = undefined;
+            $scope.koalaDownloadLink = undefined;
 
             resultImage.palette = peptoPalette;
 
@@ -73,12 +74,12 @@ angular.module('vicarApp')
                     h = imageData.height,
                     unrestrictedImage = new PixelImage(),
                     ci,
-                    cm,
                     koalaPic,
                     converter = new KoalaPicture();
 
 
                 // create an unrestricted image (one colormap of 1 x 1 resolution).
+                // and map the image onto it.
                 unrestrictedImage.palette = palette;
                 unrestrictedImage.dither = $scope.selectedDither.value;
                 unrestrictedImage.errorDiffusionDither = $scope.selectedErrorDiffusionDither.value;
@@ -87,32 +88,32 @@ angular.module('vicarApp')
                 unrestrictedImage.init(w, h, new ColorMap(w, h, 1, 1));
                 unrestrictedImage.drawImageData(imageData);
 
-                $scope.colorMap = [];
+                // fill up the colormaps in the restricted image based based on the colors in the unrestricted image
                 for (ci = 0; ci < restrictedImage.colorMaps.length; ci += 1) {
-                    cm = unrestrictedImage.extractColorMap(restrictedImage.colorMaps[ci]);
-                    $scope.colorMap[ci] = toPixelImage(cm, palette);
-                    $scope.colorMap[ci].pWidth = restrictedImage.pWidth;
-                    $scope.colorMap[ci].pHeight = restrictedImage.pHeight;
+                    unrestrictedImage.extractColorMap(restrictedImage.colorMaps[ci]);
                 }
 
-                // draw the image again in the restricted image
+                // draw the image again in the restricted image, making sure to use the same dithering
+                // N.B. using a different dithering gives interesting results.
                 restrictedImage.dither = unrestrictedImage.dither;
                 restrictedImage.errorDiffusionDither = unrestrictedImage.errorDiffusionDither;
                 restrictedImage.drawImageData(imageData);
 
                 $scope.mainImage = restrictedImage;
-                $scope.testImage = unrestrictedImage;
-                $scope.quality = unrestrictedImage.getTransparencyPercentage();
+                //$scope.testImage = unrestrictedImage;
+                //$scope.quality = unrestrictedImage.getTransparencyPercentage();
 
+                // convert to koalapic
+                // TODO: do this on demand, when user actually wants to save a koala pic
                 koalaPic = converter.convert(restrictedImage);
                 $scope.mainImage = converter.toPixelImage(koalaPic, palette);
                 $scope.koalaDownloadLink = koalaPic.toUrl();
 
             }
 
-            grabber.grab(function (imageData) {
+            $timeout(function() {grabber.grab(function (imageData) {
                 convertToPixelImage(imageData, resultImage);
-            });
+            }); }, 500);
 
         };
 
@@ -120,16 +121,16 @@ angular.module('vicarApp')
             if ($scope.files !== undefined && $scope.files.length === 1) {
                 img.src = URL.createObjectURL($scope.files[0]);
                 img.onload = function () {
-                    $scope.render();
+                    $scope.convert();
                 };
             }
         };
 
         $scope.$watch('files', function () {
             $scope.mainImage = undefined;
-            $timeout($scope.upload(), 500);
+            $scope.upload();
         });
 
-        $scope.render();
+        $scope.convert();
 
     }]);

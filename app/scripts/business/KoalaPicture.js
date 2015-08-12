@@ -61,8 +61,8 @@ KoalaPicture.prototype.convertBitmap = function (pixelImage) {
                 bitmap[bitmapIndex] =
                     pixelImage.getPixelIndex(charX, charY + bitmapY) << 6
                     | pixelImage.getPixelIndex(charX + 1, charY + bitmapY) << 4
-                    | pixelImage.getPixelIndex(charX  + 2, charY + bitmapY) << 2
-                    | pixelImage.getPixelIndex(charX  + 3, charY + bitmapY);
+                    | pixelImage.getPixelIndex(charX + 2, charY + bitmapY) << 2
+                    | pixelImage.getPixelIndex(charX + 3, charY + bitmapY);
 
                 bitmapIndex += 1;
             }

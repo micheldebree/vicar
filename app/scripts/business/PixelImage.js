@@ -134,7 +134,7 @@ PixelImage.prototype.getDitherOffset = function (x, y) {
 
 };
 
-PixelImage.prototype.orderedDither = function (x, y, pixel) {
+PixelImage.prototype.orderedDither = function (x, y) {
     'use strict';
     var offset = this.dither[y % this.dither.length][x % this.dither.length],
         offsetPixel;

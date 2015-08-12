@@ -37,7 +37,7 @@ PixelCalculator.clone = function (one) {
  */
 PixelCalculator.isEmpty = function (pixel) {
     'use strict';
-    return pixel[3] === undefined ||  pixel[3] < 1;
+    return pixel[3] === undefined || pixel[3] < 1;
 };
 
 /** Compare pixels by color value */
