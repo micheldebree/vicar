@@ -4,6 +4,10 @@ Applies graphics limitations of the [Commodore 64](https://en.wikipedia.org/wiki
 
 Cross-platform, cross-device HTML5 application for use on desktop, online web browser and mobile devices.
 
+## License
+
+This code is open source under the MIT license. See [LICENSE.txt](LICENSE.txt).
+
 ## Prerequisites for development:
 - Git
 - [Node.js](http://nodejs.org/)
