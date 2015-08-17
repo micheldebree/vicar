@@ -13,11 +13,18 @@ angular.module('vicarApp')
         var img = new Image();
         img.src = 'images/eye.jpg';
 
+        function sleep(millis)
+       {
+        var date = new Date();
+        var curDate = null;
+        do { curDate = new Date(); }
+        while(curDate-date < millis);
+      }
         // graphic mode selection
         $scope.graphicModes = c64izerService.supportedGraphicModes;
         $scope.selectedGraphicMode = $scope.graphicModes[0];
         $scope.$watch('selectedGraphicMode', function () {
-            $scope.convert();
+            convert();
         });
         $scope.selectGraphicMode = function (graphicMode) {
             $scope.selectedGraphicMode = graphicMode;
@@ -29,7 +36,7 @@ angular.module('vicarApp')
 
         $scope.selectDither = function (dither) {
             $scope.selectedDither = dither;
-            $scope.convert();
+            convert();
         };
 
         // error diffusion dithering selection
@@ -38,7 +45,7 @@ angular.module('vicarApp')
 
         $scope.selectErrorDiffusionDither = function (errorDiffusionDither) {
             $scope.selectedErrorDiffusionDither = errorDiffusionDither;
-            $scope.convert();
+            convert();
         };
 
         /**
@@ -58,7 +65,7 @@ angular.module('vicarApp')
         /**
          * Convert the current Image to a PixelImage and update the scope.
          */
-        $scope.convert = function () {
+        function convert () {
 
             var palette = peptoPalette,
                 resultImage = $scope.selectedGraphicMode.value(),
@@ -115,22 +122,22 @@ angular.module('vicarApp')
                 convertToPixelImage(imageData, resultImage);
             }); }, 500);
 
-        };
+        }
 
-        $scope.upload = function () {
+        function upload() {
             if ($scope.files !== undefined && $scope.files.length === 1) {
+
                 img.src = URL.createObjectURL($scope.files[0]);
                 img.onload = function () {
-                    $scope.convert();
+                    convert();
                 };
             }
-        };
+        }
 
         $scope.$watch('files', function () {
-            $scope.mainImage = undefined;
-            $scope.upload();
+            upload();
         });
 
-        $scope.convert();
+        convert();
 
     }]);
