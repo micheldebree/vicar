@@ -39,7 +39,41 @@ angular.module('vicarApp').factory('c64izerService', function() {
     pixelImage.addDitherOffset(x, y + 2, weighError(error, 1, 8));
   }
 
+  function sleep(millis) {
+    var date = new Date();
+    var curDate = null;
+    do { curDate = new Date(); }
+    while(curDate-date < millis);
+  }
+
+  function convertToPixelImage(imageData, restrictedImage) {
+      var w = imageData.width,
+          h = imageData.height,
+          unrestrictedImage = new PixelImage(),
+          ci;
+
+      // create an unrestricted image (one colormap of 1 x 1 resolution).
+      // and map the image onto it.
+      unrestrictedImage.palette = restrictedImage.palette;
+      unrestrictedImage.dither = restrictedImage.dither;
+      unrestrictedImage.errorDiffusionDither = restrictedImage.errorDiffusionDither;
+      unrestrictedImage.pWidth = restrictedImage.pWidth;
+      unrestrictedImage.pHeight = restrictedImage.pHeight;
+      unrestrictedImage.init(w, h, new ColorMap(w, h, 1, 1));
+      unrestrictedImage.drawImageData(imageData);
+
+      // fill up the colormaps in the restricted image based based on the colors in the unrestricted image
+      for (ci = 0; ci < restrictedImage.colorMaps.length; ci += 1) {
+          unrestrictedImage.extractColorMap(restrictedImage.colorMaps[ci]);
+      }
+
+      // draw the image again in the restricted image
+      restrictedImage.drawImageData(imageData);
+
+  }
+
   return {
+    convertToPixelImage: convertToPixelImage,
     supportedGraphicModes: [{
       key: 'Multicolor',
       value: function() {

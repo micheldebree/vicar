@@ -9,18 +9,18 @@
  */
 angular
       .module('vicarApp', [
-       
+
         'ngRoute',
-       
+
         'angularFileUpload'
     ])
       .config(function ($routeProvider, $compileProvider) {
         'use strict';
-    
+
         $routeProvider
               .when('/', {
-                templateUrl: 'views/main.html',
-                controller: 'MainCtrl'
+                templateUrl: 'views/main.html'
+                //controller: 'MainCtrl'
             })
               .when('/koala', {
                 templateUrl: 'views/koala.html',
@@ -29,8 +29,7 @@ angular
               .otherwise({
                 redirectTo: '/'
             });
-    
+
         $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension|blob):/);
-    
+
     });
- 

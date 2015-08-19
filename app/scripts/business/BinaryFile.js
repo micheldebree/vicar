@@ -7,9 +7,7 @@ function BinaryFile() {
  * Concatenate multiple 8-bit array buffers into one.
  */
 BinaryFile.prototype.concat = function (arrayBuffers) {
-
     'use strict';
-
     var i,
         ii,
         iii = 0,
@@ -40,12 +38,6 @@ BinaryFile.prototype.concat = function (arrayBuffers) {
  * of buffers.
  */
 BinaryFile.prototype.toObjectUrl = function (buffers) {
-
     'use strict';
-
-    var stream = this.concat(buffers),
-        blob = new Blob([stream], {type: 'application/octet-binary'});
-
-    return URL.createObjectURL(blob);
-
+    return URL.createObjectURL(new Blob([this.concat(buffers)], {type: 'application/octet-binary'}));
 };

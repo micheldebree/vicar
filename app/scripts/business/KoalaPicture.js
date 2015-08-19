@@ -32,9 +32,7 @@ KoalaPicture.prototype.read = function (arrayBuffer) {
 };
 
 KoalaPicture.prototype.toUrl = function () {
-
     'use strict';
-
     return this.toObjectUrl([
         this.loadAddress,
         this.bitmap,

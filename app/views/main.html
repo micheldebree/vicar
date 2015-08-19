@@ -25,20 +25,20 @@
     <div class="row" id="bottomNav">
 
       <div class="col-xs-3 text-center">
-        <a href ng-file-select ng-model="files" ng-multiple="false" allow-dir="false" accept="image/*">
+        <button href ng-file-select ng-model="files" ng-multiple="false" allow-dir="false" accept="image/*" ng-disabled="mainImage == null">
           <span class="glyphicon glyphicon-camera" aria-hidden="true" />
           <span class="hidden-xs">
             <br/>New</span>
-        </a>
+        </button>
       </div>
 
       <div class="btn-group col-xs-3 text-center dropup" role="group">
-        <a href data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <button href data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-disabled="mainImage == null">
           <span class="glyphicon glyphicon-th" aria-hidden="true" />
           <span class="hidden-xs">
             <br/>Ordered Dithering</span>&nbsp;
           <span class="caret"></span>
-        </a>
+        </button>
         <ul class="dropdown-menu">
           <li ng-repeat="dither in dithers" ng-class="dither.key === selectedDither.key ? 'active' : null">
             <a href ng-click="selectDither(dither)">{{dither.key}}</a></li>
@@ -46,23 +46,23 @@
       </div>
 
       <div class="btn-group col-xs-3 text-center dropup" role="group">
-        <a href data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <button href data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-disabled="mainImage == null">
           <span class="glyphicon glyphicon-equalizer" aria-hidden="true" />
           <span class="hidden-xs">
             <br/>Error Diffusion Dithering</span>&nbsp;
           <span class="caret"></span>&nbsp;
-        </a>
+        </button>
         <ul class="dropdown-menu">
           <li ng-repeat="errorDiffusionDither in errorDiffusionDithers" ng-class="errorDiffusionDither.key === selectedErrorDiffusionDither.key ? 'active' : null">
             <a href ng-click="selectErrorDiffusionDither(errorDiffusionDither)">{{errorDiffusionDither.key}}</a></li>
         </ul>
       </div>
 
-      <div class="btn-group col-xs-3 text-center dropup" ng-show="koalaDownloadLink">
-        <a href class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <div class="btn-group col-xs-3 text-center dropup">
+        <button href class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-disabled="mainImage == null">
           <span class="glyphicon glyphicon-share" aria-hidden="true"></span>
           <span class="hidden-xs"><br/>&nbsp;Save</span>
-        </a>
+        </button>
         <ul class="dropdown-menu">
           <li><a href="{{koalaDownloadLink}}" download="vicar.kla">Koala Painter (.kla)</a></li>
           <li><a href="#">Runnable (.prg)</a></li>

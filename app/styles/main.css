@@ -116,8 +116,17 @@ img {
   color: #f0f0f0;
 }
 
-#bottomNav a {
+#bottomNav a, button {
   color: #c0c0c0;
+}
+
+#bottomNav button {
+  background-color: transparent;
+  border-width: 0 0 0 0;
+}
+
+#bottomNav button:disabled {
+  color: #606060;
 }
 
 #bottomNav a:hover {
