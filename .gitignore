@@ -13,3 +13,4 @@ bower_components
 *.sym
 *.vs
 *.kla
+.vagrant

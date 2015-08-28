@@ -13,9 +13,27 @@ This code is open source under the MIT license. See [LICENSE.txt](LICENSE.txt).
 - [Node.js](http://nodejs.org/)
 - [KickAssembler](http://www.theweb.dk/KickAssembler/Main.php) (optional, for altering c64 code)
 
-## Setup development:
+## Setup development with Vagrant
+
+This is the easiest way to start developing using a virtual machine, and keeps your host machine
+clean.
+
+- Install [Vagrant](https://www.vagrantup.com)
+- Checkout the code
+    - `git clone https://github.com/micheldebree/vicar.git`
+- From the project root (`vicar`):
+    - `vagrant up` and wait for the machine to finish provisioning
+    - `vagrant ssh`
+    - `cd /vagrant`
+    - `grunt serve`
+- The application is now available on [http://localhost:9000](http://localhost:9000)
+- Check out the Vagrant docs on how to stop and start Vagrant machines.
+
+## Setup development (locally):
 
 - Install [Node.js](http://nodejs.org/) for your OS
+- Install Bower 
+    - npm install -g bower
 - Install grunt command line tools:
     - `npm install -g grunt-cli`
 - Checkout the code (or download source zip)
