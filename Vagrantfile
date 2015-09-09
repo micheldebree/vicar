@@ -30,7 +30,7 @@ $serve = <<SCRIPT
 
 # serve application
 cd /vagrant
-grunt serve
+grunt serve --force
 SCRIPT
 
 Vagrant.configure(2) do |config|

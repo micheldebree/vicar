@@ -31,18 +31,31 @@ KoalaPicture.prototype.read = function (arrayBuffer) {
     this.background = new Uint8Array(arrayBuffer, 10002, 1);
 };
 
-KoalaPicture.prototype.toUrl = function () {
-    'use strict';
-    return this.toObjectUrl([
-        this.loadAddress,
-        this.bitmap,
-        this.screenRam,
-        this.colorRam,
-        this.background
-    ]);
-
+/**
+ * Convert to a sequence of bytes.
+ */
+KoalaPicture.prototype.toBytes = function() {
+  'use strict';
+  return this.concat([
+      this.loadAddress,
+      this.bitmap,
+      this.screenRam,
+      this.colorRam,
+      this.background
+  ]);
 };
 
+/**
+ * Get a url to download this picture.
+ */
+KoalaPicture.prototype.toUrl = function () {
+    'use strict';
+    return this.toObjectUrl(this.toBytes());
+};
+
+/**
+ * Get the Koala bitmap component from a PixelImage.
+ */
 KoalaPicture.prototype.convertBitmap = function (pixelImage) {
     'use strict';
     var charY,
@@ -69,6 +82,9 @@ KoalaPicture.prototype.convertBitmap = function (pixelImage) {
     return bitmap;
 };
 
+/**
+ * Get the Koala screenram component from two ColorMaps
+ */
 KoalaPicture.prototype.convertScreenram = function (lowerColorMap, upperColorMap) {
     'use strict';
 
@@ -85,13 +101,15 @@ KoalaPicture.prototype.convertScreenram = function (lowerColorMap, upperColorMap
                 ((upperColorMap.getColor(colorX, colorY) << 4) & 0xf0)
                 | (lowerColorMap.getColor(colorX, colorY) & 0x0f);
             colorIndex += 1;
-
         }
     }
     return screenRam;
 
 };
 
+/**
+ * Get the Koala colorram component from a ColorMap
+ */
 KoalaPicture.prototype.convertColorram = function (colorMap) {
     'use strict';
     var colorX,
@@ -116,8 +134,9 @@ KoalaPicture.prototype.convertColorram = function (colorMap) {
  * Convert a pixelImage to a KoalaPic
  * PixelImage must have the following specs:
  * - 320 x 160 pixels
- * - colormap 0 has one color
- * - colormap 1 is
+ * - colormap 0 has one color, the background color
+ * - colormap 1 and 2 have the screenram
+ * - colormap 3 has the colorram
  */
 KoalaPicture.prototype.convert = function (pixelImage) {
     'use strict';

@@ -25,7 +25,7 @@
     <div class="row" id="bottomNav">
 
       <div class="col-xs-3 text-center">
-        <button href ng-file-select ng-model="files" ng-multiple="false" allow-dir="false" accept="image/*" ng-disabled="mainImage == null">
+        <button href ngf-select="upload($file)"  ng-multiple="false" allow-dir="false" ng-disabled="mainImage == null">
           <span class="glyphicon glyphicon-camera" aria-hidden="true" />
           <span class="hidden-xs">
             <br/>New</span>

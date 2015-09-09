@@ -73,20 +73,13 @@ angular.module('vicarApp')
             }); }, 500);
 
         }
-
-        function upload() {
-            if ($scope.files !== undefined && $scope.files.length === 1) {
-                // set the source image url to the newly uploaded image and convert when fully loaded.
-                img.src = URL.createObjectURL($scope.files[0]);
-                img.onload = function () {
-                    convert();
-                };
-            }
-        }
-
-        $scope.$watch('files', function () {
-            upload();
-        });
+        
+        $scope.upload = function(file) {
+            img.src = URL.createObjectURL(file);
+            img.onload = function () {
+                convert();
+            };
+        };
 
         convert();
 

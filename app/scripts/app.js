@@ -8,12 +8,7 @@
  * Main module of the application.
  */
 angular
-      .module('vicarApp', [
-
-        'ngRoute',
-
-        'angularFileUpload'
-    ])
+      .module('vicarApp', ['ngRoute','ngFileUpload'])
       .config(function ($routeProvider, $compileProvider) {
         'use strict';
 

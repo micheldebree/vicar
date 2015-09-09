@@ -34,10 +34,9 @@ BinaryFile.prototype.concat = function (arrayBuffers) {
 };
 
 /**
- * Get a URL for downloading the 'file' which consists of a list
- * of buffers.
+ * Get a URL for downloading an array of bytes as a file.
  */
-BinaryFile.prototype.toObjectUrl = function (buffers) {
+BinaryFile.prototype.toObjectUrl = function (byteArray) {
     'use strict';
-    return URL.createObjectURL(new Blob([this.concat(buffers)], {type: 'application/octet-binary'}));
+    return URL.createObjectURL(new Blob([byteArray], {type: 'application/octet-binary'}));
 };
