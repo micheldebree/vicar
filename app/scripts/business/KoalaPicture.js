@@ -138,7 +138,7 @@ KoalaPicture.prototype.convertColorram = function (colorMap) {
  * - colormap 1 and 2 have the screenram
  * - colormap 3 has the colorram
  */
-KoalaPicture.prototype.convert = function (pixelImage) {
+KoalaPicture.prototype.fromPixelImage = function (pixelImage) {
     'use strict';
 
     var koalaPic = new KoalaPicture();

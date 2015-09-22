@@ -3,9 +3,18 @@
 /*jslint bitwise: true*/
 /** Create an image with access to individual pixels
 
+    A pixel's color at (x,y) is determined through 2 indirections:
+    
+    - colormapIndex = pixelIndex[x,y] 
+    - paletteIndex = colorMaps[colormapIndex][x,y]
+    - color = palette[paletteIndex]
+    - red = color[0], green = color[1], blue = color[2]    
+
     Pixels are indexed:
-    - index 0 = transparant
-    - index > 0 = color is stored in color map with that index (-1, as actual array starts at 0)
+    - index at (x,y) undefined -> transparant
+    - index at (x,y) = number -> number of colormap in which color is stored at (x,y) 
+    
+    Colormaps contain a mapping from (x,y) to an index in the palette.
 
 http://csdb.dk/forums/?roomid=11&topicid=21409&showallposts=1
 
@@ -32,6 +41,9 @@ function PixelImage() {
 
 }
 
+/**
+  Initialize the image.
+*/
 PixelImage.prototype.init = function (w, h, colorMap) {
     'use strict';
 
@@ -67,7 +79,7 @@ PixelImage.prototype.findColorMap = function (x, y, color) {
 };
 
 /**
- * Map a pixel to the closest available color at x, y
+ * Map a pixel to the closest available palette color at x, y
  */
 PixelImage.prototype.map = function (pixel, x, y, offsetPixel) {
     'use strict';
@@ -304,9 +316,21 @@ PixelImage.prototype.extractColorMap = function (colorMap) {
 
 /**
     Create a URL that can be used as the src for an Image.
-    If there is no image data (yet), the URL for a default image is returned.
 */
 PixelImage.prototype.toSrcUrl = function () {
+    'use strict';
+    return this.toUrl('image/png');
+};
+
+/**
+    Create a URL that can be used to download this as an image.
+*/
+PixelImage.prototype.toDownloadUrl = function () {
+    'use strict';
+    return this.toSrcUrl().replace('data:image/png', 'data:image/octet-stream');
+};
+
+PixelImage.prototype.toUrl = function (mimetype) {
     'use strict';
 
     var canvas = document.createElement('canvas'),
@@ -339,8 +363,7 @@ PixelImage.prototype.toSrcUrl = function () {
     }
 
     context.putImageData(imageData, 0, 0);
-    return canvas.toDataURL();
-
+    return canvas.toDataURL(mimetype);
 
 };
 

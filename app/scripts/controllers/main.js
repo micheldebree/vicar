@@ -23,7 +23,7 @@ angular.module('vicarApp')
 
         // ordered dithering selection
         $scope.dithers = c64izerService.getSupportedDithers();
-        $scope.selectedDither = $scope.dithers[2];
+        $scope.selectedDither = $scope.dithers[0];
 
         $scope.selectDither = function (dither) {
             $scope.selectedDither = dither;
@@ -67,17 +67,24 @@ angular.module('vicarApp')
             resultImage.dither = $scope.selectedDither.value;
             resultImage.errorDiffusionDither = $scope.selectedErrorDiffusionDither.value;
 
-            $timeout(function() {grabber.grab(function (imageData) {
-                c64izerService.convertToPixelImage(imageData, resultImage);
-                $scope.mainImage = resultImage;
-            }); }, 500);
+            $timeout(
+              function() {
+                grabber.grab(
+                  function (imageData) {
+                    c64izerService.convertToPixelImage(imageData, resultImage);
+                    $scope.mainImage = resultImage;
+                    $scope.download = resultImage.toDownloadUrl();
+                  }
+                ); 
+              }, 500
+            );
 
         }
         
         $scope.upload = function(file) {
             img.src = URL.createObjectURL(file);
             img.onload = function () {
-                convert();
+                $timeout(function() {convert();});
             };
         };
 
