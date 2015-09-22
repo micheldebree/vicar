@@ -67,27 +67,30 @@ angular.module('vicarApp')
             resultImage.dither = $scope.selectedDither.value;
             resultImage.errorDiffusionDither = $scope.selectedErrorDiffusionDither.value;
 
-            $timeout(
-              function() {
-                grabber.grab(
-                  function (imageData) {
-                    c64izerService.convertToPixelImage(imageData, resultImage);
-                    $scope.mainImage = resultImage;
-                    $scope.download = resultImage.toDownloadUrl();
-                  }
-                ); 
-              }, 500
-            );
+          
+            grabber.grab(
+              function (imageData) {
+                $scope.$evalAsync(function() {
+                  c64izerService.convertToPixelImage(imageData, resultImage);
+                  $scope.mainImage = resultImage;
+                  $scope.download = resultImage.toDownloadUrl();
+                });
+                
+              }
+            ); 
+            
 
         }
         
         $scope.upload = function(file) {
             img.src = URL.createObjectURL(file);
-            img.onload = function () {
-                $timeout(function() {convert();});
+            img.onload = function() { 
+              convert();
             };
+            
         };
-
+        
+        
         convert();
 
     }]);
