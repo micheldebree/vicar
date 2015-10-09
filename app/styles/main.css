@@ -38,12 +38,14 @@ html, body {
   border-top: 1px solid #e5e5e5;
 }
 
-/* Customize container */
+/* Customize container
 @media (min-width: 768px) {
   .container {
     max-width: 730px;
   }
 }
+*/
+
 .container-narrow > hr {
   margin: 30px 0;
 }
@@ -66,24 +68,22 @@ html, body {
   margin-top: 28px;
 }
 
-/* Responsive: Portrait tablets and up */
+/* Responsive: Portrait tablets and up
 @media screen and (min-width: 768px) {
-  /* Remove the padding we set earlier */
   .header,
   .marketing,
   .footer {
     padding-left: 0;
     padding-right: 0;
   }
-  /* Space out the masthead */
   .header {
     margin-bottom: 30px;
   }
-  /* Remove the bottom border on the jumbotron for visual effect */
   .jumbotron {
     border-bottom: 0;
   }
 }
+*/
 
 #image {
     border: 1px 1px 1px 1px;
@@ -96,6 +96,12 @@ html, body {
 
 .col-md-12 {
   padding: 0 0 0 0;
+}
+
+@media (min-width: 320px) {
+  .col-md-12 {
+    width: 100%;
+  }
 }
 
 img {

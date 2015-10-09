@@ -27,7 +27,7 @@
       <div class="col-xs-3 text-center">
         <button href ngf-select="upload($file)"  ng-multiple="false" allow-dir="false" ng-disabled="mainImage == null">
           <span class="glyphicon glyphicon-camera" aria-hidden="true" />
-          <span class="hidden-xs">
+          <span class="hidden-xs hidden-sm">
             <br/>New</span>
         </button>
       </div>
@@ -35,7 +35,7 @@
       <div class="btn-group col-xs-3 text-center dropup" role="group">
         <button href data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-disabled="mainImage == null">
           <span class="glyphicon glyphicon-th" aria-hidden="true" />
-          <span class="hidden-xs">
+          <span class="hidden-xs hidden-sm">
             <br/>Ordered Dithering</span>&nbsp;
           <span class="caret"></span>
         </button>
@@ -48,7 +48,7 @@
       <div class="btn-group col-xs-3 text-center dropup" role="group">
         <button href data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-disabled="mainImage == null">
           <span class="glyphicon glyphicon-equalizer" aria-hidden="true" />
-          <span class="hidden-xs">
+          <span class="hidden-xs hidden-sm">
             <br/>Error Diffusion Dithering</span>&nbsp;
           <span class="caret"></span>&nbsp;
         </button>
@@ -61,7 +61,7 @@
       <div class="btn-group col-xs-3 text-center dropup">
         <button href class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-disabled="mainImage == null">
           <span class="glyphicon glyphicon-share" aria-hidden="true"></span>
-          <span class="hidden-xs"><br/>&nbsp;Save</span>
+          <span class="hidden-xs hidden-sm"><br/>&nbsp;Save</span>
         </button>
         <ul class="dropdown-menu">
           <li><a href="{{download}}" download="vicar.png" title="VICar">Image (.png)</a></li>
