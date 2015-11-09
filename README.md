@@ -8,27 +8,12 @@ Cross-platform, cross-device HTML5 application for use on desktop, online web br
 
 This code is open source under the MIT license. See [LICENSE.txt](LICENSE.txt).
 
-
 # Development
 
 First, checkout the project (or download source zip)
     - `git clone https://github.com/micheldebree/vicar.git`
 
-## Setup development with Vagrant
-
-This is the easiest way to start developing using a virtual machine, and keeps your host machine
-clean.
-
-- Install [Vagrant](https://www.vagrantup.com)
-- From the project root (`vicar`):
-    - `vagrant up`
-    - Get some coffee and wait for `Waiting...` prompt
-- Application is now running at [http://localhost:9000](http://localhost:9000)
-- Edit sourcecode, browser should auto-refresh on changes.
-
-Check out the Vagrant docs on how to stop, start and destroy Vagrant machines.
-
-## Setup development (locally):
+## Setup development:
 
 Don't use a virtual machine to serve the application, but install Node.js tools locally.
 
