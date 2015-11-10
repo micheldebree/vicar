@@ -8,7 +8,7 @@ html, body {
   margin-right: 0;
   margin-top: 0;
   margin-bottom: 0;
-  background-color: #e0e0e0;
+  background-color: #352879;
 }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
@@ -123,7 +123,7 @@ img {
 }
 
 #bottomNav a, button {
-  color: #c0c0c0;
+  color: #ffffff;
 }
 
 #bottomNav button {
@@ -138,4 +138,25 @@ img {
 #bottomNav a:hover {
   color: #f0f0f0;
   text-decoration: none;
+}
+
+.navbar {
+  border-radius: 0;
+  margin-bottom: 0;
+  color: #f0f0f0;
+  border: 0;
+}
+
+.navbar-default,
+.dropdown-menu {
+  background-color: #6c5eb5;
+}
+
+
+
+.navbar-default .navbar-text,
+.navbar-default a,
+.navbar-default a:visited
+ {
+  color: #ffffff;
 }
