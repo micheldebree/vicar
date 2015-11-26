@@ -16,3 +16,4 @@ bower_components
 .vagrant
 publish.sh
 .DS_Store
+.idea
