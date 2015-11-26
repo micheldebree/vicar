@@ -1,4 +1,5 @@
 /* Space out content a bit */
+
 html, body {
   padding-top: 0;
   padding-bottom: 0;
@@ -12,9 +13,7 @@ html, body {
 }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
-.header,
-.marketing,
-.footer {
+.header, .marketing, .footer {
   padding-left: 15px;
   padding-right: 15px;
 }
@@ -23,6 +22,7 @@ html, body {
 .header {
   border-bottom: 1px solid #e5e5e5;
 }
+
 /* Make the masthead heading the same height as the navigation */
 .header h3 {
   margin-top: 0;
@@ -38,125 +38,55 @@ html, body {
   border-top: 1px solid #e5e5e5;
 }
 
-/* Customize container
-@media (min-width: 768px) {
-  .container {
-    max-width: 730px;
-  }
-}
-*/
-
 .container-narrow > hr {
   margin: 30px 0;
-}
-
-/* Main marketing message and sign up button */
-.jumbotron {
-  text-align: center;
-  border-bottom: 1px solid #e5e5e5;
-}
-.jumbotron .btn {
-  font-size: 21px;
-  padding: 14px 24px;
-}
-
-/* Supporting marketing content */
-.marketing {
-  margin: 40px 0;
-}
-.marketing p + h4 {
-  margin-top: 28px;
-}
-
-/* Responsive: Portrait tablets and up
-@media screen and (min-width: 768px) {
-  .header,
-  .marketing,
-  .footer {
-    padding-left: 0;
-    padding-right: 0;
-  }
-  .header {
-    margin-bottom: 30px;
-  }
-  .jumbotron {
-    border-bottom: 0;
-  }
-}
-*/
-
-#image {
-    border: 1px 1px 1px 1px;
-    border-color: red;
 }
 
 .container {
   padding: 0 0 0 0;
 }
-
 .col-md-12 {
   padding: 0 0 0 0;
 }
-
 @media (min-width: 320px) {
   .col-md-12 {
     width: 100%;
   }
 }
-
 img {
   padding: 0 0 0 0;
 }
-
 .footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    /*height: 60px;*/
-    padding-top: 20px;
-}
-
-#bottomNav {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /*height: 60px;*/
   padding-top: 20px;
-  padding-bottom: 20px;
-  color: #f0f0f0;
 }
 
 #bottomNav a, button {
   color: #ffffff;
 }
-
 #bottomNav button {
   background-color: transparent;
   border-width: 0 0 0 0;
 }
-
 #bottomNav button:disabled {
   color: #606060;
 }
-
 #bottomNav a:hover {
   color: #f0f0f0;
   text-decoration: none;
 }
-
 .navbar {
   border-radius: 0;
   margin-bottom: 0;
   color: #f0f0f0;
   border: 0;
 }
-
-.navbar-default,
-.dropdown-menu {
+.navbar-default, .dropdown-menu {
   background-color: #6c5eb5;
 }
-
-
-
-.navbar-default .navbar-text,
-.navbar-default a,
-.navbar-default a:visited
- {
+.navbar-default .navbar-text, .navbar-default a, .navbar-default a:visited {
   color: #ffffff;
 }

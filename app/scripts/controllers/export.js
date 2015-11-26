@@ -6,7 +6,8 @@ angular.module('vicarApp').controller('ExportCtrl', [
 
     if ($scope.mainImage !== null) {
       var koala = KoalaPicture.fromPixelImage($scope.mainImage);
-      $scope.koalaLink = koala.toObjectUrl(); 
+      $scope.koalaLink = koala.toObjectUrl();
     }
 
   }]);
+/**/

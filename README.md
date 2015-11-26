@@ -15,10 +15,8 @@ First, checkout the project (or download source zip)
 
 ## Setup development:
 
-Don't use a virtual machine to serve the application, but install Node.js tools locally.
-
 - Install [Node.js](http://nodejs.org/) for your OS
-- Install Bower 
+- Install Bower
     - npm install -g bower
 - Install grunt command line tools:
     - `npm install -g grunt-cli`
