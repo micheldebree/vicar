@@ -1,0 +1,3 @@
+[submodule "app/scripts/retropixels"]
+	path = app/scripts/retropixels
+	url = https://github.com/micheldebree/retropixels.git

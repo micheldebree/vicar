@@ -39,27 +39,19 @@ angular.module('vicarApp').factory('c64izerService', function() {
     pixelImage.addDitherOffset(x, y + 2, weighError(error, 1, 8));
   }
 
-  function sleep(millis) {
-    var date = new Date();
-    var curDate = null;
-    do { curDate = new Date(); }
-    while(curDate-date < millis);
-  }
-
   function convertToPixelImage(imageData, restrictedImage) {
       var w = imageData.width,
           h = imageData.height,
-          unrestrictedImage = new PixelImage(),
+          unrestrictedImage,
           ci;
 
       // create an unrestricted image (one colormap of 1 x 1 resolution).
       // and map the image onto it.
+      unrestrictedImage = PixelImage.create(w, h, new ColorMap(w, h, 1, 1), restrictedImage.pWidth, restrictedImage.pHeight);
+
       unrestrictedImage.palette = restrictedImage.palette;
       unrestrictedImage.dither = restrictedImage.dither;
       unrestrictedImage.errorDiffusionDither = restrictedImage.errorDiffusionDither;
-      unrestrictedImage.pWidth = restrictedImage.pWidth;
-      unrestrictedImage.pHeight = restrictedImage.pHeight;
-      unrestrictedImage.init(w, h, new ColorMap(w, h, 1, 1));
       unrestrictedImage.drawImageData(imageData);
 
       // fill up the colormaps in the restricted image based based on the colors in the unrestricted image
@@ -77,10 +69,7 @@ angular.module('vicarApp').factory('c64izerService', function() {
     supportedGraphicModes: [{
       key: 'Multicolor',
       value: function() {
-        var pixelImage = new PixelImage();
-        pixelImage.pWidth = 2;
-        pixelImage.pHeight = 1;
-        pixelImage.init(160, 200);
+        var pixelImage = PixelImage.create(160, 200, undefined, 2, 1);
         pixelImage.colorMaps.push(new ColorMap(160, 200));
         pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
         pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
@@ -90,10 +79,7 @@ angular.module('vicarApp').factory('c64izerService', function() {
     }, {
       key: 'FLI',
       value: function() {
-        var pixelImage = new PixelImage();
-        pixelImage.pWidth = 2;
-        pixelImage.pHeight = 1;
-        pixelImage.init(160, 200);
+        var pixelImage = PixelImage.create(160, 200, undefined, 2, 1);
         pixelImage.colorMaps.push(new ColorMap(160, 200));
         pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
         pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 1));
@@ -103,10 +89,7 @@ angular.module('vicarApp').factory('c64izerService', function() {
     }, {
       key: 'AFLI',
       value: function() {
-        var pixelImage = new PixelImage();
-        pixelImage.pWidth = 1;
-        pixelImage.pHeight = 1;
-        pixelImage.init(320, 200);
+        var pixelImage = PixelImage.create(320, 200, undefined, 1, 1);
         pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
         pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 1));
         return pixelImage;
@@ -114,14 +97,19 @@ angular.module('vicarApp').factory('c64izerService', function() {
     }, {
       key: 'Hires',
       value: function() {
-        var pixelImage = new PixelImage();
-        pixelImage.pWidth = 1;
-        pixelImage.pHeight = 1;
-        pixelImage.init(320, 200);
+        var pixelImage = PixelImage.create(320, 200, undefined, 1, 1);
         pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
         pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
         return pixelImage;
       }
+    }, {
+        key: 'Hires (2 colors)',
+        value: function() {
+          var pixelImage = PixelImage.create(320, 200, undefined, 1, 1);
+          pixelImage.colorMaps.push(new ColorMap(320, 200, 320, 200));
+          pixelImage.colorMaps.push(new ColorMap(320, 200, 320, 200));
+          return pixelImage;
+        }
     }],
     // TODO: rewrite as an array
     getSupportedDithers: function() {
