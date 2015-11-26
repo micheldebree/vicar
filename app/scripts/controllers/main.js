@@ -55,11 +55,12 @@ angular.module('vicarApp')
 
       /**
        * Convert the current Image to a PixelImage and update the scope.
+       * @returns {void}
        */
       function convert() {
 
         var resultImage = $scope.selectedGraphicMode.value(),
-          grabber = new ImageGrabber(img, resultImage.width, resultImage.height);
+            grabber = new ImageGrabber(img, resultImage.width, resultImage.height);
 
         $scope.mainImage = undefined;
 

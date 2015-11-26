@@ -8,6 +8,11 @@
   },
 
   "rules": {
-    "quotes": [2, "single"]
-  }
+    "quotes": [2, "single"],
+    semi: [2, "always"],
+    strict: [2, "function"],
+    "camelcase": [2, {"properties": "always"}],
+    "valid-jsdoc": 2
+  },
+
 }
