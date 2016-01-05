@@ -3,8 +3,7 @@ angular.module('vicarApp')
   .controller('MainCtrl', [
     '$scope',
     'c64izerService',
-    '$timeout',
-    function ($scope, c64izerService, $timeout) {
+    function ($scope, c64izerService) {
       'use strict';
 
       var img = new Image();
