@@ -66,7 +66,7 @@ angular.module('vicarApp')
       function convert() {
 
         var resultImage = $scope.selectedGraphicMode.value(),
-            grabber = new ImageGrabber(img, resultImage);
+            grabber = new ImageGrabber(img, resultImage.width, resultImage.height);
 
         $scope.mainImage = undefined;
 

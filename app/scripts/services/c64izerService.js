@@ -40,9 +40,26 @@ angular.module('vicarApp').factory('c64izerService', function() {
   }
 
   function convertToPixelImage(imageData, restrictedImage) {
+      var w = imageData.width,
+          h = imageData.height,
+          unrestrictedImage,
+          ci;
 
-      var colorReducer = new ColorReducer();
-      colorReducer.extractColorMaps(restrictedImage, imageData);
+      // create an unrestricted image (one colormap of 1 x 1 resolution).
+      // and map the image onto it.
+      unrestrictedImage = PixelImage.create(w, h, restrictedImage.pWidth, restrictedImage.pHeight);
+      unrestrictedImage.colorMaps.push(new ColorMap(w, h, 1, 1));
+      unrestrictedImage.palette = restrictedImage.palette;
+      unrestrictedImage.dither = restrictedImage.dither;
+      unrestrictedImage.errorDiffusionDither = restrictedImage.errorDiffusionDither;
+      unrestrictedImage.drawImageData(imageData);
+
+      var colorReducer = new ColorReducer(unrestrictedImage);
+
+      // fill up the colormaps in the restricted image based based on the colors in the unrestricted image
+      for (ci = 0; ci < restrictedImage.colorMaps.length; ci += 1) {
+          colorReducer.extractColorMap(restrictedImage.colorMaps[ci]);
+      }
 
       // draw the image again in the restricted image
       restrictedImage.drawImageData(imageData);

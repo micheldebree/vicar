@@ -1,28 +1,21 @@
 /*exported ImageGrabber*/
-function ImageGrabber(img, pixelImage) {
+function ImageGrabber(img, width, height) {
     'use strict';
 
     var successCallback;
 
     function grabData() {
 
-        var canvas = document.createElement('canvas'),
-            context = canvas.getContext('2d'),
-            cropwidth,
-            cropheight;
+        var w = width === undefined ? img.width : width,
+            h = height === undefined ? img.height : height,
+            canvas = document.createElement('canvas'),
+            context = canvas.getContext('2d');
 
-        canvas.width = pixelImage.width * pixelImage.pWidth;
-        canvas.height = pixelImage.height * pixelImage.pHeight;
+        canvas.width = w;
+        canvas.height = h;
+        context.drawImage(img, 0, 0, w, h);
 
-        // fill up the image
-        var destratio = canvas.width / canvas.height;
-        var srcratio = img.width / img.height;
-        cropwidth = srcratio > destratio ? img.height * destratio : img.width;
-        cropheight = srcratio > destratio ? img.height : img.width / destratio;
-        
-        context.drawImage(img, 0, 0, cropwidth, cropheight, 0, 0, pixelImage.width, pixelImage.height);
-
-        successCallback(context.getImageData(0, 0, pixelImage.width, pixelImage.height));
+        successCallback(context.getImageData(0, 0, w, h));
 
     }
 
