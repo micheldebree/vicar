@@ -17,3 +17,5 @@ bower_components
 publish.sh
 .DS_Store
 .idea
+.tags
+.tags1
