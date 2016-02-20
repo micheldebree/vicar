@@ -68,7 +68,7 @@ angular.module('vicarApp')
             function convert() {
 
                 var resultImage = $scope.selectedGraphicMode.value(),
-                    grabber = new ImageGrabber(img, resultImage.width, resultImage.height);
+                    grabber = new ImageGrabber(img, resultImage);
 
                 $scope.mainImage = undefined;
 
@@ -92,7 +92,7 @@ angular.module('vicarApp')
                             // make a koala picture to download
                             var koala = KoalaPicture.fromPixelImage(resultImage);
                             $scope.koalaLink = koala.toUrl();
-                            
+
                             // debug koala conversion
                             $scope.koala = KoalaPicture.toPixelImage(koala, resultImage.palette);
 

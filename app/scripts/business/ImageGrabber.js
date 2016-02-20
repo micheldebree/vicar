@@ -1,21 +1,28 @@
 /*exported ImageGrabber*/
-function ImageGrabber(img, width, height) {
+function ImageGrabber(img, pixelImage) {
     'use strict';
 
     var successCallback;
 
     function grabData() {
 
-        var w = width === undefined ? img.width : width,
-            h = height === undefined ? img.height : height,
-            canvas = document.createElement('canvas'),
-            context = canvas.getContext('2d');
+        var canvas = document.createElement('canvas'),
+            context = canvas.getContext('2d'),
+            cropwidth,
+            cropheight;
 
-        canvas.width = w;
-        canvas.height = h;
-        context.drawImage(img, 0, 0, w, h);
+        canvas.width = pixelImage.width * pixelImage.pWidth;
+        canvas.height = pixelImage.height * pixelImage.pHeight;
 
-        successCallback(context.getImageData(0, 0, w, h));
+        // fill up the image
+        var destratio = canvas.width / canvas.height;
+        var srcratio = img.width / img.height;
+        cropwidth = srcratio > destratio ? img.height * destratio : img.width;
+        cropheight = srcratio > destratio ? img.height : img.width / destratio;
+
+        context.drawImage(img, 0, 0, cropwidth, cropheight, 0, 0, pixelImage.width, pixelImage.height);
+
+        successCallback(context.getImageData(0, 0, pixelImage.width, pixelImage.height));
 
     }
 
@@ -28,7 +35,7 @@ function ImageGrabber(img, width, height) {
             if (typeof currentOnLoad !== 'function') {
                 img.onload = grabData;
             } else {
-                img.onload = function () {
+                img.onload = function() {
                     currentOnLoad();
                     grabData();
                 };
