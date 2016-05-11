@@ -8,6 +8,8 @@ function ImageGrabber(img, pixelImage) {
 
         var canvas = document.createElement('canvas'),
             context = canvas.getContext('2d'),
+            sourceLeft,
+            sourceTop,
             cropwidth,
             cropheight;
 
@@ -19,8 +21,10 @@ function ImageGrabber(img, pixelImage) {
         var srcratio = img.width / img.height;
         cropwidth = srcratio > destratio ? img.height * destratio : img.width;
         cropheight = srcratio > destratio ? img.height : img.width / destratio;
+        sourceLeft = (img.width - cropwidth) / 2;
+        sourceTop = (img.height - cropheight) / 2;
 
-        context.drawImage(img, 0, 0, cropwidth, cropheight, 0, 0, pixelImage.width, pixelImage.height);
+        context.drawImage(img, sourceLeft, sourceTop, cropwidth, cropheight, 0, 0, pixelImage.width, pixelImage.height);
 
         successCallback(context.getImageData(0, 0, pixelImage.width, pixelImage.height));
 

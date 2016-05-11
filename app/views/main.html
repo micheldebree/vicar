@@ -5,11 +5,11 @@
     <!--div ng-show="quality"><span class="badge"><span class="glyphicon glyphicon-tint" aria-hidden="true"></span>&nbsp;{{100-quality}}%</span></div-->
   </div>
   
-  <img pixel-image="colorMap0"/>
+  <!-- <img pixel-image="colorMap0"/>
   <img pixel-image="colorMap1"/>
   <img pixel-image="colorMap2"/>
   <img pixel-image="colorMap3"/>
-  <img pixel-image="koala"/>
+  <img pixel-image="koala"/> -->
 </div>
 
 <!-- graphics mode selection, to be added in future release -->
@@ -76,7 +76,7 @@
         </button>
         <ul class="dropdown-menu">
           <li><a href="{{download}}" download="{{filename}}.png" title="VICar">Image (.png)</a></li>
-          <li><a href="{{koalaLink}}" download="{{filename}}.kla" title="VICar">Koala</a></li>
+          <li ng-if="koalaLink"><a href="{{koalaLink}}" download="{{filename}}.kla" title="VICar">Koala Paint (.kla)</a></li>
         </ul>
       </div>
     </div>

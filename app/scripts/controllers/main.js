@@ -19,14 +19,6 @@ angular.module('vicarApp')
                 convert();
             };
 
-            // TODO: add graphics mode selection in future release
-            // $scope.$watch('selectedGraphicMode', function () {
-            //     convert();
-            // });
-            // $scope.selectGraphicMode = function (graphicMode) {
-            //     $scope.selectedGraphicMode = graphicMode;
-            // };
-
             // ordered dithering selection
             $scope.dithers = c64izerService.getSupportedDithers();
             $scope.selectedDither = $scope.dithers[0];
@@ -88,13 +80,17 @@ angular.module('vicarApp')
                             $scope.colorMap1 = toPixelImage(resultImage, 1);
                             $scope.colorMap2 = toPixelImage(resultImage, 2);
                             $scope.colorMap3 = toPixelImage(resultImage, 3);
-
-                            // make a koala picture to download
-                            var koala = KoalaPicture.fromPixelImage(resultImage);
-                            $scope.koalaLink = koala.toUrl();
+                            
+                            if ($scope.selectedGraphicMode.key === 'Multicolor') {
+                                // make a koala picture to download
+                                $scope.koalaLink = KoalaPicture.fromPixelImage(resultImage).toUrl();
+                            }
+                            else {
+                                $scope.koalaLink = undefined;
+                            }
 
                             // debug koala conversion
-                            $scope.koala = KoalaPicture.toPixelImage(koala, resultImage.palette);
+                            // $scope.koala = KoalaPicture.toPixelImage(koala, resultImage.palette);
 
                         });
                     }
