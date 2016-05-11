@@ -38,3 +38,10 @@ From the project root:
 
 - `grunt build`
 - Distribution is in the `dist` folder
+
+
+## Changelog
+
+### v 0.1.0
+
+Initial version
