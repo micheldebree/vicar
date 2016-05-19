@@ -102,14 +102,6 @@ angular.module('vicarApp').factory('c64izerService', function() {
         pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
         return pixelImage;
       }
-    }, {
-        key: 'Hires (2 colors)',
-        value: function() {
-          var pixelImage = PixelImage.create(320, 200, undefined, 1, 1);
-          pixelImage.colorMaps.push(new ColorMap(320, 200, 320, 200));
-          pixelImage.colorMaps.push(new ColorMap(320, 200, 320, 200));
-          return pixelImage;
-        }
     }],
     // TODO: rewrite as an array
     getSupportedDithers: function() {
