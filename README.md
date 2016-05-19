@@ -11,7 +11,7 @@ This code is open source under the MIT license. See [LICENSE.txt](LICENSE.txt).
 # Development
 
 First, checkout the project (or download source zip)
-    - `git clone https://github.com/micheldebree/vicar.git`
+git clone https://github.com/micheldebree/vicar.git
 
 ## Setup development:
 
@@ -42,6 +42,11 @@ From the project root:
 
 ## Changelog
 
-### v 0.1.0
+### 0.1.1
+
+- Fixed ugly typography bug on buttons (Issue #32)
+- Removed 2 color hires mode. It was ugly.
+
+### 0.1.0
 
 Initial version
