@@ -76,10 +76,11 @@ angular.module('vicarApp')
                             $scope.download = resultImage.toDownloadUrl();
 
                             // debug colorMaps
-                            $scope.colorMap0 = toPixelImage(resultImage, 0);
-                            $scope.colorMap1 = toPixelImage(resultImage, 1);
-                            $scope.colorMap2 = toPixelImage(resultImage, 2);
-                            $scope.colorMap3 = toPixelImage(resultImage, 3);
+                            $scope.colorMap = [];
+                            $scope.colorMap[0] = toPixelImage(resultImage, 0);
+                            $scope.colorMap[1] = toPixelImage(resultImage, 1);
+                            $scope.colorMap[2] = toPixelImage(resultImage, 2);
+                            $scope.colorMap[3] = toPixelImage(resultImage, 3);
                             
                             if ($scope.selectedGraphicMode.key === 'Multicolor') {
                                 // make a koala picture to download

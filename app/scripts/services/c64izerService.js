@@ -56,7 +56,7 @@ angular.module('vicarApp').factory('c64izerService', function() {
 
       // fill up the colormaps in the restricted image based based on the colors in the unrestricted image
       for (ci = 0; ci < restrictedImage.colorMaps.length; ci += 1) {
-          unrestrictedImage.extractColorMap(restrictedImage.colorMaps[ci]);
+          unrestrictedImage.extractColorMap(restrictedImage.colorMaps[ci], 0);
       }
 
       // draw the image again in the restricted image
