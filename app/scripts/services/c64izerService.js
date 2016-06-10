@@ -1,4 +1,4 @@
-/*global angular, PixelImage, ColorMap */
+/*global angular, PixelImage, ColorMap, Remapper */
 angular.module('vicarApp').factory('c64izerService', function() {
   'use strict';
 
@@ -39,31 +39,9 @@ angular.module('vicarApp').factory('c64izerService', function() {
     pixelImage.addDitherOffset(x, y + 2, weighError(error, 1, 8));
   }
 
-  function getColorMap(imageData, image) {
-      var w = imageData.width,
-          h = imageData.height,
-          unrestrictedImage = PixelImage.create(w, h, new ColorMap(w, h, 1, 1), image.pWidth, image.pHeight);
-
-      unrestrictedImage.palette = image.palette;
-      unrestrictedImage.dither = image.dither;
-      unrestrictedImage.errorDiffusionDither = image.errorDiffusionDither;
-      unrestrictedImage.drawImageData(imageData);
-      return unrestrictedImage.colorMaps[0];
-  }
-
   function convertToPixelImage(imageData, restrictedImage) {
-      
-      var ci, 
-          colorMap = getColorMap(imageData, restrictedImage);
-
-      // fill up the colormaps in the restricted image based on the colors in the unrestricted image
-      for (ci = 0; ci < restrictedImage.colorMaps.length; ci += 1) {
-          colorMap.extractColorMap(restrictedImage.colorMaps[ci]);
-      }
-
-      // draw the image again in the restricted image
-      restrictedImage.drawImageData(imageData);
-
+      var remapper = new Remapper(restrictedImage);
+      return remapper.mapImageData(imageData); 
   }
 
   return {
