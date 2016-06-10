@@ -1,4 +1,4 @@
-/*global angular, PixelImage, ColorMap, Remapper */
+/*global angular, PixelImage, ColorMap, Remapper, peptoPalette */
 angular.module('vicarApp').factory('c64izerService', function() {
   'use strict';
 
@@ -40,8 +40,7 @@ angular.module('vicarApp').factory('c64izerService', function() {
   }
 
   function convertToPixelImage(imageData, restrictedImage) {
-      var remapper = new Remapper(restrictedImage);
-      return remapper.mapImageData(imageData); 
+      return new Remapper(restrictedImage).mapImageData(imageData); 
   }
 
   return {
@@ -50,6 +49,7 @@ angular.module('vicarApp').factory('c64izerService', function() {
       key: 'Multicolor',
       value: function() {
         var pixelImage = PixelImage.create(160, 200, undefined, 2, 1);
+        pixelImage.palette = peptoPalette;
         pixelImage.colorMaps.push(new ColorMap(160, 200));
         pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
         pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
@@ -60,6 +60,7 @@ angular.module('vicarApp').factory('c64izerService', function() {
       key: 'FLI',
       value: function() {
         var pixelImage = PixelImage.create(160, 200, undefined, 2, 1);
+        pixelImage.palette = peptoPalette;
         pixelImage.colorMaps.push(new ColorMap(160, 200));
         pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
         pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 1));
@@ -70,6 +71,7 @@ angular.module('vicarApp').factory('c64izerService', function() {
       key: 'AFLI',
       value: function() {
         var pixelImage = PixelImage.create(320, 200, undefined, 1, 1);
+        pixelImage.palette = peptoPalette;
         pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
         pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 1));
         return pixelImage;
@@ -78,6 +80,7 @@ angular.module('vicarApp').factory('c64izerService', function() {
       key: 'Hires',
       value: function() {
         var pixelImage = PixelImage.create(320, 200, undefined, 1, 1);
+        pixelImage.palette = peptoPalette;
         pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
         pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
         return pixelImage;

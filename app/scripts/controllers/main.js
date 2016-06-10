@@ -1,4 +1,4 @@
-/*global angular, Image, URL, ImageGrabber, PixelImage, ColorMap, peptoPalette, KoalaPicture */
+/*global angular, Image, URL, ImageGrabber, PixelImage, ColorMap, KoalaPicture */
 angular.module('vicarApp')
     .controller('MainCtrl', [
         '$scope',
@@ -64,7 +64,6 @@ angular.module('vicarApp')
 
                 $scope.mainImage = undefined;
 
-                resultImage.palette = peptoPalette;
                 resultImage.dither = $scope.selectedDither.value;
                 resultImage.errorDiffusionDither = $scope.selectedErrorDiffusionDither.value;
 
