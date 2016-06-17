@@ -37,6 +37,16 @@ angular.module('vicarApp')
                 convert();
             };
 
+            // psychedelic mode selection
+            $scope.psychedelicModes = c64izerService.supportedPsychedelicModes;
+            $scope.selectedPsychedelicMode = $scope.psychedelicModes[0];
+
+            $scope.selectPsychedelicMode = function(psychedelicMode) {
+                $scope.selectedPsychedelicMode = psychedelicMode;
+                convert();
+            };
+
+
             /**
              * Convert a ColorMap to a PixelImage, for debugging visualisation.
              */
@@ -66,6 +76,7 @@ angular.module('vicarApp')
 
                 resultImage.dither = $scope.selectedDither.value;
                 resultImage.errorDiffusionDither = $scope.selectedErrorDiffusionDither.value;
+                resultImage.mappingWeight = $scope.selectedPsychedelicMode.value;
 
                 grabber.grab(
                     function(imageData) {

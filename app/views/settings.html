@@ -1,0 +1,13 @@
+<div class="container">
+<h1>Dit is het settings window</h1>
+
+<div class="btn-group" role="group" aria-label="...">
+  <button ng-repeat="errorDiffusionDither in errorDiffusionDithers" 
+    type="button" 
+    ng-class="errorDiffusionDither.key === selectedErrorDiffusionDither.key ? 'active' : null"
+    class="btn btn-default"
+    ng-click="selectErrorDiffusionDither(errorDiffusionDither)"
+    >{{errorDiffusionDither.key}}</button>
+ 
+</div>
+</div>

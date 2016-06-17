@@ -1,12 +1,4 @@
 /*global angular*/
-/**
- * @ngdoc overview
- * @name workspaceApp
- * @description
- * # workspaceApp
- *
- * Main module of the application.
- */
 angular
       .module('vicarApp', ['ngRoute','ngFileUpload'])
       .config(function ($routeProvider, $compileProvider) {
@@ -20,6 +12,12 @@ angular
               .when('/koala', {
                 templateUrl: 'views/koala.html',
                 controller: 'KoalaCtrl'
+            })
+              .when('/settings', {
+                templateUrl: 'views/settings.html'
+            })
+              .when('/debug', {
+                templateUrl: 'views/debug.html'
             })
               .otherwise({
                 redirectTo: '/'

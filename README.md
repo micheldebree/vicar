@@ -42,6 +42,12 @@ From the project root:
 
 ## Changelog
 
+### 0.1.2
+
+- Added psychedelia setting for more color variation
+- Internal optimizations
+- Issue #21 (needed for psychedelia setting)
+
 ### 0.1.1
 
 - Fixed ugly typography bug on buttons (Issue #32)
