@@ -19,7 +19,7 @@ start:
 	sta $d011
 	lda #0
 	sta $d020
-	lda #background
+	lda background
 	sta $d021
 	ldx #0
 
@@ -38,4 +38,3 @@ start:
 // fill up with zero bytes up until the start of the bitmap ($2000)
 // leave out two bytes because the koala picture's first two bytes are the load address, then bitmap starts
 .fill bitmap - * - 2, 0
-
