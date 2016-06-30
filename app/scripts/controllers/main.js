@@ -7,7 +7,7 @@ angular.module('vicarApp')
             'use strict';
 
             var img = new Image();
-            img.src = 'images/eye.jpg';
+            img.src = 'images/eye.png';
             $scope.filename = 'eye';
 
             // graphic mode selection
@@ -21,7 +21,7 @@ angular.module('vicarApp')
 
             // ordered dithering selection
             $scope.dithers = c64izerService.getSupportedDithers();
-            $scope.selectedDither = $scope.dithers[0];
+            $scope.selectedDither = $scope.dithers[1];
 
             $scope.selectDither = function(dither) {
                 $scope.selectedDither = dither;
@@ -30,7 +30,7 @@ angular.module('vicarApp')
 
             // error diffusion dithering selection
             $scope.errorDiffusionDithers = c64izerService.supportedErrorDiffusionDithers;
-            $scope.selectedErrorDiffusionDither = $scope.errorDiffusionDithers[3];
+            $scope.selectedErrorDiffusionDither = $scope.errorDiffusionDithers[1];
 
             $scope.selectErrorDiffusionDither = function(errorDiffusionDither) {
                 $scope.selectedErrorDiffusionDither = errorDiffusionDither;
