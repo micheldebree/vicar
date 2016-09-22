@@ -134,7 +134,6 @@ angular.module('vicarApp').factory('c64izerService', function() {
       key: 'Atkinson',
       value: atkinsonDither
   }],
-  
   supportedPsychedelicModes: [{
       key: 'None',
       value: [1, 1, 1]
@@ -147,11 +146,8 @@ angular.module('vicarApp').factory('c64izerService', function() {
   }, {
       key: 'Forest',
       value: [1, 1, 0]
- 
-  
   }]
-  
-};
+ };
 });
   
       

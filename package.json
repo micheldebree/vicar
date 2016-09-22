@@ -29,7 +29,6 @@
     "grunt-karma": "^2.0.0",
     "grunt-newer": "^1.1.1",
     "grunt-ng-annotate": "^2.0.2",
-    "grunt-node-webkit-builder": "^1.0.2",
     "grunt-svgmin": "^3.2.0",
     "grunt-usemin": "^3.1.1",
     "grunt-wiredep": "^3.0.1",
