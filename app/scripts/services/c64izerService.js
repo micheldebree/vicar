@@ -1,4 +1,4 @@
-/*global angular, PixelImage, ColorMap, Remapper, ErrorDiffusionDitherer, peptoPalette */
+/*global angular, Remapper, ErrorDiffusionDitherer, GraphicModes */
 angular.module('vicarApp').factory('c64izerService', function() {
     'use strict';
 
@@ -10,44 +10,16 @@ angular.module('vicarApp').factory('c64izerService', function() {
         convertToPixelImage: convertToPixelImage,
         supportedGraphicModes: [{
             key: 'Multicolor',
-            value: function() {
-                var pixelImage = PixelImage.create(160, 200, undefined, 2, 1);
-                pixelImage.palette = peptoPalette;
-                pixelImage.colorMaps.push(new ColorMap(160, 200));
-                pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
-                pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
-                pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
-                return pixelImage;
-            }
+            value: GraphicModes.c64Multicolor
         }, {
             key: 'FLI',
-            value: function() {
-                var pixelImage = PixelImage.create(160, 200, undefined, 2, 1);
-                pixelImage.palette = peptoPalette;
-                pixelImage.colorMaps.push(new ColorMap(160, 200));
-                pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 8));
-                pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 1));
-                pixelImage.colorMaps.push(new ColorMap(160, 200, 4, 1));
-                return pixelImage;
-            }
+            value: GraphicModes.c64FLI
         }, {
             key: 'AFLI',
-            value: function() {
-                var pixelImage = PixelImage.create(320, 200, undefined, 1, 1);
-                pixelImage.palette = peptoPalette;
-                pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
-                pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 1));
-                return pixelImage;
-            }
+            value: GraphicModes.c64AFLI
         }, {
             key: 'Hires',
-            value: function() {
-                var pixelImage = PixelImage.create(320, 200, undefined, 1, 1);
-                pixelImage.palette = peptoPalette;
-                pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
-                pixelImage.colorMaps.push(new ColorMap(320, 200, 8, 8));
-                return pixelImage;
-            }
+            value: GraphicModes.c64Hires
         }],
         supportedDithers: [{
             key: 'None',
