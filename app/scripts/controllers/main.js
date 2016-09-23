@@ -20,7 +20,7 @@ angular.module('vicarApp')
             };
 
             // ordered dithering selection
-            $scope.dithers = c64izerService.getSupportedDithers();
+            $scope.dithers = c64izerService.supportedDithers;
             $scope.selectedDither = $scope.dithers[1];
 
             $scope.selectDither = function(dither) {
