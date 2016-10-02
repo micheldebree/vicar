@@ -1,9 +1,8 @@
-/*global angular, Image, URL, ImageGrabber, PixelImage, ColorMap, KoalaPicture */
+/*global angular, Image, URL, ImageGrabber, PixelImage, ColorMap, KoalaPicture, Remapper, GraphicModes, ErrorDiffusionDitherer, OrderedDitherers */
 angular.module('vicarApp')
     .controller('MainCtrl', [
         '$scope',
-        'c64izerService',
-        function($scope, c64izerService) {
+        function($scope) {
             'use strict';
 
             var img = new Image();
@@ -11,7 +10,7 @@ angular.module('vicarApp')
             $scope.filename = 'eye';
 
             // graphic mode selection
-            $scope.graphicModes = c64izerService.supportedGraphicModes;
+            $scope.graphicModes = GraphicModes.all;
             $scope.selectedGraphicMode = $scope.graphicModes[0];
 
             $scope.selectGraphicMode = function(graphicMode) {
@@ -20,7 +19,7 @@ angular.module('vicarApp')
             };
 
             // ordered dithering selection
-            $scope.dithers = c64izerService.supportedDithers;
+            $scope.dithers = OrderedDitherers.all;
             $scope.selectedDither = $scope.dithers[1];
 
             $scope.selectDither = function(dither) {
@@ -29,7 +28,7 @@ angular.module('vicarApp')
             };
 
             // error diffusion dithering selection
-            $scope.errorDiffusionDithers = c64izerService.supportedErrorDiffusionDithers;
+            $scope.errorDiffusionDithers = ErrorDiffusionDitherer.all;
             $scope.selectedErrorDiffusionDither = $scope.errorDiffusionDithers[1];
 
             $scope.selectErrorDiffusionDither = function(errorDiffusionDither) {
@@ -38,7 +37,19 @@ angular.module('vicarApp')
             };
 
             // psychedelic mode selection
-            $scope.psychedelicModes = c64izerService.supportedPsychedelicModes;
+            $scope.psychedelicModes = [{
+                key: 'None',
+                value: [1, 1, 1]
+            }, {
+                key: 'Rainbow',
+                value: [1, 0, 0]
+            }, {
+                key: 'Candy',
+                value: [1, 0, 1]
+            }, {
+                key: 'Forest',
+                value: [1, 1, 0]
+            }];
             $scope.selectedPsychedelicMode = $scope.psychedelicModes[0];
 
             $scope.selectPsychedelicMode = function(psychedelicMode) {
@@ -81,7 +92,7 @@ angular.module('vicarApp')
                 grabber.grab(
                     function(imageData) {
                         $scope.$evalAsync(function() {
-                            c64izerService.convertToPixelImage(imageData, resultImage);
+                            new Remapper(resultImage).mapImageData(imageData);
                             $scope.mainImage = resultImage;
                             $scope.download = resultImage.toDownloadUrl();
 
@@ -91,12 +102,11 @@ angular.module('vicarApp')
                             $scope.colorMap[1] = toPixelImage(resultImage, 1);
                             $scope.colorMap[2] = toPixelImage(resultImage, 2);
                             $scope.colorMap[3] = toPixelImage(resultImage, 3);
-                            
+
                             if ($scope.selectedGraphicMode.key === 'Multicolor') {
                                 // make a koala picture to download
                                 $scope.koalaLink = KoalaPicture.fromPixelImage(resultImage).toUrl();
-                            }
-                            else {
+                            } else {
                                 $scope.koalaLink = undefined;
                             }
 
