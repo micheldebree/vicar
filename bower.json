@@ -6,8 +6,6 @@
     "json3": "~3.3.2",
     "es5-shim": "~4.5.8",
     "angular-route": "~1.5.6",
-    "ng-file-upload": "~7.0.17",
-    "bootstrap": "<3.3.5",
     "webcam": "webcam-directive#^3.1.1"
   },
   "devDependencies": {
