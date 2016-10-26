@@ -128,6 +128,33 @@ angular.module('vicarApp')
                 };
             };
 
+            $scope.onWebcam = function() {
+
+                var video =$scope.channel.video;
+                var canvas = document.querySelector('#camvas');
+
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, video.width / 2, video.height);
+
+                var resultImage = $scope.selectedGraphicMode.value();
+
+                var imageData = ctx.getImageData(0, 0, resultImage.width, resultImage.height)
+
+                new Remapper(resultImage).mapImageData(imageData);
+                 $scope.mainImage = resultImage;
+// TODO: draw back directly to canvas
+
+                 $scope.$apply();
+
+                // The video element contains the captured camera data
+                // _video = $scope.channel.video;
+                // $scope.$apply(function() {
+                //     $scope.patOpts.w = _video.width;
+                //     $scope.patOpts.h = _video.height;
+                //     $scope.showDemos = true;
+                // });
+            };
+
             convert();
 
         }

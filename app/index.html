@@ -25,6 +25,7 @@
   <!-- Add your site or application content here -->
   <div ng-controller="MainCtrl">
     <div ng-view=""></div>
+    <webcam channel="channel" on-streaming="onWebcam()"></webcam><canvas id="camvas" width="320" height="200" style="background-color: red"></canvas>
   </div>
 
   <!-- build:js(.) scripts/oldieshim.js -->
@@ -43,6 +44,7 @@
   <script src="bower_components/ng-file-upload/ng-file-upload.js"></script>
   <script src="bower_components/jquery/dist/jquery.js"></script>
   <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+  <script src="bower_components/webcam/dist/webcam.min.js"></script>
   <!-- endbower -->
   <!-- endbuild -->
 

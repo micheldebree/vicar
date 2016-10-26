@@ -1,6 +1,6 @@
 /*global angular*/
 angular
-      .module('vicarApp', ['ngRoute','ngFileUpload'])
+      .module('vicarApp', ['ngRoute','ngFileUpload', 'webcam'])
       .config(function ($routeProvider, $compileProvider) {
         'use strict';
 
