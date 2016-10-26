@@ -1,40 +1,21 @@
-/*global angular, Image, URL, ImageGrabber, PixelImage, ColorMap, KoalaPicture, Remapper, GraphicModes, ErrorDiffusionDitherer, OrderedDitherers */
+/*global angular, Image, URL, ImageGrabber, PixelCalculator, PixelImage, ColorMap, KoalaPicture, Remapper, GraphicModes, ErrorDiffusionDitherer, OrderedDitherers */
 angular.module('vicarApp')
     .controller('MainCtrl', [
         '$scope',
-        function($scope) {
+        function ($scope) {
             'use strict';
-
-            var img = new Image();
-            img.src = 'images/eye.png';
-            $scope.filename = 'eye';
 
             // graphic mode selection
             $scope.graphicModes = GraphicModes.all;
             $scope.selectedGraphicMode = $scope.graphicModes[0];
 
-            $scope.selectGraphicMode = function(graphicMode) {
-                $scope.selectedGraphicMode = graphicMode;
-                convert();
-            };
-
             // ordered dithering selection
             $scope.dithers = OrderedDitherers.all;
-            $scope.selectedDither = $scope.dithers[1];
-
-            $scope.selectDither = function(dither) {
-                $scope.selectedDither = dither;
-                convert();
-            };
+            $scope.selectedDither = $scope.dithers[2];
 
             // error diffusion dithering selection
             $scope.errorDiffusionDithers = ErrorDiffusionDitherer.all;
-            $scope.selectedErrorDiffusionDither = $scope.errorDiffusionDithers[1];
-
-            $scope.selectErrorDiffusionDither = function(errorDiffusionDither) {
-                $scope.selectedErrorDiffusionDither = errorDiffusionDither;
-                convert();
-            };
+            $scope.selectedErrorDiffusionDither = $scope.errorDiffusionDithers[0];
 
             // psychedelic mode selection
             $scope.psychedelicModes = [{
@@ -52,110 +33,65 @@ angular.module('vicarApp')
             }];
             $scope.selectedPsychedelicMode = $scope.psychedelicModes[0];
 
-            $scope.selectPsychedelicMode = function(psychedelicMode) {
-                $scope.selectedPsychedelicMode = psychedelicMode;
-                convert();
-            };
+            (function () {
+                var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                    window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+                window.requestAnimationFrame = requestAnimationFrame;
+            })();
+
+            function paintOnCanvas(context, pixelImage) {
+
+                var
+                    imageData,
+                    x,
+                    y,
+                    px,
+                    py,
+                    xx,
+                    yy,
+                    pixel;
 
 
-            /**
-             * Convert a ColorMap to a PixelImage, for debugging visualisation.
-             */
+                imageData = context.createImageData(pixelImage.width * pixelImage.pWidth, pixelImage.height * pixelImage.pHeight);
 
-            function toPixelImage(pixelImage, colorMapIndex) {
-                var colorMap = pixelImage.colorMaps[colorMapIndex],
-                    result = PixelImage.create(colorMap.width, colorMap.height,
-                        new ColorMap(colorMap.width, colorMap.height, 1, 1), 1, 1);
+                for (x = 0; x < pixelImage.width; x += 1) {
+                    for (y = 0; y < pixelImage.height; y += 1) {
 
-                result.pWidth = pixelImage.pWidth;
-                result.pHeight = pixelImage.pHeight;
-                result.palette = pixelImage.palette;
-                result.drawImageData(colorMap.toImageData(result.palette));
-                return result;
-            }
-
-            /**
-             * Convert the current Image to a PixelImage and update the scope.
-             * @returns {void}
-             */
-            function convert() {
-
-                var resultImage = $scope.selectedGraphicMode.value(),
-                    grabber = new ImageGrabber(img, resultImage);
-
-                $scope.mainImage = undefined;
-
-                resultImage.dither = $scope.selectedDither.value;
-                resultImage.errorDiffusionDither = $scope.selectedErrorDiffusionDither.value;
-                resultImage.mappingWeight = $scope.selectedPsychedelicMode.value;
-
-                grabber.grab(
-                    function(imageData) {
-                        $scope.$evalAsync(function() {
-                            new Remapper(resultImage).mapImageData(imageData);
-                            $scope.mainImage = resultImage;
-                            $scope.download = resultImage.toDownloadUrl();
-
-                            // debug colorMaps
-                            $scope.colorMap = [];
-                            $scope.colorMap[0] = toPixelImage(resultImage, 0);
-                            $scope.colorMap[1] = toPixelImage(resultImage, 1);
-                            $scope.colorMap[2] = toPixelImage(resultImage, 2);
-                            $scope.colorMap[3] = toPixelImage(resultImage, 3);
-
-                            if ($scope.selectedGraphicMode.key === 'Multicolor') {
-                                // make a koala picture to download
-                                $scope.koalaLink = KoalaPicture.fromPixelImage(resultImage).toUrl();
-                            } else {
-                                $scope.koalaLink = undefined;
+                        pixel = pixelImage.peek(x, y);
+                        for (px = 0; px < pixelImage.pWidth; px += 1) {
+                            xx = x * pixelImage.pWidth + px;
+                            yy = y * pixelImage.pHeight;
+                            for (py = 0; py < pixelImage.pHeight; py += 1) {
+                                PixelCalculator.poke(imageData, xx, yy + py, pixel);
                             }
-
-                            // debug koala conversion
-                            // $scope.koala = KoalaPicture.toPixelImage(koala, resultImage.palette);
-
-                        });
+                        }
                     }
-                );
+                }
+                context.putImageData(imageData, 0, 0);
             }
 
-            $scope.upload = function(file) {
-                $scope.filename = file.name;
-                img.src = URL.createObjectURL(file);
-                img.onload = function() {
-                    $scope.$evalAsync(function() {
-                        convert();
-                    });
-                };
-            };
-
-            $scope.onWebcam = function() {
-
-                var video =$scope.channel.video;
+            function captureFrame() {
+                var video = $scope.channel.video;
                 var canvas = document.querySelector('#camvas');
 
                 var ctx = canvas.getContext('2d');
                 ctx.drawImage(video, 0, 0, video.width / 2, video.height);
 
                 var resultImage = $scope.selectedGraphicMode.value();
+                resultImage.dither = $scope.selectedDither.value;
+                resultImage.errorDiffusionDither = $scope.selectedErrorDiffusionDither.value;
+                resultImage.mappingWeight = $scope.selectedPsychedelicMode.value;
 
                 var imageData = ctx.getImageData(0, 0, resultImage.width, resultImage.height)
 
                 new Remapper(resultImage).mapImageData(imageData);
-                 $scope.mainImage = resultImage;
-// TODO: draw back directly to canvas
 
-                 $scope.$apply();
+                paintOnCanvas(ctx, resultImage);
+                requestAnimationFrame(captureFrame);
+            }
 
-                // The video element contains the captured camera data
-                // _video = $scope.channel.video;
-                // $scope.$apply(function() {
-                //     $scope.patOpts.w = _video.width;
-                //     $scope.patOpts.h = _video.height;
-                //     $scope.showDemos = true;
-                // });
+            $scope.onWebcam = function () {
+                requestAnimationFrame(captureFrame);
             };
-
-            convert();
-
         }
     ]);
