@@ -2,10 +2,10 @@
 angular.module('vicarApp')
     .controller('MainCtrl', [
         '$scope',
-        function ($scope) {
+        function($scope) {
             'use strict';
 
-            (function () {
+            (function() {
                 var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
                     window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
                 window.requestAnimationFrame = requestAnimationFrame;
@@ -28,17 +28,15 @@ angular.module('vicarApp')
                 }];
 
             function paintOnCanvas(context, pixelImage) {
-                var x,
-                    y,
-                    px,
+                var px,
                     py,
                     xx,
                     yy,
                     pixel,
                     imageData = context.createImageData(pixelImage.width * pixelImage.pWidth, pixelImage.height * pixelImage.pHeight);
 
-                for (x = 0; x < pixelImage.width; x += 1) {
-                    for (y = 0; y < pixelImage.height; y += 1) {
+                for (var x = 0; x < pixelImage.width; x += 1) {
+                    for (var y = 0; y < pixelImage.height; y += 1) {
                         pixel = pixelImage.peek(x, y);
                         xx = x * pixelImage.pWidth;
                         for (px = 0; px < pixelImage.pWidth; px += 1) {
@@ -59,7 +57,7 @@ angular.module('vicarApp')
                 var resultImage = GraphicModes.c64Multicolor();
                 resultImage.dither = OrderedDitherers.all[2].value;
                 // resultImage.errorDiffusionDither = ErrorDiffusionDitherer.fsDither;
-                resultImage.mappingWeight = psychedelicModes[0].value;
+                resultImage.mappingWeight = psychedelicModes[1].value;
 
                 ctx.drawImage(video, 0, 0, video.width / resultImage.pWidth, video.height / resultImage.pHeight);
                 var imageData = ctx.getImageData(0, 0, resultImage.width, resultImage.height);
@@ -70,7 +68,7 @@ angular.module('vicarApp')
                 requestAnimationFrame(captureFrame);
             }
 
-            $scope.onWebcam = function () {
+            $scope.onWebcam = function() {
                 requestAnimationFrame(captureFrame);
             };
         }
